@@ -17,6 +17,10 @@ minishell
 *.lib
 *.a
 
+# Executables
+*.exe
+*.out
+
 # Debug files
 *.dSYM/
 *.su
