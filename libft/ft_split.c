@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 16:05:36 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 18:17:48 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/02/27 21:57:40 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ char
 
 	if (s == NULL)
 		return (NULL);
-	if ((ary = malloc(sizeof(char *) * (ary_size((char *)s, c) + 1))) == NULL)
+	if (!(ary = (char **)malloc(sizeof(char *) * (ary_size((char *)s, c) + 1))))
 		return (NULL);
 	return (split_ary(ary, (char *)s, c));
 }
