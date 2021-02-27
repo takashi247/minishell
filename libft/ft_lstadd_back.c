@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstadd_back.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/10 08:19:14 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 18:14:42 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/02/27 21:33:06 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void
 {
 	t_list	*tmp;
 
-	if (!new)
+	if (!lst || !new)
 		return ;
 	if (!*lst)
 	{
