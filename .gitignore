@@ -1,0 +1,24 @@
+# Project file
+minishell
+
+# General
+.DS_Store
+
+# Editor
+.vscode
+
+# Prerequisites
+*.d
+
+# Object files
+*.o
+
+# Libraries
+*.lib
+*.a
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
