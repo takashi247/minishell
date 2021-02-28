@@ -14,10 +14,10 @@ int
 void
 	do_command(char *line)
 {
-	char	*argv[2];
+	char	**argv;
 
-	argv[0] = ft_strjoin("/bin/", line);
-	argv[1] = NULL;
+	argv = ft_split(line, ' ');
+	argv[0] = ft_strjoin("/bin/", argv[0]);
 	execve(argv[0], argv, environ);
 	exit_with_error("execve");
 }
