@@ -9,11 +9,13 @@
 # include <errno.h>
 # include "libft.h"
 
+# define PRG_NAME "minishell"
+
 /*
 ** command_utils.c
 */
 int		ft_strcmp(const char *s1, const char *s2);
-void	ft_put_cmdmsg_fd(char *cmd_name, char *msg, int fd);
-void	ft_put_cmdmsg_fd_with_arg(char *cmd_name, char *msg, char *arg, int fd);
+void	ft_put_cmderror(char *cmd_name, char *msg);
+void	ft_put_cmderror_with_arg(char *cmd_name, char *msg, char *arg);
 
 #endif

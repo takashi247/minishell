@@ -28,19 +28,12 @@ int
 	ft_cd(char **args)
 {
 	char	*debug_ls[] = {"pwd", NULL};
-	char	*path;
 
 	lsh_launch(debug_ls);
-	path = NULL;
 	if (args[1] == NULL)
-	{
-		// TODO: 引数なしでcdが呼ばれた際にパスを~にしてもHOMEへ行かない、課題範囲外なので引数エラーを返してしまっても良い、調査・検討する
-		path = "~";
-	}
-	else
-		path = args[1];
-	if (chdir(path) != 0)
-		ft_put_cmdmsg_fd_with_arg("cd", strerror(errno), args[1], STDERR_FILENO);
+		ft_put_cmderror("cd", strerror(EINVAL));
+	else if (chdir(args[1]) != 0)
+		ft_put_cmderror_with_arg("cd", strerror(errno), args[1]);
 	lsh_launch(debug_ls);
 	return (1);
 }
@@ -55,7 +48,7 @@ int
 
 	if (ac < 2)
 	{
-		ft_put_cmdmsg_fd("main", strerror(EINVAL), STDERR_FILENO);
+		ft_put_cmderror("main", strerror(EINVAL));
 		return (EXIT_FAILURE);
 	}
 	if (!(args = (char **)malloc(sizeof(char*) * (ac + 1))))
