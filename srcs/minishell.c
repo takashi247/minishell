@@ -1,9 +1,6 @@
 #include "minishell_tnishina.h"
 #include "libft.h"
 
-// need to use g_* prefix to pass norm
-extern char **environ;
-
 int
 	exit_with_error(char *str)
 {
@@ -12,7 +9,7 @@ int
 }
 
 void
-	do_command(char *line)
+	do_command(char *line, char **environ)
 {
 	char	**argv;
 
@@ -25,9 +22,10 @@ void
 int
 	main(void)
 {
-	char	*line;
-	pid_t	pid;
-	int		status;
+	char		*line;
+	pid_t		pid;
+	int			status;
+	extern char	**environ;
 
 	write(STDOUT_FILENO, PROMPT, ft_strlen(PROMPT));
 	while (get_next_line(STDIN_FILENO, &line) == 1 &&
@@ -36,7 +34,7 @@ int
 		if ((pid = fork()) < 0)
 			exit_with_error("fork");
 		else if (pid == 0)
-			do_command(line);
+			do_command(line, environ);
 		if ((pid = waitpid(pid, &status, 0)) < 0)
 			exit_with_error("wait");
 		ft_free_str(&line);
