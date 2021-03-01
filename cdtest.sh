@@ -37,6 +37,24 @@ pwd
 cd $WORKDIR
 echo
 
+printf "${YELLOW}%s${RESET}\n" "[mini] cd \"\""
+./cd.out cd "~"
+printf "${YELLOW}%s${RESET}\n" "[bash] cd \"\""
+pwd
+cd ""
+pwd
+cd $WORKDIR
+echo
+
+printf "${YELLOW}%s${RESET}\n" "[mini] cd ''"
+./cd.out cd "~"
+printf "${YELLOW}%s${RESET}\n" "[bash] cd ''"
+pwd
+cd ''
+pwd
+cd $WORKDIR
+echo
+
 printf "${YELLOW}%s${RESET}\n" "[mini] cd \$HOME"
 ./cd.out cd $HOME
 printf "${YELLOW}%s${RESET}\n" "[bash] cd \$HOME"
