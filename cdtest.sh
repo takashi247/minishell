@@ -38,7 +38,7 @@ cd $WORKDIR
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] cd \"\""
-./cd.out cd "~"
+./cd.out cd ""
 printf "${YELLOW}%s${RESET}\n" "[bash] cd \"\""
 pwd
 cd ""
@@ -47,7 +47,7 @@ cd $WORKDIR
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] cd ''"
-./cd.out cd "~"
+./cd.out cd ''
 printf "${YELLOW}%s${RESET}\n" "[bash] cd ''"
 pwd
 cd ''
@@ -73,13 +73,22 @@ pwd
 echo
 cd $WORKDIR
 
-printf "${YELLOW}%s${RESET}\n" "mkdir test"
-mkdir test
-printf "${YELLOW}%s${RESET}\n" "[mini] cd test"
-./cd.out cd test
-printf "${YELLOW}%s${RESET}\n" "[bash] cd test"
+printf "${YELLOW}%s${RESET}\n" "mkdir cdtest"
+mkdir cdtest
+printf "${YELLOW}%s${RESET}\n" "[mini] cd cdtest"
+./cd.out cd cdtest
+printf "${YELLOW}%s${RESET}\n" "[bash] cd cdtest"
 pwd
-cd test
+cd cdtest
+pwd
+echo
+cd $WORKDIR
+
+printf "${YELLOW}%s${RESET}\n" "[mini] cd hoge world"
+./cd.out cd hoge world
+printf "${YELLOW}%s${RESET}\n" "[bash] cd hoge world"
+pwd
+cd hoge world
 pwd
 echo
 cd $WORKDIR
@@ -93,11 +102,4 @@ pwd
 echo
 cd $WORKDIR
 
-printf "${YELLOW}%s${RESET}\n" "[mini] cd hoge world"
-./cd.out cd hoge world
-printf "${YELLOW}%s${RESET}\n" "[bash] cd hoge world"
-pwd
-cd hoge world
-pwd
-echo
-cd $WORKDIR
+rm -rf cdtest
