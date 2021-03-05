@@ -14,7 +14,7 @@ int
 }
 
 char
-	*get_cmd_option(char *option, const char *arg)
+	*ft_get_cmd_option(char *option, const char *arg)
 {
 	if (!option || !arg)
 		return (NULL);

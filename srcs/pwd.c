@@ -4,11 +4,11 @@ extern char
 	*g_pwd;
 
 int
-	init_pwd(char **environ)
+	ft_init_pwd()
 {
 	int	fd;
 
-	if ((g_pwd = get_env_by_key("PWD", environ)))
+	if ((g_pwd = ft_getenv("PWD")))
 		if (0 <= (fd = open(g_pwd, O_RDONLY)) && close(fd))
 			return (KEEP_RUNNING);
 	if ((g_pwd = getcwd(NULL, 0)))
@@ -27,7 +27,7 @@ int
 	char	option[3];
 
 	dir = NULL;
-	if (get_cmd_option(option, args[1]))
+	if (ft_get_cmd_option(option, args[1]))
 	{
 		ft_put_cmderror_with_arg("pwd", CMD_OPTION_ERR, option);
 		ft_put_cmderror_with_help("pwd", CMD_PWD_HELP);
@@ -41,7 +41,6 @@ int
 int
 	main(int ac, char **av)
 {
-	extern char	**environ;
 	char		**args;
 	int			ret;
 	int			i;
@@ -51,7 +50,7 @@ int
 		ft_put_cmderror("main", strerror(EINVAL));
 		return (EXIT_FAILURE);
 	}
-	if (init_pwd(environ) == STOP)
+	if (ft_init_pwd() == STOP)
 		return (EXIT_FAILURE);
 	if (!(args = (char **)malloc(sizeof(char*) * (ac + 1))))
 		return (EXIT_FAILURE);

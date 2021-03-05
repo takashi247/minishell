@@ -27,12 +27,12 @@ char	*g_pwd;
 /*
 ** env_utils.c
 */
-char	*get_env_by_key(char *key, char **environ);
+char	*ft_getenv(const char *name);
 /*
 ** command_utils.c
 */
 int		ft_strcmp(const char *s1, const char *s2);
-char	*get_cmd_option(char *option, const char *arg);
+char	*ft_get_cmd_option(char *option, const char *arg);
 void	ft_put_cmderror(char *cmd_name, char *msg);
 void	ft_put_cmderror_with_arg(char *cmd_name, char *msg, char *arg);
 void	ft_put_cmderror_with_help(char *cmd_name, char *help);
@@ -43,7 +43,7 @@ int		ft_cd(char **args);
 /*
 ** pwd.c
 */
-int		init_pwd(char **environ);
+int		ft_init_pwd();
 int		ft_pwd(char **args);
 
 #endif

@@ -1,18 +1,21 @@
 #include "minishell_sikeda.h"
 
 char
-	*get_env_by_key(char *key, char **environ)
+	*ft_getenv(const char *name)
 {
-	size_t	len;
+	extern char	**environ;
+	char		**envptr;
+	size_t		len;
 
-	if (!environ)
+	if (!environ || !*name)
 		return (NULL);
-	len = ft_strlen(key);
-	while (*environ)
+	len = ft_strlen(name);
+	envptr = environ;
+	while (*envptr)
 	{
-		if (!ft_strncmp(key, *environ, len) && (*environ)[len] == '=')
-			return (ft_strdup(*environ + len + 1));
-		environ++;
+		if (!ft_strncmp(name, *envptr, len) && (*envptr)[len] == '=')
+			return (ft_strdup(*envptr + len + 1));
+		envptr++;
 	}
 	return (NULL);
 }
