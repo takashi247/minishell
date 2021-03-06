@@ -1,6 +1,6 @@
 #include "minishell_sikeda.h"
 
-// debug
+#ifdef CDTEST
 int
 	lsh_launch(char **args)
 {
@@ -23,19 +23,24 @@ int
 	}
 	return (1);
 }
+#endif
 
 int
 	ft_cd(char **args)
 {
+#ifdef CDTEST
 	char	*debug_ls[] = {"pwd", NULL};
 
 	lsh_launch(debug_ls);
+#endif
 	if (args[1] == NULL)
 		ft_put_cmderror("cd", strerror(EINVAL));
 	else if (chdir(args[1]) != 0)
 		ft_put_cmderror_with_arg("cd", strerror(errno), args[1]);
+#ifdef CDTEST
 	lsh_launch(debug_ls);
-	return (1);
+#endif
+	return (KEEP_RUNNING);
 }
 
 #ifdef CDTEST
@@ -60,9 +65,9 @@ int
 	ret = 0;
 	if (!ft_strcmp(args[1], "cd"))
 		ret = ft_cd(++args);
-	if (!ret)
+	if (ret == STOP)
 	{
-		// TODO: exitが呼ばれたときに0が返されてloopを終了してmainが終了するイメージ
+		// TODO: exitが呼ばれたときにSTOPが返されてloopを終了してmainが終了するイメージ
 	}
 	return (EXIT_SUCCESS);
 }
