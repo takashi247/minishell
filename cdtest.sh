@@ -84,6 +84,24 @@ pwd
 echo
 cd $WORKDIR
 
+printf "${YELLOW}%s${RESET}\n" "[mini] cd \"cdtest\""
+./cd.out cd "cdtest"
+printf "${YELLOW}%s${RESET}\n" "[bash] cd \"cdtest\""
+pwd
+cd "cdtest"
+pwd
+echo
+cd $WORKDIR
+
+printf "${YELLOW}%s${RESET}\n" "[mini] cd \"cdtest \""
+./cd.out cd "cdtest "
+printf "${YELLOW}%s${RESET}\n" "[bash] cd \"cdtest \""
+pwd
+cd "cdtest "
+pwd
+echo
+cd $WORKDIR
+
 printf "${YELLOW}%s${RESET}\n" "[mini] cd hoge world"
 ./cd.out cd hoge world
 printf "${YELLOW}%s${RESET}\n" "[bash] cd hoge world"

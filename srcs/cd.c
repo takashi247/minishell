@@ -46,7 +46,7 @@ int
 	}
 	else if (args[i] == NULL)
 		ft_put_cmderror("cd", strerror(EINVAL));
-	else if (chdir(args[i]) != 0)
+	else if (*args[i] && chdir(args[i]) != 0)
 		ft_put_cmderror_with_arg("cd", strerror(errno), args[i]);
 #ifdef CDTEST
 	lsh_launch(debug_ls);
