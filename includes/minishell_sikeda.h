@@ -11,7 +11,7 @@
 
 # define PRG_NAME "minishell"
 # define CMD_OPTION_ERR "invalid option"
-# define CMD_CD_HELP "cd"
+# define CMD_CD_HELP "cd [dir]"
 # define CMD_PWD_HELP "pwd"
 
 # define FREE(p) ((p) ? free(p) : (p), (p) = NULL)
