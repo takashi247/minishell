@@ -25,32 +25,45 @@ int
 }
 #endif
 
-int
-	ft_cd(char **args)
+t_bool
+	validate_args(char **args)
 {
+	t_bool	ret;
 	char	option[3];
-	int		i;
 
-#ifdef CDTEST
-	char	*debug_ls[] = {"pwd", NULL};
-
-	lsh_launch(debug_ls);
-#endif
-	i = 1;
-	if (args[i] && !ft_strcmp(args[i], "--"))
-		i++;
-	if (ft_get_cmd_option(option, args[i]))
+	ret = FALSE;
+	if (ft_get_cmd_option(option, *args))
 	{
 		ft_put_cmderror_with_arg("cd", CMD_OPTION_ERR, option);
 		ft_put_cmderror_with_help("cd", CMD_CD_HELP);
 	}
-	else if (args[i] == NULL)
+	else if (*args == NULL)
 		ft_put_cmderror("cd", strerror(EINVAL));
-	else if (*args[i] && chdir(args[i]) != 0)
-		ft_put_cmderror_with_arg("cd", strerror(errno), args[i]);
-#ifdef CDTEST
-	lsh_launch(debug_ls);
-#endif
+	else if (**args == '\0')
+		return (ret);
+	else if (chdir(*args) != 0)
+		ft_put_cmderror_with_arg("cd", strerror(errno), *args);
+	else
+		ret = TRUE;
+	return (ret);
+}
+
+int
+	ft_cd(char **args)
+{
+	args++;
+	if (*args && !ft_strcmp(*args, "--"))
+		args++;
+	if (validate_args(args) == TRUE)
+	{
+		// TODO: $PWD、$OLDPWDの値を更新
+		FREE(g_pwd);
+		if (!(g_pwd = getcwd(NULL, 0)))
+		{
+			ft_putendl_fd(strerror(EINVAL), STDERR_FILENO);
+			return (STOP);
+		}
+	}
 	return (KEEP_RUNNING);
 }
 
@@ -68,6 +81,8 @@ int
 		ft_put_cmderror("main", strerror(EINVAL));
 		return (EXIT_FAILURE);
 	}
+	if (ft_init_pwd() == STOP)
+		return (EXIT_FAILURE);
 	if (!(args = (char **)malloc(sizeof(char*) * (ac + 1))))
 	{
 		FREE(g_pwd);
@@ -80,7 +95,13 @@ int
 	args_head = args;
 	ret = 0;
 	if (!ft_strcmp(args[1], "cd"))
-		ret = ft_cd(++args);
+	{
+		char	*pwdargs[2] = {"pwd", NULL};
+		++args;
+		ret = ft_pwd(pwdargs);
+		ret = ft_cd(args);
+		ret = ft_pwd(pwdargs);
+	}
 	else if (!ft_strcmp(args[1], "pwd"))
 		ret = ft_pwd(++args);
 	if (ret == STOP)

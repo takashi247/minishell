@@ -16,6 +16,12 @@
 
 # define FREE(p) ((p) ? free(p) : (p), (p) = NULL)
 
+typedef enum e_bool
+{
+	FALSE,
+	TRUE
+}	t_bool;
+
 enum	e_cmd_signal
 {
 	KEEP_RUNNING,
