@@ -10,9 +10,14 @@
 # include "libft.h"
 
 # define PRG_NAME "minishell"
+# define STATUS_SUCCESS 0
+# define STATUS_GENERAL_ERR 1
+# define STATUS_OUT_OF_RANGE_ERR 255
 # define CMD_OPTION_ERR "invalid option"
 # define CMD_CD_HELP "cd"
 # define CMD_PWD_HELP "pwd"
+
+# define SPACE_CHARS " \t\n\v\f\r"
 
 # define FREE(p) ((p) ? free(p) : (p), (p) = NULL)
 
@@ -22,6 +27,7 @@ enum	e_cmd_signal
 	STOP
 };
 
+uint8_t	g_status;
 char	*g_pwd;
 
 /*
@@ -32,6 +38,8 @@ char	*ft_getenv(const char *name);
 ** command_utils.c
 */
 int		ft_strcmp(const char *s1, const char *s2);
+int		ft_isspace(char c);
+int		ft_isnumeric(char *s);
 char	*ft_get_cmd_option(char *option, const char *arg);
 void	ft_put_cmderror(char *cmd_name, char *msg);
 void	ft_put_cmderror_with_arg(char *cmd_name, char *msg, char *arg);
@@ -45,5 +53,9 @@ int		ft_cd(char **args);
 */
 int		ft_init_pwd();
 int		ft_pwd(char **args);
+/*
+** exit.c
+*/
+int		ft_exit(char **args);
 
 #endif
