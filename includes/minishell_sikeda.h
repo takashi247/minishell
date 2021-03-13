@@ -14,12 +14,18 @@
 # define STATUS_GENERAL_ERR 1
 # define STATUS_OUT_OF_RANGE_ERR 255
 # define CMD_OPTION_ERR "invalid option"
-# define CMD_CD_HELP "cd"
+# define CMD_CD_HELP "cd [dir]"
 # define CMD_PWD_HELP "pwd"
 
 # define SPACE_CHARS " \t\n\v\f\r"
 
 # define FREE(p) ((p) ? free(p) : (p), (p) = NULL)
+
+typedef enum e_bool
+{
+	FALSE,
+	TRUE
+}	t_bool;
 
 enum	e_cmd_signal
 {

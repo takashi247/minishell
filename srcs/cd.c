@@ -25,21 +25,45 @@ int
 }
 #endif
 
+t_bool
+	validate_args(char **args)
+{
+	t_bool	ret;
+	char	option[3];
+
+	ret = FALSE;
+	if (ft_get_cmd_option(option, *args))
+	{
+		ft_put_cmderror_with_arg("cd", CMD_OPTION_ERR, option);
+		ft_put_cmderror_with_help("cd", CMD_CD_HELP);
+	}
+	else if (*args == NULL)
+		ft_put_cmderror("cd", strerror(EINVAL));
+	else if (**args == '\0')
+		return (ret);
+	else if (chdir(*args) != 0)
+		ft_put_cmderror_with_arg("cd", strerror(errno), *args);
+	else
+		ret = TRUE;
+	return (ret);
+}
+
 int
 	ft_cd(char **args)
 {
-#ifdef CDTEST
-	char	*debug_ls[] = {"pwd", NULL};
-
-	lsh_launch(debug_ls);
-#endif
-	if (args[1] == NULL)
-		ft_put_cmderror("cd", strerror(EINVAL));
-	else if (chdir(args[1]) != 0)
-		ft_put_cmderror_with_arg("cd", strerror(errno), args[1]);
-#ifdef CDTEST
-	lsh_launch(debug_ls);
-#endif
+	args++;
+	if (*args && !ft_strcmp(*args, "--"))
+		args++;
+	if (validate_args(args) == TRUE)
+	{
+		// TODO: $PWD、$OLDPWDの値を更新
+		FREE(g_pwd);
+		if (!(g_pwd = getcwd(NULL, 0)))
+		{
+			ft_putendl_fd(strerror(EINVAL), STDERR_FILENO);
+			return (STOP);
+		}
+	}
 	return (KEEP_RUNNING);
 }
 
@@ -48,6 +72,7 @@ int
 	main(int ac, char **av)
 {
 	char	**args;
+	char	**args_head;
 	int		ret;
 	int		i;
 
@@ -56,19 +81,36 @@ int
 		ft_put_cmderror("main", strerror(EINVAL));
 		return (EXIT_FAILURE);
 	}
-	if (!(args = (char **)malloc(sizeof(char*) * (ac + 1))))
+	if (ft_init_pwd() == STOP)
 		return (EXIT_FAILURE);
+	if (!(args = (char **)malloc(sizeof(char*) * (ac + 1))))
+	{
+		FREE(g_pwd);
+		return (EXIT_FAILURE);
+	}
 	i = -1;
 	while (++i < ac)
 		args[i] = av[i];
 	args[i] = NULL;
+	args_head = args;
 	ret = 0;
 	if (!ft_strcmp(args[1], "cd"))
-		ret = ft_cd(++args);
+	{
+		char	*pwdargs[2] = {"pwd", NULL};
+		++args;
+		ret = ft_pwd(pwdargs);
+		ret = ft_cd(args);
+		ret = ft_pwd(pwdargs);
+	}
+	else if (!ft_strcmp(args[1], "pwd"))
+		ret = ft_pwd(++args);
 	if (ret == STOP)
 	{
 		// TODO: exitが呼ばれたときにSTOPが返されてloopを終了してmainが終了するイメージ
 	}
+	FREE(args_head);
+	FREE(g_pwd);
+	// system("leaks cd.out");
 	return (EXIT_SUCCESS);
 }
 #endif
