@@ -39,9 +39,18 @@ t_bool
 	}
 	else if (*args == NULL)
 		ft_put_cmderror("cd", strerror(EINVAL));
-	else if (**args == '\0')
-		return (ret);
-	else if (chdir(*args) != 0)
+	else if (**args != '\0')
+		ret = TRUE;
+	return (ret);
+}
+
+t_bool
+	exec_cd(char **args)
+{
+	t_bool	ret;
+
+	ret = FALSE;
+	if (chdir(*args) != 0)
 		ft_put_cmderror_with_arg("cd", strerror(errno), *args);
 	else
 		ret = TRUE;
@@ -54,7 +63,7 @@ int
 	args++;
 	if (*args && !ft_strcmp(*args, "--"))
 		args++;
-	if (validate_args(args) == TRUE)
+	if (validate_args(args) == TRUE && exec_cd(args) == TRUE)
 	{
 		// TODO: $PWD、$OLDPWDの値を更新
 		FREE(g_pwd);
