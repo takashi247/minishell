@@ -4,7 +4,7 @@ extern char
 	*g_pwd;
 
 int
-	ft_init_pwd()
+	ft_init_pwd(void)
 {
 	int	fd;
 
@@ -52,11 +52,17 @@ int
 		ft_put_cmderror("main", strerror(EINVAL));
 		return (EXIT_FAILURE);
 	}
-	if (ft_init_pwd() == STOP)
+	if (ft_init_env() == STOP)
 		return (EXIT_FAILURE);
+	if (ft_init_pwd() == STOP)
+	{
+		ft_lstclear(&g_env, free);
+		return (EXIT_FAILURE);
+	}
 	if (!(args = (char **)malloc(sizeof(char*) * (ac + 1))))
 	{
 		FREE(g_pwd);
+		ft_lstclear(&g_env, free);
 		return (EXIT_FAILURE);
 	}
 	i = -1;
@@ -74,12 +80,17 @@ int
 	}
 	else if (!ft_strcmp(args[1], "pwd"))
 		ret = ft_pwd(++args);
+	else if (!ft_strcmp(args[1], "env"))
+		ret = ft_env(++args);
+	else if (!ft_strcmp(args[1], "exit"))
+		ret = ft_exit(++args);
 	if (ret == STOP)
 	{
 		// TODO: exitが呼ばれたときにSTOPが返されてloopを終了してmainが終了するイメージ
 	}
 	FREE(args_head);
 	FREE(g_pwd);
+	ft_lstclear(&g_env, free);
 	// system("leaks pwd.out");
 	return (EXIT_SUCCESS);
 }
