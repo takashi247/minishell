@@ -16,6 +16,7 @@
 # define CMD_OPTION_ERR "invalid option"
 # define CMD_CD_HELP "cd [dir]"
 # define CMD_PWD_HELP "pwd"
+# define CMD_ENV_HELP "env"
 
 # define SPACE_CHARS " \t\n\v\f\r"
 
@@ -35,6 +36,7 @@ enum	e_cmd_signal
 
 uint8_t	g_status;
 char	*g_pwd;
+t_list	*g_env;
 
 /*
 ** env_utils.c
@@ -57,8 +59,13 @@ int		ft_cd(char **args);
 /*
 ** pwd.c
 */
-int		ft_init_pwd();
+int		ft_init_pwd(void);
 int		ft_pwd(char **args);
+/*
+** env.c
+*/
+int		ft_init_env(void);
+int		ft_env(char **args);
 /*
 ** exit.c
 */

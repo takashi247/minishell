@@ -3,19 +3,20 @@
 char
 	*ft_getenv(const char *name)
 {
-	extern char	**environ;
-	char		**envptr;
-	size_t		len;
+	t_list	*envptr;
+	size_t	len;
+	char	*current;
 
-	if (!environ || !*name)
+	if (!g_env || !*name)
 		return (NULL);
 	len = ft_strlen(name);
-	envptr = environ;
-	while (*envptr)
+	envptr = g_env;
+	while (envptr)
 	{
-		if (!ft_strncmp(name, *envptr, len) && (*envptr)[len] == '=')
-			return (ft_strdup(*envptr + len + 1));
-		envptr++;
+		current = envptr->content;
+		if (!ft_strncmp(name, current, len) && current[len] == '=')
+			return (ft_strdup(current + len + 1));
+		envptr = envptr->next;
 	}
 	return (NULL);
 }

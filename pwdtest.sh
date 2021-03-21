@@ -1,9 +1,9 @@
 #!/bin/bash
 
 cd libft
-make
+make bonus
 cd ..
-gcc -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D PWDTEST -o pwd.out
+gcc -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D PWDTEST -o pwd.out
 
 YELLOW=$(printf '\033[33m')
 RESET=$(printf '\033[0m')
