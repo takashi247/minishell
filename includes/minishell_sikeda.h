@@ -10,13 +10,21 @@
 # include "libft.h"
 
 # define PRG_NAME "minishell"
+
 # define STATUS_SUCCESS 0
 # define STATUS_GENERAL_ERR 1
+# define STATUS_MISUSE_OF_BUILTINS_ERR 2
 # define STATUS_OUT_OF_RANGE_ERR 255
+
 # define CMD_OPTION_ERR "invalid option"
+# define CMD_IDENTIFIER_ERR "not a valid identifier"
 # define CMD_CD_HELP "cd [dir]"
 # define CMD_PWD_HELP "pwd"
 # define CMD_ENV_HELP "env"
+# define CMD_UNSET_HELP "unset [name ...]"
+
+# define ENVUTIL_SUCCESS 0
+# define ENVUTIL_ERROR -1
 
 # define SPACE_CHARS " \t\n\v\f\r"
 
@@ -42,6 +50,7 @@ t_list	*g_env;
 ** env_utils.c
 */
 char	*ft_getenv(const char *name);
+int		ft_unsetenv(const char *name);
 /*
 ** command_utils.c
 */
@@ -51,6 +60,7 @@ int		ft_isnumeric(char *s);
 char	*ft_get_cmd_option(char *option, const char *arg);
 void	ft_put_cmderror(char *cmd_name, char *msg);
 void	ft_put_cmderror_with_arg(char *cmd_name, char *msg, char *arg);
+void	ft_put_cmderror_with_quoted_arg(char *cmd_name, char *msg, char *arg);
 void	ft_put_cmderror_with_help(char *cmd_name, char *help);
 /*
 ** cd.c
@@ -61,6 +71,10 @@ int		ft_cd(char **args);
 */
 int		ft_init_pwd(void);
 int		ft_pwd(char **args);
+/*
+** unset.c
+*/
+int		ft_unset(char **args);
 /*
 ** env.c
 */
