@@ -21,10 +21,11 @@
 # define CMD_CD_HELP "cd [dir]"
 # define CMD_PWD_HELP "pwd"
 # define CMD_ENV_HELP "env"
+# define CMD_EXPORT_HELP "export [name[=value] ...]"
 # define CMD_UNSET_HELP "unset [name ...]"
 
-# define ENVUTIL_SUCCESS 0
-# define ENVUTIL_ERROR -1
+# define UTIL_SUCCESS 0
+# define UTIL_ERROR -1
 
 # define SPACE_CHARS " \t\n\v\f\r"
 
@@ -36,11 +37,11 @@ typedef enum e_bool
 	TRUE
 }	t_bool;
 
-enum	e_cmd_signal
+typedef enum e_cmd_signal
 {
 	KEEP_RUNNING,
 	STOP
-};
+}	t_cmd_signal;
 
 uint8_t	g_status;
 char	*g_pwd;
@@ -51,6 +52,11 @@ t_list	*g_env;
 */
 char	*ft_getenv(const char *name);
 int		ft_unsetenv(const char *name);
+int		ft_setenv(char *str);
+int		ft_unsetenv(const char *name);
+void	ft_envsort(t_list **lst);
+void	ft_clear_copied_env(t_list **cpy);
+t_list	*ft_copy_env(void);
 /*
 ** command_utils.c
 */
@@ -58,6 +64,7 @@ int		ft_strcmp(const char *s1, const char *s2);
 int		ft_isspace(char c);
 int		ft_isnumeric(char *s);
 char	*ft_get_cmd_option(char *option, const char *arg);
+void	ft_put_error(char *msg);
 void	ft_put_cmderror(char *cmd_name, char *msg);
 void	ft_put_cmderror_with_arg(char *cmd_name, char *msg, char *arg);
 void	ft_put_cmderror_with_quoted_arg(char *cmd_name, char *msg, char *arg);

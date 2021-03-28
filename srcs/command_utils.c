@@ -52,6 +52,17 @@ char
 }
 
 void
+	ft_put_error(char *msg)
+{
+	int	fd;
+
+	fd = STDERR_FILENO;
+	ft_putstr_fd(PRG_NAME, fd);
+	ft_putstr_fd(": ", fd);
+	ft_putendl_fd(msg, fd);
+}
+
+void
 	ft_put_cmderror(char *cmd_name, char *msg)
 {
 	int	fd;
