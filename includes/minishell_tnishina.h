@@ -2,6 +2,16 @@
 # define MINISHELL_TNISHINA_H
 
 /*
+** required header files
+*/
+
+# include <stdio.h>
+# include <sys/wait.h>
+# include <unistd.h>
+# include <unistd.h>
+# include <string.h>
+
+/*
 ** basic parameters for minishell
 */
 
@@ -19,14 +29,16 @@
 # define GNL_EOF 0
 
 /*
-** required header files
+** a strucutre to store commands
 */
 
-# include <stdio.h>
-# include <sys/wait.h>
-# include <unistd.h>
-# include <unistd.h>
-# include <string.h>
+typedef struct			s_command
+{
+	int					argc;
+	char				**argv;
+	char				*op;
+	struct s_command	*next;
+}						t_command;
 
 int		get_next_line(int fd, char **line);
 void	ft_free_str(char **str);

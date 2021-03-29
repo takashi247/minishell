@@ -1,4 +1,5 @@
 #include "minishell_tnishina.h"
+#include "minishell_sikeda.h"
 #include "libft.h"
 
 int
@@ -27,7 +28,7 @@ int
 	int			status;
 	extern char	**environ;
 
-	write(STDOUT_FILENO, PROMPT, ft_strlen(PROMPT));
+	ft_putstr_fd(PROMPT, STDOUT_FILENO);
 	while (get_next_line(STDIN_FILENO, &line) == 1 &&
 		ft_strncmp(line, "exit", 5))
 	{
@@ -37,9 +38,10 @@ int
 			do_command(line, environ);
 		if ((pid = waitpid(pid, &status, 0)) < 0)
 			exit_with_error("wait");
-		ft_free_str(&line);
-		write(STDOUT_FILENO, PROMPT, ft_strlen(PROMPT));
+		FREE(line);
+		ft_putstr_fd(PROMPT, STDOUT_FILENO);
 	}
-	write(STDOUT_FILENO, EXIT_PROMPT, ft_strlen(EXIT_PROMPT));
+	FREE(line);
+	ft_putstr_fd(EXIT_PROMPT, STDOUT_FILENO);
 	exit(0);
 }
