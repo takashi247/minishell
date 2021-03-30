@@ -166,6 +166,69 @@ static int
 
 */
 
+static t_list
+	*exit_with_error(t_list **tokens, char **cpy)
+{
+	FREE(*cpy);
+	ft_lstclear(tokens, free);
+	return (NULL);
+}
+
+static t_list
+	*merge_tokens(t_list *old, t_list *new, t_list **prev, t_list **head)
+{
+	if (!old)
+		return (NULL);
+	if (!new)
+	{
+		new = old->next;
+		if (*prev)
+			(*prev)->next = new;
+		else
+			*head = new;
+		ft_lstdelone(old, free);
+		return (new);
+	}
+	if (*prev)
+		(*prev)->next = new;
+	else
+		*head = new;
+	new = ft_lstlast(new);
+	new->next = old->next;
+	ft_lstdelone(old, free);
+	*prev = new;
+	return (new->next);
+}
+
+static t_list
+	*expand_env_var(t_list *tokens)
+{
+	t_list	*head;
+	char	*env_content;
+	t_list	*new_tokens;
+	t_list	*prev;
+
+	if (!tokens)
+		return (NULL);
+	head = tokens;
+	prev = NULL;
+	while (tokens)
+	{
+		if (((char*)tokens->content)[0] == '$')
+		{
+			env_content = ft_getenv(((char*)tokens->content) + 1);
+			new_tokens = ft_make_token(env_content);
+			tokens = merge_tokens(tokens, new_tokens, &prev, &head);
+		}
+		else
+		{
+			prev = tokens;
+			tokens = tokens->next;
+		}
+	}
+	return (head);
+}
+
 static t_bool
 	is_delimiter(char c)
 {
@@ -174,14 +237,6 @@ static t_bool
 		return (TRUE);
 	else
 		return (FALSE);
-}
-
-static t_list
-	*exit_with_error(t_list **tokens, char **cpy)
-{
-	FREE(*cpy);
-	ft_lstclear(tokens, free);
-	return (NULL);
 }
 
 t_list
@@ -202,13 +257,13 @@ t_list
 			line++;
 		while (!(is_delimiter(line[i])))
 			i++;
-		if (!(cpy = i != 0 ? ft_substr(line, 0, i) : 
+		if (!(cpy = i != 0 ? ft_substr(line, 0, i) :
 			ft_substr(line, 0, i + 1)) || !(new = ft_lstnew(cpy)))
 			return (exit_with_error(&tokens, &cpy));
 		ft_lstadd_back(&tokens, new);
 		line = line[i] ? line + i + (i == 0) : line + i;
 	}
-	return (tokens);
+	return (expand_env_var(tokens));
 }
 
 #ifdef TOKENTEST
@@ -220,13 +275,15 @@ int
 	t_list		*tokens;
 	t_list		*head;
 
+	if (ft_init_env() == STOP)
+		return (EXIT_FAILURE);
 	if (ac == 1)
 	{
 		ft_putstr_fd(PROMPT, STDOUT_FILENO);
 		while (get_next_line(STDIN_FILENO, &line) == 1 &&
-			(ft_strncmp(line, "exit", 5)) &&
-			(tokens = ft_make_token(line)))
+			(ft_strncmp(line, "exit", 5)))
 		{
+			tokens = ft_make_token(line);
 			head = tokens;
 			while (tokens)
 			{
