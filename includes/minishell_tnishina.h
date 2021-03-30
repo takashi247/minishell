@@ -8,8 +8,8 @@
 # include <stdio.h>
 # include <sys/wait.h>
 # include <unistd.h>
-# include <unistd.h>
 # include <string.h>
+# include "libft.h"
 
 /*
 ** basic parameters for minishell
@@ -42,5 +42,6 @@ typedef struct			s_command
 
 int		get_next_line(int fd, char **line);
 void	ft_free_str(char **str);
+t_list	*ft_make_token(char *line);
 
 #endif
