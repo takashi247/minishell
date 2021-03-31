@@ -115,7 +115,8 @@ int
 		envptr = g_env;
 		while (envptr)
 		{
-			ft_putendl_fd(envptr->content, STDOUT_FILENO);
+			if (ft_strchr(envptr->content, '='))
+				ft_putendl_fd(envptr->content, STDOUT_FILENO);
 			envptr = envptr->next;
 		}
 	}
