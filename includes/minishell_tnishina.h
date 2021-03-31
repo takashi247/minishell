@@ -43,7 +43,6 @@ typedef struct			s_command
 
 int		get_next_line(int fd, char **line);
 void	ft_free_str(char **str);
-t_bool	ft_is_delimiter(char c);
 t_list	*ft_make_token(char *line);
 
 #endif
