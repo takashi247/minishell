@@ -10,6 +10,7 @@
 # include <unistd.h>
 # include <string.h>
 # include "libft.h"
+# include "minishell_sikeda.h"
 
 /*
 ** basic parameters for minishell
@@ -30,12 +31,12 @@
 
 /*
 ** a strucutre to store commands
+** need to add member variables to store redirection info
 */
 
 typedef struct			s_command
 {
-	int					argc;
-	char				**argv;
+	t_list				*args;
 	char				*op;
 	struct s_command	*next;
 }						t_command;
