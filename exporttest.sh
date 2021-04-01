@@ -324,3 +324,35 @@ diff mini_export bash_export
 echo "===diff check end==="
 rm mini_export bash_export
 echo
+
+# OLDPWDにexportで値を設定
+printf "${YELLOW}%s${RESET}\n" "[mini] export OLDPWD=override_oldpwd"
+./export.out export OLDPWD=override_oldpwd > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export OLDPWD=override_oldpwd"
+echo "export OLDPWD=override_oldpwd" | bash
+echo $?
+echo "export OLDPWD=override_oldpwd ; export > bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo
+
+# PWDがunsetされた状態でminishell起動
+# シェル起動時にカレントディレクトリパスを値にしてPWD作成する（未実装のためdiff出る）
+printf "${CYAN}%s${RESET}\n" "unset PWD"
+unset PWD
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${CYAN}%s${RESET}\n" "unset PWD"
+unset PWD
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo

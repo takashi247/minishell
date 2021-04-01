@@ -79,6 +79,10 @@ int		ft_cd(char **args);
 int		ft_init_pwd(void);
 int		ft_pwd(char **args);
 /*
+** export.c
+*/
+int		ft_export(char **args);
+/*
 ** unset.c
 */
 int		ft_unset(char **args);
