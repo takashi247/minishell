@@ -48,13 +48,13 @@ int
 			int		flag = 0;
 			char	*tmp = NULL;
 			// 環境変数の存在チェック
-			if ((tmp = ft_getenv(args[1])))
+			if ((tmp = ft_strdup(ft_getenv(args[1]))))
 				flag = 1;
 			FREE(tmp);
 			// unset実行
 			ft_unsetenv(args[1]);
 			// 環境変数が消えたかチェック
-			if (!(tmp = ft_getenv(args[1])) && flag == 1)
+			if (!(tmp = ft_strdup(ft_getenv(args[1]))) && flag == 1)
 				puts("\033[32munset success\033[0m");
 			FREE(tmp);
 		}
