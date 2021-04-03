@@ -41,8 +41,10 @@ typedef struct			s_command
 	struct s_command	*next;
 }						t_command;
 
-int		get_next_line(int fd, char **line);
-void	ft_free_str(char **str);
-t_list	*ft_make_token(char *line);
+int			get_next_line(int fd, char **line);
+void		ft_free_str(char **str);
+t_list		*ft_make_token(char *line);
+t_command	*ft_make_command(t_list *tokens);
+void		ft_clear_commands(t_command **c);
 
 #endif
