@@ -138,6 +138,7 @@ int
 	FREE(line);
 	get_next_line(STDIN_FILENO, NULL);
 	FREE(g_pwd);
+	ft_lstclear(&g_env, free);
 	ft_putstr_fd(EXIT_PROMPT, STDOUT_FILENO);
 	exit(0);
 }
