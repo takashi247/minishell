@@ -78,7 +78,8 @@ int
 	while (envptr)
 	{
 		if (!ft_strncmp(name, envptr->content, len)
-		&& ((char*)envptr->content)[len] == '=')
+		&& (((char*)envptr->content)[len] == '='
+		|| ((char*)envptr->content)[len] == '\0'))
 		{
 			if (prev)
 				prev->next = envptr->next;
@@ -218,13 +219,11 @@ t_list
 	envptr = g_env;
 	while (envptr)
 	{
-		if (!(current = (t_list*)malloc(sizeof(t_list))))
+		if (!(current = ft_lstnew(envptr->content)))
 		{
 			ft_clear_copied_env(&copy);
 			return (NULL);
 		}
-		current->content = envptr->content;
-		current->next = NULL;
 		ft_lstadd_back(&copy, current);
 		envptr = envptr->next;
 	}
