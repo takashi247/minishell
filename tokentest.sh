@@ -22,3 +22,7 @@ echo
 printf "${YELLOW}%s${RESET}\n\n" "test| test&test>test<;"
 ./token.out "test| test&test>test<;"
 echo
+
+printf "${YELLOW}%s${RESET}\n\n" "echo dir-is-\$PWD"
+./token.out "echo dir-is-\$PWD"
+echo

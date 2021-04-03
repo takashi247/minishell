@@ -2,231 +2,137 @@
 #include "minishell_sikeda.h"
 #include "libft.h"
 
-/* コメントアウトしている部分は一旦無視してください
-
-t_bool
-	is_operator(char *elem)
-{
-	if (!(ft_strcmp(elem, "&")) || !(ft_strcmp(elem, "&&")) ||
-		!(ft_strcmp(elem, "|")) || !(ft_strcmp(elem, "||")) ||
-		!(ft_strcmp(elem, ";")))
-		return (TRUE);
-	else
-		return (FALSE);
-}
-
-t_bool
-	is_end_of_command(char *elem)
-{
-	if (elem[ft_strlen(elem) - 1] == ';' ||
-		elem == NULL)
-		return (TRUE);
-	else
-		return (FALSE);
-}
-
-t_command
-	*ft_create_command(char **elem_head, int argc)
-{
-	t_command	*new_command;
-
-	if (!(new_command = (t_command *)malloc(sizeof(t_command))))
-		return (NULL);
-	ft_memset(new_command, 0, sizeof(t_command));
-	new_command->argv = elem_head;
-	new_command->argc = argc;
-	if (is_operator(*(elem_head + argc - 1)))
-		new_command->op = *(elem_head + argc - 1);
-	else if(!(new_command->op = ft_strdup(";")))
-		return (NULL);
-	return (new_command);
-}
-
-t_command
-	*ft_get_last_command(t_command *command_head)
-{
-	if (!command_head)
-		return (NULL);
-	while (command_head->next)
-		command_head = command_head->next;
-	return (command_head);
-}
-
-t_bool
-	ft_add_command(t_command **command_head, t_command *new_command)
-{
-	t_command	*last_command;
-
-	if (!command_head || !new_command)
-		return (FALSE);
-	if (!(*command_head))
-		*command_head = new_command;
-	else
-	{
-		last_command = ft_get_last_command(*command_head);
-		last_command->next = new_command;
-	}
-	return (TRUE);
-}
-
-void
-	ft_clear_command(t_command **command_head)
-{
-	t_command	*prev;
-	t_command	*current;
-
-	if (!command_head)
-		return ;
-	current = *command_head;
-	while (current)
-	{
-		prev = current;
-		current = current->next;
-		FREE(prev);
-	}
-	FREE(*command_head);
-}
-
-t_bool
-	ft_load_command(char **elems, t_command **command_head)
-{
-	int		argc;
-	char	**elem_head;
-
-	while (TRUE)
-	{
-		argc = 0;
-		elem_head = elems;
-		while (!(is_operator(*(elems + argc))) ||
-			is_end_of_command(*(elems + argc)))
-			argc++;
-		argc++;
-		if (!(ft_add_command(command_head, 
-			ft_create_command(elem_head, argc))))
-		{
-			ft_clear_command(command_head);
-			return (FALSE);
-		}
-		if (*(elems + argc - 1) == NULL)
-			break;
-		else
-			elems += argc;
-	}
-	return (TRUE);
-}
-
-static t_bool
-	is_valid_quote(char **line)
-{
-	if (**line == '\"')
-	{
-		(*line)++;
-		while (**line && **line != '\"')
-			(*line)++;
-	}
-	else if (**line == '\'')
-	{
-		(*line)++;
-		while (**line && **line != '\'')
-			(*line)++;
-	}
-	if (**line == '\0')
-		return (FALSE);
-	(*line)++;
-	return (TRUE);
-}
-
 static int
-	count_elems(char *line)
-{
-	int	num_elems;
-
-	num_elems = 0;
-	while (*line)
-	{
-		if (*line == '\'' || *line == '\"')
-		{
-			if (!(is_valid_quote(&line)))
-				return (-1);
-			num_elems++;
-		}
-		while (!(is_delimiter(*line)))
-			line++;
-		num_elems++;
-		while (*line == ' ')
-			line++;
-		if (*line == '\0')
-			return (num_elems);
-		if (!(is_valid_delimiter(&line)))
-			return (-1);
-		num_elems++;
-	}
-	return (num_elems);
-}
-
-*/
-
-static t_list
-	*exit_with_error(t_list **tokens, char **cpy)
+	exit_with_error(t_list **tokens, char **cpy)
 {
 	FREE(*cpy);
 	ft_lstclear(tokens, free);
-	return (NULL);
+	return (FAILED);
 }
 
-static t_list
-	*merge_tokens(t_list *old, t_list *new, t_list **prev, t_list **head)
+static void
+	free_all_chars(char *tmp[2], char *new[3])
 {
-	if (!old)
-		return (NULL);
-	if (!new)
-	{
-		new = old->next;
-		if (*prev)
-			(*prev)->next = new;
-		else
-			*head = new;
-		ft_lstdelone(old, free);
-		return (new);
-	}
-	if (*prev)
-		(*prev)->next = new;
-	else
-		*head = new;
-	new = ft_lstlast(new);
-	new->next = old->next;
-	ft_lstdelone(old, free);
-	*prev = new;
-	return (new->next);
+	FREE(tmp[0]);
+	FREE(tmp[1]);
+	FREE(new[0]);
+	FREE(new[1]);
+	FREE(new[2]);
 }
 
-static t_list
-	*expand_env_var(t_list *tokens)
+static int
+	replace_name_with_value(char **content, int env_pos[2])
+{
+	char	*tmp[2];
+	char	*new[3];
+	int		p[2];
+	int		res;
+
+	ft_memset(tmp, 0, sizeof(char*) * 2);
+	ft_memset(new, 0, sizeof(char*) * 3);
+	tmp[0] = *content;
+	p[0] = (*content)[env_pos[0] + 1] != '{' ? env_pos[0] + 1 : env_pos[0] + 2;
+	p[1] = (*content)[env_pos[0] + 1] == '{' && (*content)[env_pos[1]] == '}' ?
+		env_pos[1] + 1 : env_pos[1];
+	if (!(new[0] = ft_substr(*content, 0, env_pos[0])) ||
+		!(new[1] = ft_substr(*content, p[0], env_pos[1] - p[0])) ||
+		!(new[2] = ft_strdup(*content + p[1])) ||
+		!(tmp[1] = ft_strjoin(new[0], ft_getenv(new[1]))) ||
+		!(*content = ft_strjoin(tmp[1], new[2])))
+	{
+		free_all_chars(tmp, new);
+		FREE(*content);
+		return (FAILED);
+	}
+	res = !ft_getenv(new[1]) ? ENV_DELETED : COMPLETED;
+	free_all_chars(tmp, new);
+	return (res);
+}
+
+static t_bool
+	is_env_name_end(char c)
+{
+	if ((33 <= c && c <= 39) || (42 <= c && c <= 47) || c == 58 || c == 61 ||
+		(63 <= c && c <= 64) || (91 <= c && c <= 96) || c == 123 ||
+		(125 <= c && c <= 126) || !c)
+		return (TRUE);
+	else
+		return (FALSE);
+}
+
+static int
+	find_n_replace_env(char **content)
+{
+	int		i;
+	int		j;
+	int		env_pos[2];
+	int		res;
+	int		flag;
+
+	i = 0;
+	res = COMPLETED;
+	while ((*content)[i])
+	{
+		flag = 1;
+		if ((i == 0 || (*content)[i - 1] != '\\') && (*content)[i] == '$')
+		{
+			flag = 0;
+			env_pos[0] = i;
+			j = i + 1;
+			while (!(is_env_name_end((*content)[j])))
+				j++;
+			env_pos[1] = j;
+			if ((res = replace_name_with_value(content, env_pos)) == FAILED)
+				return (res);
+		}
+		i += flag;
+	}
+	return (res);
+}
+
+static void
+	delete_token(t_list **tokens, t_list **head, t_list *prev)
+{
+	if (!prev)
+	{
+		*head = (*tokens)->next;
+		ft_lstdelone(*tokens, free);
+		*tokens = *head;
+	}
+	else
+	{
+		prev->next = (*tokens)->next;
+		ft_lstdelone(*tokens, free);
+		*tokens = prev->next;
+	}
+}
+
+static int
+	expand_env_var(t_list **tokens)
 {
 	t_list	*head;
-	char	*env_content;
-	t_list	*new_tokens;
 	t_list	*prev;
+	int		res;
 
-	if (!tokens)
-		return (NULL);
-	head = tokens;
+	if (!*tokens)
+		return (COMPLETED);
+	head = *tokens;
 	prev = NULL;
-	while (tokens)
+	while (*tokens)
 	{
-		if (((char*)tokens->content)[0] == '$')
+		if ((res = find_n_replace_env((char**)&((*tokens)->content))) ==
+			COMPLETED)
 		{
-			env_content = ft_getenv(((char*)tokens->content) + 1);
-			new_tokens = ft_make_token(env_content);
-			tokens = merge_tokens(tokens, new_tokens, &prev, &head);
+			prev = *tokens;
+			*tokens = (*tokens)->next;
 		}
+		else if (res == FAILED)
+			return (FAILED);
 		else
-		{
-			prev = tokens;
-			tokens = tokens->next;
-		}
+			delete_token(tokens, &head, prev);
 	}
-	return (head);
+	*tokens = head;
+	return (COMPLETED);
 }
 
 static t_bool
@@ -239,17 +145,16 @@ static t_bool
 		return (FALSE);
 }
 
-t_list
-	*ft_make_token(char *line)
+int
+	ft_make_token(t_list **tokens, char *line)
 {
-	t_list	*tokens;
 	t_list	*new;
 	int		i;
 	char	*cpy;
 
 	if (!line)
-		return (NULL);
-	tokens = NULL;
+		return (COMPLETED);
+	*tokens = NULL;
 	while (*line)
 	{
 		i = 0;
@@ -259,8 +164,8 @@ t_list
 			i++;
 		if (!(cpy = i != 0 ? ft_substr(line, 0, i) :
 			ft_substr(line, 0, i + 1)) || !(new = ft_lstnew(cpy)))
-			return (exit_with_error(&tokens, &cpy));
-		ft_lstadd_back(&tokens, new);
+			return (exit_with_error(tokens, &cpy));
+		ft_lstadd_back(tokens, new);
 		line = line[i] ? line + i + (i == 0) : line + i;
 	}
 	return (expand_env_var(tokens));
@@ -277,13 +182,15 @@ int
 
 	if (ft_init_env() == STOP)
 		return (EXIT_FAILURE);
+	// line = NULL;
+	// tokens = NULL;
 	if (ac == 1)
 	{
 		ft_putstr_fd(PROMPT, STDOUT_FILENO);
 		while (get_next_line(STDIN_FILENO, &line) == 1 &&
-			(ft_strncmp(line, "exit", 5)))
+			(ft_strncmp(line, "exit", 5)) &&
+			(ft_make_token(&tokens, line) == COMPLETED))
 		{
-			tokens = ft_make_token(line);
 			head = tokens;
 			while (tokens)
 			{
@@ -302,7 +209,7 @@ int
 	}
 	else
 	{
-		if ((tokens = ft_make_token(av[1])))
+		if ((ft_make_token(&tokens, av[1])) == COMPLETED)
 		{
 			head = tokens;
 			while (tokens)
@@ -315,6 +222,8 @@ int
 			ft_lstclear(&head, free);
 		}
 	}
+	FREE(g_pwd);
+	ft_lstclear(&g_env, free);
 	exit(0);
 }
 #endif

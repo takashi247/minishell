@@ -8,7 +8,7 @@ int
 {
 	int	fd;
 
-	if ((g_pwd = ft_getenv("PWD")))
+	if ((g_pwd = ft_strdup(ft_getenv("PWD"))))
 		if (0 <= (fd = open(g_pwd, O_RDONLY)) && close(fd) <= 0)
 			return (KEEP_RUNNING);
 	FREE(g_pwd);

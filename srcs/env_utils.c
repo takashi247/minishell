@@ -16,7 +16,7 @@ char
 		current = envptr->content;
 		if (!ft_strncmp(name, current, len)
 		&& (current[len] == '=' || current[len] == '\0'))
-			return (ft_strdup(current + len + 1));
+			return (current + len + 1);
 		envptr = envptr->next;
 	}
 	return (NULL);
