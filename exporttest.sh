@@ -340,7 +340,6 @@ rm mini_export bash_export
 echo
 
 # PWDがunsetされた状態でminishell起動
-# シェル起動時にカレントディレクトリパスを値にしてPWD作成する（未実装のためdiff出る）
 printf "${CYAN}%s${RESET}\n" "unset PWD"
 unset PWD
 printf "${YELLOW}%s${RESET}\n" "[mini] export"

@@ -6,19 +6,12 @@ extern char
 int
 	ft_init_pwd(void)
 {
-	int	fd;
-
-	if ((g_pwd = ft_strdup(ft_getenv("PWD"))))
-		if (0 <= (fd = open(g_pwd, O_RDONLY)) && close(fd) <= 0)
-			return (KEEP_RUNNING);
-	FREE(g_pwd);
 	if (!(g_pwd = getcwd(NULL, 0)))
 	{
-		// TODO: エラーステータス設定
-		ft_putendl_fd(strerror(errno), STDERR_FILENO);
+		ft_put_error(strerror(errno));
 		return (STOP);
 	}
-	// TODO: $PWDの値を更新
+	ft_setenv_sep("PWD", g_pwd);
 	return (KEEP_RUNNING);
 }
 
@@ -27,9 +20,10 @@ int
 {
 	char	option[3];
 
+	g_status = STATUS_SUCCESS;
 	if (ft_get_cmd_option(option, args[1]))
 	{
-		// TODO: エラーステータス設定
+		g_status = STATUS_GENERAL_ERR;
 		ft_put_cmderror_with_arg("pwd", CMD_OPTION_ERR, option);
 		ft_put_cmderror_with_help("pwd", CMD_PWD_HELP);
 	}
@@ -74,14 +68,18 @@ int
 	if (!ft_strcmp(args[1], "cd"))
 	{
 		++args;
-		ret = ft_pwd(args);
+		ret = ft_pwd(args);	// test
 		ret = ft_cd(args);
-		ret = ft_pwd(args);
+		ret = ft_pwd(args);	// test
 	}
 	else if (!ft_strcmp(args[1], "pwd"))
 		ret = ft_pwd(++args);
 	else if (!ft_strcmp(args[1], "env"))
 		ret = ft_env(++args);
+	else if (!ft_strcmp(args[1], "export"))
+		ret = ft_export(++args);
+	else if (!ft_strcmp(args[1], "unset"))
+		ret = ft_unset(++args);
 	else if (!ft_strcmp(args[1], "exit"))
 		ret = ft_exit(++args);
 	if (ret == STOP)
@@ -92,6 +90,6 @@ int
 	FREE(g_pwd);
 	ft_lstclear(&g_env, free);
 	// system("leaks pwd.out");
-	return (EXIT_SUCCESS);
+	return (g_status);
 }
 #endif
