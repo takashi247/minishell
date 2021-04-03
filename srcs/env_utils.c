@@ -25,7 +25,6 @@ char
 static void
 	delone_env(char *str)
 {
-	char	*env;
 	size_t	len;
 	size_t	i;
 
@@ -40,9 +39,8 @@ static void
 		}
 		i++;
 	}
-	if ((env = ft_getenv(str)))
+	if (ft_getenv(str))
 		ft_unsetenv(str);
-	FREE(env);
 	if (i != len)
 		str[i] = '=';
 }
