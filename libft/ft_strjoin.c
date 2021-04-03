@@ -6,7 +6,7 @@
 /*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 15:06:48 by tnishina          #+#    #+#             */
-/*   Updated: 2021/04/03 11:16:59 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/04/03 14:40:34 by tnishina         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ char
 
 	if (s1 == NULL && s2 == NULL)
 		return (NULL);
-	else if (s1 = NULL)
+	else if (s1 == NULL)
 		return (ft_strdup(s2));
-	else if (s2 = NULL)
+	else if (s2 == NULL)
 		return (ft_strdup(s1));
 	else
 	{
