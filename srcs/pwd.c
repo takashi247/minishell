@@ -6,12 +6,13 @@ extern char
 int
 	ft_init_pwd(void)
 {
-	if (!(g_pwd = getcwd(NULL, 0)))
+	if (!(g_pwd = getcwd(NULL, 0))
+	|| ft_setenv_sep("PWD", g_pwd) == UTIL_ERROR)
 	{
 		ft_put_error(strerror(errno));
+		FREE(g_pwd);
 		return (STOP);
 	}
-	ft_setenv_sep("PWD", g_pwd);
 	return (KEEP_RUNNING);
 }
 
