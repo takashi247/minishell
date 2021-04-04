@@ -64,6 +64,30 @@ int
 }
 
 int
+	ft_setenv_sep(char *name, char *value)
+{
+	char	*equal_value;
+	char	*env_str;
+	int		ret;
+
+	if (!g_env || !name)
+		return (UTIL_ERROR);
+	equal_value = NULL;
+	if (value && !(equal_value = ft_strjoin("=", value)))
+		return (UTIL_ERROR);
+	if (equal_value)
+		env_str = ft_strjoin(name, equal_value);
+	else
+		env_str = ft_strdup(name);
+	ret = UTIL_ERROR;
+	if (env_str)
+		ret = ft_setenv(env_str);
+	FREE(equal_value);
+	FREE(env_str);
+	return (ret);
+}
+
+int
 	ft_unsetenv(const char *name)
 {
 	t_list	*envptr;

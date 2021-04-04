@@ -53,6 +53,7 @@ t_list	*g_env;
 char	*ft_getenv(const char *name);
 int		ft_unsetenv(const char *name);
 int		ft_setenv(char *str);
+int		ft_setenv_sep(char *name, char *value);
 int		ft_unsetenv(const char *name);
 void	ft_envsort(t_list **lst);
 void	ft_clear_copied_env(t_list **cpy);
