@@ -43,7 +43,7 @@ typedef enum e_cmd_signal
 	STOP
 }	t_cmd_signal;
 
-uint8_t	g_status;
+int		g_status;
 char	*g_pwd;
 t_list	*g_env;
 
