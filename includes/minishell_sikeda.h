@@ -73,7 +73,7 @@ void	ft_put_cmderror_with_help(char *cmd_name, char *help);
 /*
 ** echo.c
 */
-int		ft_echo(t_list *args);
+int		ft_echo(char **args);
 /*
 ** cd.c
 */
