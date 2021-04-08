@@ -22,16 +22,14 @@ int
 	char	option[3];
 
 	g_status = STATUS_SUCCESS;
-	if (args[1] && !ft_strcmp(args[1], "--"))
-		args++;
-	else if (ft_get_cmd_option(option, args[1]))
+	if (ft_get_cmd_option(option, args[1]))
 	{
 		g_status = STATUS_GENERAL_ERR;
 		ft_put_cmderror_with_arg("pwd", CMD_OPTION_ERR, option);
 		ft_put_cmderror_with_help("pwd", CMD_PWD_HELP);
-		return (KEEP_RUNNING);
 	}
-	ft_putendl_fd(g_pwd, STDOUT_FILENO);
+	else
+		ft_putendl_fd(g_pwd, STDOUT_FILENO);
 	return (KEEP_RUNNING);
 }
 
