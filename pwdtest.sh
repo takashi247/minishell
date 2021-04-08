@@ -139,8 +139,6 @@ pwd -
 echo $?
 echo
 
-# TODO: 未対応
-echo "※今後対応予定です"
 printf "${YELLOW}%s${RESET}\n" "[mini] pwd --"
 ./pwd.out pwd --
 echo $?
@@ -154,6 +152,14 @@ printf "${YELLOW}%s${RESET}\n" "[mini] pwd -a"
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] pwd -a"
 pwd -a
+echo $?
+echo
+
+printf "${YELLOW}%s${RESET}\n" "[mini] pwd -- -a"
+./pwd.out pwd -- -a
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] pwd -- -a"
+pwd -- -a
 echo $?
 echo
 
