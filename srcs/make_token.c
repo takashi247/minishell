@@ -245,6 +245,6 @@ int
 	}
 	FREE(g_pwd);
 	ft_lstclear(&g_env, free);
-	exit(0);
+	exit(g_status);
 }
 #endif
