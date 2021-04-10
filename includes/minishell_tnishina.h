@@ -29,6 +29,12 @@
 # define GNL_ERROR -1
 # define GNL_EOF 0
 
+/*
+** Error messages
+*/
+
+# define QUOTATION_ERROR "multiline commands are not allowed"
+
 typedef enum e_status
 {
 	FAILED,
@@ -51,7 +57,7 @@ typedef struct			s_command
 int			get_next_line(int fd, char **line);
 void		ft_free_str(char **str);
 int			ft_make_token(t_list **tokens, char *line);
-t_command	*ft_make_command(t_list *tokens);
+int			ft_make_command(t_command **commands, t_list *tokens);
 void		ft_clear_commands(t_command **c);
 
 #endif

@@ -9,7 +9,7 @@ static int
 	ft_lstclear(tokens, free);
 	return (FAILED);
 }
-
+/*
 static void
 	free_all_chars(char *tmp[2], char *new[3])
 {
@@ -54,7 +54,7 @@ static t_bool
 {
 	if ((33 <= c && c <= 39) || (42 <= c && c <= 47) || c == 58 || c == 61 ||
 		(63 <= c && c <= 64) || (91 <= c && c <= 96) || c == 123 ||
-		(125 <= c && c <= 126) || !c)
+		(125 <= c && c <= 126) || !c || c == ' ')
 		return (TRUE);
 	else
 		return (FALSE);
@@ -134,15 +134,34 @@ static int
 	*tokens = head;
 	return (COMPLETED);
 }
+*/
 
 static t_bool
-	is_delimiter(char c)
+	is_delimiter_or_quote(char *l, int i, int *q)
 {
-	if (c == ' ' || c == '|' || c == '&' || c == ';' ||
-		c == '<' || c == '>' || c == '\0')
+	if ((!q[0] && !q[1] && (l[i] == ' ' || l[i] == '|' ||
+		l[i] == '&' || l[i] == ';' || l[i] == '<' || l[i] == '>' ||
+		l[i] == '\0')) || ((!i || l[i - 1] != '\\') && l[i] == '\'' &&
+		q[0]) || ((!i || l[i - 1] != '\\') && l[i] == '\"' && q[1]) ||
+		((q[0] || q[1]) && !l[i]))
 		return (TRUE);
 	else
+	{
+		if ((!i || l[i - 1] != '\\') && l[i] == '\'' && !q[0] && !q[1])
+			q[0] = 1;
+		else if ((!i || l[i - 1] != '\\') && l[i] == '\"' && !q[0] && !q[1])
+			q[1] = 1;
 		return (FALSE);
+	}
+}
+
+static int
+	put_quotation_error(char *cpy, t_list **tokens)
+{
+	ft_put_cmderror(cpy, QUOTATION_ERROR);
+	ft_lstclear(tokens, free);
+	g_status = 1;
+	return (COMPLETED);
 }
 
 int
@@ -151,6 +170,7 @@ int
 	t_list	*new;
 	int		i;
 	char	*cpy;
+	int		q[2];
 
 	if (!line)
 		return (COMPLETED);
@@ -158,17 +178,20 @@ int
 	while (*line)
 	{
 		i = 0;
+		ft_memset(q, 0, sizeof(int) * 2);
 		while (*line == ' ')
 			line++;
-		while (!(is_delimiter(line[i])))
+		while (!(is_delimiter_or_quote(line, i, q)))
 			i++;
-		if (!(cpy = i != 0 ? ft_substr(line, 0, i) :
+		if (!(cpy = i != 0 && q[0] == 0 && q[1] == 0 ? ft_substr(line, 0, i) :
 			ft_substr(line, 0, i + 1)) || !(new = ft_lstnew(cpy)))
 			return (exit_with_error(tokens, &cpy));
 		ft_lstadd_back(tokens, new);
-		line = line[i] ? line + i + (i == 0) : line + i;
+		if ((q[0] || q[1]) && !line[i])
+			return (put_quotation_error(cpy, tokens));
+		line = line[i] ? line + i + (!i || q[0] || q[1]) : line + i;
 	}
-	return (expand_env_var(tokens));
+	return (COMPLETED);
 }
 
 #ifdef TOKENTEST
@@ -182,8 +205,6 @@ int
 
 	if (ft_init_env() == STOP)
 		return (EXIT_FAILURE);
-	// line = NULL;
-	// tokens = NULL;
 	if (ac == 1)
 	{
 		ft_putstr_fd(PROMPT, STDOUT_FILENO);
@@ -224,6 +245,6 @@ int
 	}
 	FREE(g_pwd);
 	ft_lstclear(&g_env, free);
-	exit(0);
+	exit(g_status);
 }
 #endif
