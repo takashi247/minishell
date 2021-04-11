@@ -423,3 +423,54 @@ echo "===diff check end==="
 rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
+
+# export SHLVL=a; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=a"
+export SHLVL=a
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=2147483646; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=2147483646"
+export SHLVL=2147483646
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=2147483647; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=2147483647"
+export SHLVL=2147483647
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+export SHLVL=$MYSHLVL
+echo

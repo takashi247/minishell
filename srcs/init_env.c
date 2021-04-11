@@ -43,13 +43,14 @@ static int
 {
 	char	*shlvl;
 	char	*next_level;
-	int		current_level;
+	int64_t	current_level;
 	int		result;
 
 	shlvl = ft_getenv("SHLVL");
 	if (shlvl)
 	{
 		current_level = ft_atoi(shlvl);
+		current_level = INT_MAX < current_level + 1 ? -1 : current_level;
 		if (!(next_level = ft_itoa(current_level + 1)))
 		{
 			ft_put_error(strerror(errno));
