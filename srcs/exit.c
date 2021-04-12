@@ -7,7 +7,7 @@ static int
 
 	if (!(trimmed_arg = ft_strtrim(args[1], SPACE_CHARS)))
 	{
-		ft_put_cmderror("exit", strerror(errno));
+		ft_put_error(strerror(errno));
 		return (STOP);
 	}
 	if (ft_isnumeric(trimmed_arg) && !ft_isover_llrange(trimmed_arg))
