@@ -10,7 +10,7 @@ static int
 		ft_put_cmderror("exit", strerror(errno));
 		return (STOP);
 	}
-	if (ft_isnumeric(trimmed_arg))
+	if (ft_isnumeric(trimmed_arg) && !ft_isover_llrange(trimmed_arg))
 	{
 		g_status = (uint8_t)ft_atoi(trimmed_arg);
 		if (args[2])
