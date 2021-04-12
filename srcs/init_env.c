@@ -50,7 +50,7 @@ static int
 	if (shlvl)
 	{
 		current_level = ft_atoi(shlvl);
-		current_level = INT_MAX < current_level + 1 ? -1 : current_level;
+		current_level = (INT_MAX - 1) < current_level ? -1 : current_level;
 		if (!(next_level = ft_itoa(current_level + 1)))
 		{
 			ft_put_error(strerror(errno));
