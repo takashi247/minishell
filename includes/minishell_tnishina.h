@@ -18,6 +18,7 @@
 
 # define PROMPT "minishell$ "
 # define EXIT_PROMPT "exit\n"
+# define STATUS_SYNTAX_ERR 258
 
 /*
 ** basic GNL parameters
@@ -33,7 +34,8 @@
 ** Error messages
 */
 
-# define QUOTATION_ERROR "multiline commands are not allowed"
+# define QUOTATION_ERROR_MSG "multiline commands are not allowed"
+# define SYNTAX_ERROR_MSG "syntax error near unexpected token"
 
 typedef enum e_status
 {
@@ -56,8 +58,12 @@ typedef struct			s_command
 
 int			get_next_line(int fd, char **line);
 void		ft_free_str(char **str);
-int			ft_make_token(t_list **tokens, char *line);
+int			ft_make_token(t_list **tokens, char *line, t_bool(*f)(char*, int, int*));
 int			ft_make_command(t_command **commands, t_list *tokens);
 void		ft_clear_commands(t_command **c);
+void		ft_put_syntaxerror_with_token(char *token);
+int			ft_expand_env_var(t_command *c);
+t_bool		ft_is_delimiter_or_quote(char *l, int i, int *fl);
+t_bool		ft_is_delimiter(char c);
 
 #endif

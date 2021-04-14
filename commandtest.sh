@@ -3,7 +3,7 @@
 cd libft
 make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/make_command.c srcs/make_token.c srcs/get_next_line.c -Llibft -lft -D COMMANDTEST -o command.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/pwd.c srcs/env.c srcs/env_utils.c srcs/command_utils.c srcs/make_command.c srcs/make_token.c srcs/get_next_line.c -Llibft -lft -D COMMANDTEST -o command.out
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')

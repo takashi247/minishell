@@ -16,7 +16,8 @@ static void
 {
 	if (command)
 	{
-		ft_lstclear(&(command->args), free);
+		if (command->args)
+			ft_lstclear(&(command->args), free);
 		FREE(command->op);
 		FREE(command);
 	}
@@ -40,13 +41,24 @@ void
 	*c = NULL;
 }
 
-static t_command
-	*clear_commands_and_tokens(t_command **c, t_list **t1, t_list **t2)
+static int
+	clear_commands_and_tokens(t_command **c, t_list **t1, t_list **t2)
 {
 	ft_lstclear(t1, free);
 	ft_lstclear(t2, free);
 	ft_clear_commands(c);
-	return (NULL);
+	g_status = STATUS_GENERAL_ERR;
+	return (FAILED);
+}
+
+static int
+	clear_with_syntax_error(t_command **c, t_list **t1, t_list **t2)
+{
+	ft_lstclear(t1, free);
+	ft_lstclear(t2, free);
+	ft_clear_commands(c);
+	g_status = STATUS_SYNTAX_ERR;
+	return (COMPLETED);
 }
 
 static t_command
@@ -75,20 +87,6 @@ static void
 	}
 }
 
-static t_bool
-	convert_to_double_arrow(t_list **tokens)
-{
-	t_list	*tmp;
-
-	FREE((*tokens)->content);
-	if (!((*tokens)->content = ft_strdup(">>")))
-		return (FALSE);
-	tmp = (*tokens)->next->next;
-	ft_lstdelone((*tokens)->next, free);
-	(*tokens)->next = tmp;
-	return (TRUE);
-}
-
 static t_command
 	*set_args_and_op(t_command *command, t_list *tokens)
 {
@@ -100,18 +98,15 @@ static t_command
 	prev = NULL;
 	while (tokens && !(ft_is_operator(((char*)tokens->content)[0])))
 	{
-		if (((char*)tokens->content)[0] == '>' && tokens->next &&
-			((char*)tokens->next->content)[0] == '>' &&
-			!(convert_to_double_arrow(&tokens)))
-			return (clear_commands_and_tokens(&command, &head, NULL));
 		prev = tokens;
 		tokens = tokens->next;
 	}
-	prev->next = NULL;
-	command->args = head;
-	op = !tokens ? ";" : (char*)tokens->content;
+	if (prev)
+		prev->next = NULL;
+	command->args = prev ? head : NULL;
+	op = !tokens ? "newline" : (char*)tokens->content;
 	if (!(command->op = ft_strdup(op)))
-		return (clear_commands_and_tokens(&command, &head, &tokens));
+		return (NULL);
 	ft_lstclear(&tokens, free);
 	return (command);
 }
@@ -127,15 +122,34 @@ static t_command
 	return (set_args_and_op(new_command, token_head));
 }
 
-t_command
-	*ft_make_command(t_list *tokens)
+static t_bool
+	is_valid_command(t_command *c)
+{
+	t_command	*prev;
+
+	prev = NULL;
+	while (c)
+	{
+		if ((!(ft_strcmp(c->op, "|")) && !(c->args)) ||
+			(!(ft_strcmp(c->op, ";")) && !(c->args)))
+		{
+			ft_put_syntaxerror_with_token(c->op);
+			return (FALSE);
+		}
+		prev = c;
+		c = c->next;
+	}
+	return (TRUE);
+}
+
+int
+	ft_make_command(t_command **commands, t_list *tokens)
 {
 	t_list		*head;
 	t_list		*tmp;
-	t_command	*head_command;
 	t_command	*new_command;
 
-	head_command = NULL;
+	*commands = NULL;
 	while (tokens)
 	{
 		head = tokens;
@@ -144,15 +158,16 @@ t_command
 		tmp = tokens->next;
 		tokens->next = NULL;
 		if (!(new_command = create_command(head)))
-			return (clear_commands_and_tokens(&head_command, &head, &tmp));
-		add_command(&head_command, new_command);
+			return (clear_commands_and_tokens(commands, &head, &tmp));
+		add_command(commands, new_command);
+		if (!(is_valid_command(*commands)))
+			return (clear_with_syntax_error(commands, NULL, &tmp));
 		tokens = tmp;
 	}
-	return (head_command);
+	return (COMPLETED);
 }
 
 #ifdef COMMANDTEST
-
 static void
 	print_args(t_list *args)
 {
@@ -173,23 +188,28 @@ int
 	main(int ac, char **av)
 {
 	char		*line;
+	char		*trimmed;
 	extern char	**environ;
 	t_list		*tokens;
 	t_command	*head;
 	t_command	*commands;
 
+	if (ft_init_env() == STOP)
+		return (EXIT_FAILURE);
+	if (ft_init_pwd() == STOP)
+	{
+		ft_lstclear(&g_env, free);
+		return (EXIT_FAILURE);
+	}
 	if (ac == 1)
 	{
 		ft_putstr_fd(PROMPT, STDOUT_FILENO);
 		while (get_next_line(STDIN_FILENO, &line) == 1 &&
-			(ft_strncmp(line, "exit", 5)))
+			(trimmed = ft_strtrim(line, " ")) &&
+			(ft_strncmp(trimmed, "exit", 5)) &&
+			(ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) == COMPLETED) &&
+			(ft_make_command(&commands, tokens) == COMPLETED))
 		{
-			if (!(tokens = ft_make_token(line)) || !(commands = ft_make_command(tokens)))
-			{
-				FREE(line);
-				ft_lstclear(&tokens, free);
-				return (1);
-			}
 			head = commands;
 			while (commands)
 			{
@@ -201,17 +221,21 @@ int
 				commands = commands->next;
 			}
 			FREE(line);
+			FREE(trimmed);
 			get_next_line(STDIN_FILENO, NULL);
 			ft_clear_commands(&head);
 			ft_putstr_fd(PROMPT, STDOUT_FILENO);
 		}
 		FREE(line);
+		FREE(trimmed);
 		get_next_line(STDIN_FILENO, NULL);
 		ft_putstr_fd(EXIT_PROMPT, STDOUT_FILENO);
 	}
 	else
 	{
-		if ((tokens = ft_make_token(av[1])) && (commands = ft_make_command(tokens)))
+		if ((trimmed = ft_strtrim(av[1], " ")) &&
+			(ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) == COMPLETED) &&
+			(ft_make_command(&commands, tokens) == COMPLETED))
 		{
 			head = commands;
 			while (commands)
@@ -223,10 +247,12 @@ int
 				ft_putstr_fd("]\n", STDOUT_FILENO);
 				commands = commands->next;
 			}
+			FREE(trimmed);
 			ft_clear_commands(&head);
 		}
 	}
-	exit(0);
+	FREE(g_pwd);
+	ft_lstclear(&g_env, free);
+	exit(g_status);
 }
-
 #endif
