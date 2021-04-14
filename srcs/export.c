@@ -1,7 +1,15 @@
 #include "minishell_sikeda.h"
 
+static int
+	stop_with_puterror(const int err)
+{
+	g_status = STATUS_GENERAL_ERR;
+	ft_put_error(strerror(err));
+	return (STOP);
+}
+
 static t_bool
-	validate_arg(const char *arg)
+	validate_name(const char *arg)
 {
 	t_bool	ret;
 
@@ -81,45 +89,107 @@ static char
 	return (ret);
 }
 
-static int
-	exec_setenv(char **args)
+static char
+	*get_value(const char *str)
 {
-	char	*name;
+	char	*value;
+	char	*ret;
+	size_t	len;
 
-	if (!(name = get_name(args[1])))
-		return (STOP);
-	if (!ft_getenv(name) || ft_strchr(args[1], '='))
+	while (*str && *str != '=')
+		str++;
+	if (*str == '=')
+		str++;
+	len = 0;
+	while (str[len])
+		len++;
+	if (!(value = (char*)malloc(sizeof(char) * (len + 1))))
+		return (NULL);
+	ret = value;
+	while (*str)
+		*value++ = *str++;
+	*value = '\0';
+	return (ret);
+}
+
+static t_bool
+	is_plus_mode(char *name)
+{
+	size_t	len;
+
+	len = ft_strlen(name);
+	if (len && name[len - 1] == '+')
 	{
-		if (ft_setenv(args[1]) == UTIL_ERROR) {
-			FREE(name);
-			return (STOP);
-		}
+		name[len - 1] = '\0';
+		if (ft_getenv(name))
+			return (TRUE);
+	}
+	return (FALSE);
+}
+
+static int
+	exec_setenv(char **args, const char *name, const t_bool plus_mode)
+{
+	char	*value;
+	char	*join;
+	int		ret;
+
+	value = NULL;
+	if (ft_strchr(args[1], '=') && !(value = get_value(args[1])))
+		return (STOP);
+	ret = KEEP_RUNNING;
+	if (plus_mode == FALSE && (!ft_getenv(name) || ft_strchr(args[1], '=')))
+	{
+		if (ft_setenv_sep(name, value) == UTIL_ERROR)
+			ret = STOP;
 #ifdef EXPORTTEST
 		else
 			show_export();	// テスト用にexport実行
 #endif
 	}
-	FREE(name);
-	return (KEEP_RUNNING);
+	else if (plus_mode == TRUE)
+	{
+		join = ft_getenv(name);
+		if (join && !(join = ft_strjoin(join, value)))
+			ret = STOP;
+		else if (join)
+		{
+			FREE(value);
+			value = join;
+		}
+		if (join && ft_setenv_sep(name, value) == UTIL_ERROR)
+			ret = STOP;
+#ifdef EXPORTTEST
+		if (ret == KEEP_RUNNING)
+			show_export();	// テスト用にexport実行
+#endif
+	}
+	FREE(value);
+	return (ret);
 }
 
 static int
 	exec_export(char **args)
 {
+	char	*name;
+	t_bool	plus_mode;
+
 	while (args[1])
 	{
-		if (validate_arg(args[1]) == FALSE)
+		if (!(name = get_name(args[1])))
+			return (stop_with_puterror(errno));
+		plus_mode = is_plus_mode(name);
+		if (validate_name(name) == FALSE)
 		{
 			g_status = STATUS_GENERAL_ERR;
 			ft_put_cmderror_with_quoted_arg("export", CMD_IDENTIFIER_ERR, args++[1]);
-			continue ;
 		}
-		if (exec_setenv(args++) == STOP)
+		else if (exec_setenv(args++, name, plus_mode) == STOP)
 		{
-			g_status = STATUS_GENERAL_ERR;
-			ft_put_error(strerror(errno));
-			return (STOP);
+			FREE(name);
+			return (stop_with_puterror(errno));
 		}
+		FREE(name);
 	}
 	return (KEEP_RUNNING);
 }
@@ -140,11 +210,7 @@ int
 		return (KEEP_RUNNING);
 	}
 	if (!args[1] && show_export() == UTIL_ERROR)
-	{
-		g_status = STATUS_GENERAL_ERR;
-		ft_put_error(strerror(errno));
-		return (STOP);
-	}
+		return (stop_with_puterror(errno));
 	return (exec_export(args));
 }
 
