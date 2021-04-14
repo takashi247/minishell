@@ -355,3 +355,40 @@ diff mini_export bash_export
 echo "===diff check end==="
 rm mini_export bash_export
 echo
+
+# 既存の環境変数をnameのみで上書きしようとする -> 何もしない
+printf "${YELLOW}%s${RESET}\n" "[mini] export HOME"
+./export.out export HOME
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export HOME"
+echo "export HOME" | bash
+echo $?
+echo
+
+# 既存の環境変数をnameのみで上書きしようとする -> 何もしない & 正常ケース
+printf "${YELLOW}%s${RESET}\n" "[mini] export HOME EXPORTTEST=0123"
+./export.out export HOME EXPORTTEST=0123 > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export HOME EXPORTTEST=0123"
+echo "export HOME EXPORTTEST=0123" | bash
+echo $?
+echo "export HOME EXPORTTEST=0123 ; export > bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo
+
+# 複数ダブルクォート
+printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\"echo \"\$USER\"\""
+./export.out export EXPORTTEST="echo "$USER"" > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\"echo \"\$USER\"\""
+echo "export EXPORTTEST=\"echo \"\$USER\"\"" | bash
+echo $?
+echo "export EXPORTTEST=\"echo \"\$USER\"\" ; export > bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo

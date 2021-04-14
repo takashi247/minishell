@@ -1,7 +1,7 @@
 #include "minishell_sikeda.h"
 
 static t_bool
-	validate_arg(char *arg)
+	validate_arg(const char *arg)
 {
 	t_bool	ret;
 
@@ -21,7 +21,7 @@ static t_bool
 }
 
 static void
-	put_env_with_export_syntax(char *str, int fd)
+	put_env_with_export_syntax(const char *str, const int fd)
 {
 	if (!str)
 		return ;
@@ -62,27 +62,64 @@ static int
 	return (UTIL_SUCCESS);
 }
 
-static int
-	exec_export(char **args)
+static char
+	*get_name(const char *str)
 {
-	while (args[1])
+	char	*name;
+	char	*ret;
+	size_t	len;
+
+	len = 0;
+	while (str[len] && str[len] != '=')
+		len++;
+	if (!(name = (char*)malloc(sizeof(char) * (len + 1))))
+		return (NULL);
+	ret = name;
+	while (*str && *str != '=')
+		*name++ = *str++;
+	*name = '\0';
+	return (ret);
+}
+
+static int
+	exec_setenv(char **args)
+{
+	char	*name;
+
+	if (!(name = get_name(args[1])))
+		return (STOP);
+	if (!ft_getenv(name) || ft_strchr(args[1], '='))
 	{
-		if (!validate_arg(args[1]))
-		{
-			g_status = STATUS_GENERAL_ERR;
-			ft_put_cmderror_with_quoted_arg("export", CMD_IDENTIFIER_ERR, args[1]);
-		}
-		else if (ft_setenv(args[1]) == UTIL_ERROR)
-		{
-			g_status = STATUS_GENERAL_ERR;
-			ft_put_error(strerror(errno));
+		if (ft_setenv(args[1]) == UTIL_ERROR) {
+			FREE(name);
 			return (STOP);
 		}
 #ifdef EXPORTTEST
 		else
 			show_export();	// テスト用にexport実行
 #endif
-		args++;
+	}
+	FREE(name);
+	return (KEEP_RUNNING);
+}
+
+static int
+	exec_export(char **args)
+{
+	while (args[1])
+	{
+		if (validate_arg(args[1]) == FALSE)
+		{
+			g_status = STATUS_GENERAL_ERR;
+			ft_put_cmderror_with_quoted_arg("export", CMD_IDENTIFIER_ERR, args++[1]);
+			continue ;
+		}
+		if (exec_setenv(args++) == STOP)
+		{
+			g_status = STATUS_GENERAL_ERR;
+			ft_put_error(strerror(errno));
+			return (STOP);
+		}
 	}
 	return (KEEP_RUNNING);
 }
