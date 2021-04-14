@@ -1,31 +1,6 @@
 #include "minishell_sikeda.h"
 
-#ifdef CDTEST
-int
-	lsh_launch(char **args)
-{
-	pid_t	pid;
-	pid_t	wpid;
-	int		status;
-
-	if ((pid = fork()) < 0)
-		perror("lsh");
-	if (pid == 0)
-	{
-		if (execvp(args[0], args) == -1)
-			perror("lsh");
-		exit(EXIT_FAILURE);
-	} else {
-		do
-		{
-			wpid = waitpid(pid, &status, WUNTRACED);
-		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-	}
-	return (1);
-}
-#endif
-
-t_bool
+static t_bool
 	validate_args(char **args)
 {
 	t_bool	ret;
@@ -44,7 +19,7 @@ t_bool
 	return (ret);
 }
 
-t_bool
+static t_bool
 	exec_cd(char **args)
 {
 	t_bool	ret;
@@ -57,22 +32,52 @@ t_bool
 	return (ret);
 }
 
+static t_bool
+	update_path_env()
+{
+	if (ft_getenv("OLDPWD") && ft_setenv_sep("OLDPWD", g_pwd) == UTIL_ERROR)
+		return (FALSE);
+	FREE(g_pwd);
+	if (!(g_pwd = getcwd(NULL, 0))
+	|| (ft_getenv("PWD") && ft_setenv_sep("PWD", g_pwd) == UTIL_ERROR))
+		return (FALSE);
+	return (TRUE);
+}
+
 int
 	ft_cd(char **args)
 {
+	g_status = STATUS_GENERAL_ERR;
 	args++;
 	if (*args && !ft_strcmp(*args, "--"))
 		args++;
 	if (validate_args(args) == TRUE && exec_cd(args) == TRUE)
 	{
-		// TODO: $PWD、$OLDPWDの値を更新
-		FREE(g_pwd);
-		if (!(g_pwd = getcwd(NULL, 0)))
+		if (update_path_env() == FALSE)
 		{
-			ft_putendl_fd(strerror(EINVAL), STDERR_FILENO);
+			ft_put_cmderror("cd", strerror(errno));
 			return (STOP);
 		}
+		g_status = STATUS_SUCCESS;
 	}
+	else if (*args && **args == '\0')
+	{
+		if (update_path_env() == FALSE)
+		{
+			ft_put_cmderror("cd", strerror(errno));
+			return (STOP);
+		}
+		g_status = STATUS_SUCCESS;
+	}
+#ifdef CDTEST
+	if (g_status == STATUS_SUCCESS)
+	{
+		char	*pwdargs[] = {"pwd", NULL};
+		ft_pwd(pwdargs);
+		printf("PWD: %s\n", ft_getenv("PWD"));
+		printf("OLDPWD: %s\n", ft_getenv("OLDPWD"));
+	}
+#endif
 	return (KEEP_RUNNING);
 }
 
@@ -87,14 +92,20 @@ int
 
 	if (ac < 2)
 	{
-		ft_put_cmderror("main", strerror(EINVAL));
+		ft_put_error(strerror(EINVAL));
 		return (EXIT_FAILURE);
 	}
-	if (ft_init_pwd() == STOP)
+	if (ft_init_env() == STOP)
 		return (EXIT_FAILURE);
+	if (ft_init_pwd() == STOP)
+	{
+		ft_lstclear(&g_env, free);
+		return (EXIT_FAILURE);
+	}
 	if (!(args = (char **)malloc(sizeof(char*) * (ac + 1))))
 	{
 		FREE(g_pwd);
+		ft_lstclear(&g_env, free);
 		return (EXIT_FAILURE);
 	}
 	i = -1;
@@ -104,22 +115,25 @@ int
 	args_head = args;
 	ret = 0;
 	if (!ft_strcmp(args[1], "cd"))
-	{
-		char	*pwdargs[2] = {"pwd", NULL};
-		++args;
-		ret = ft_pwd(pwdargs);
-		ret = ft_cd(args);
-		ret = ft_pwd(pwdargs);
-	}
+		ret = ft_cd(++args);
 	else if (!ft_strcmp(args[1], "pwd"))
 		ret = ft_pwd(++args);
+	else if (!ft_strcmp(args[1], "env"))
+		ret = ft_env(++args);
+	else if (!ft_strcmp(args[1], "export"))
+		ret = ft_export(++args);
+	else if (!ft_strcmp(args[1], "unset"))
+		ret = ft_unset(++args);
+	else if (!ft_strcmp(args[1], "exit"))
+		ret = ft_exit(++args);
 	if (ret == STOP)
 	{
 		// TODO: exitが呼ばれたときにSTOPが返されてloopを終了してmainが終了するイメージ
 	}
 	FREE(args_head);
 	FREE(g_pwd);
+	ft_lstclear(&g_env, free);
 	// system("leaks cd.out");
-	return (EXIT_SUCCESS);
+	return (g_status);
 }
 #endif

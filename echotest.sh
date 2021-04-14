@@ -65,6 +65,20 @@ echo "===diff check end==="
 rm -rf mini_echo bash_echo
 echo
 
+printf "${YELLOW}%s${RESET}\n" "[mini] echo hello   world hoge"
+./echo.out echo hello   world hoge
+echo $?
+./echo.out echo hello   world hoge > mini_echo
+printf "${YELLOW}%s${RESET}\n" "[bash] echo hello   world hoge"
+echo "echo hello   world hoge" | bash
+echo $?
+echo "echo hello   world hoge > bash_echo" | bash
+echo "===diff check start==="
+diff mini_echo bash_echo
+echo "===diff check end==="
+rm -rf mini_echo bash_echo
+echo
+
 printf "${YELLOW}%s${RESET}\n" "[mini] echo \"hello   world\""
 ./echo.out echo "hello   world"
 echo $?

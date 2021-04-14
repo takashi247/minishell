@@ -89,6 +89,50 @@ echo "===diff check end==="
 rm mini_env mini_env_sed mini_env_wc bash_env bash_env_sed bash_env_wc
 echo
 
+printf "${CYAN}%s${RESET}\n" "unset PWD"
+unset PWD
+printf "${YELLOW}%s${RESET}\n" "[mini] env"
+./env.out env > mini_env
+echo $?
+printf "${CYAN}%s${RESET}\n" "unset PWD"
+unset PWD
+printf "${YELLOW}%s${RESET}\n" "[bash] env"
+echo "env > bash_env" | bash
+echo $?
+# _=で始まる変数は最後に実行したコマンドの引数で、bashとminishellの呼び出し方が異なるので、この値も異なるため除外する
+sed -e '/^_=/d' mini_env > mini_env_sed
+sed -e '/^_=/d' bash_env > bash_env_sed
+# 順番を同じにすることができない（?）ので文字数で比較
+cat mini_env_sed | wc > mini_env_wc
+cat bash_env_sed | wc > bash_env_wc
+echo "===diff check start==="
+diff mini_env_wc bash_env_wc
+echo "===diff check end==="
+rm mini_env mini_env_sed mini_env_wc bash_env bash_env_sed bash_env_wc
+echo
+
+printf "${CYAN}%s${RESET}\n" "export PWD=hello"
+export PWD=hello
+printf "${YELLOW}%s${RESET}\n" "[mini] env"
+./env.out env > mini_env
+echo $?
+printf "${CYAN}%s${RESET}\n" "export PWD=hello"
+export PWD=hello
+printf "${YELLOW}%s${RESET}\n" "[bash] env"
+echo "env > bash_env" | bash
+echo $?
+# _=で始まる変数は最後に実行したコマンドの引数で、bashとminishellの呼び出し方が異なるので、この値も異なるため除外する
+sed -e '/^_=/d' mini_env > mini_env_sed
+sed -e '/^_=/d' bash_env > bash_env_sed
+# 順番を同じにすることができない（?）ので文字数で比較
+cat mini_env_sed | wc > mini_env_wc
+cat bash_env_sed | wc > bash_env_wc
+echo "===diff check start==="
+diff mini_env_wc bash_env_wc
+echo "===diff check end==="
+rm mini_env mini_env_sed mini_env_wc bash_env bash_env_sed bash_env_wc
+echo
+
 printf "${YELLOW}%s${RESET}\n" "[mini] env -a"
 ./env.out env -a
 echo $?
