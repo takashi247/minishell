@@ -1,47 +1,5 @@
 #include "../includes/minishell_sikeda.h"
 
-static int
-	init_env_list(char *current, int i)
-{
-	t_list	*new;
-	char	*cpy;
-
-	if (!(cpy = ft_strdup(current)) || !(new = ft_lstnew(cpy)))
-	{
-		cpy ? FREE(cpy) : cpy;
-		ft_lstclear(&g_env, free);
-		return (STOP);
-	}
-	if (i == 0)
-		g_env = new;
-	else
-		ft_lstadd_back(&g_env, new);
-	return (KEEP_RUNNING);
-}
-
-int
-	ft_init_env(void)
-{
-	extern char	**environ;
-	int			i;
-
-	i = 0;
-	while (environ[i])
-	{
-		if (!ft_strncmp(environ[i], "OLDPWD=", ft_strlen("OLDPWD=")))
-		{
-			i++;
-			continue ;
-		}
-		if (init_env_list(environ[i], i) == STOP)
-			return (STOP);
-		i++;
-	}
-	if (init_env_list("OLDPWD", i++) == STOP)
-		return (STOP);
-	return (KEEP_RUNNING);
-}
-
 static void
 	put_enverror_with_option(char *option)
 {
