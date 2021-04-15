@@ -36,6 +36,30 @@ int
 	return (1);
 }
 
+int
+	ft_isover_llrange(char *s)
+{
+	size_t	num;
+	int		is_minus;
+
+	while (ft_isspace(*s))
+		s++;
+	is_minus = *s == '-' ? 1 : 0;
+	if (*s == '+' || *s == '-')
+		s++;
+	num = 0;
+	while (ft_isdigit(*s))
+	{
+		num = num * 10 + *s - '0';
+		if (is_minus && (size_t)__LONG_LONG_MAX__ + 1 < num)
+			return (-1);
+		else if (!is_minus && (size_t)__LONG_LONG_MAX__ < num)
+			return (1);
+		s++;
+	}
+	return (0);
+}
+
 char
 	*ft_get_cmd_option(char *option, const char *arg)
 {

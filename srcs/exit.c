@@ -7,10 +7,10 @@ static int
 
 	if (!(trimmed_arg = ft_strtrim(args[1], SPACE_CHARS)))
 	{
-		ft_put_cmderror("exit", strerror(errno));
+		ft_put_error(strerror(errno));
 		return (STOP);
 	}
-	if (ft_isnumeric(trimmed_arg))
+	if (ft_isnumeric(trimmed_arg) && !ft_isover_llrange(trimmed_arg))
 	{
 		g_status = (uint8_t)ft_atoi(trimmed_arg);
 		if (args[2])
@@ -33,7 +33,6 @@ static int
 int
 	ft_exit(char **args)
 {
-	g_status = STATUS_SUCCESS;
 	ft_putendl_fd("exit", STDERR_FILENO);
 	if (args[1])
 	{

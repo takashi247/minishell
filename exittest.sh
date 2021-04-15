@@ -127,24 +127,6 @@ echo "exit 0" | bash
 echo $?
 echo
 
-printf "${YELLOW}%s${RESET}\n" "[mini] exit 9223372036854775807"
-./exit.out exit 9223372036854775807
-echo $?
-printf "${YELLOW}%s${RESET}\n" "[bash] exit 9223372036854775807"
-echo "exit 9223372036854775807" | bash
-echo $?
-echo
-
-# TODO: 未対応
-echo "※今後対応予定です"
-printf "${YELLOW}%s${RESET}\n" "[mini] exit 9223372036854775808"
-./exit.out exit 9223372036854775808
-echo $?
-printf "${YELLOW}%s${RESET}\n" "[bash] exit 9223372036854775808"
-echo "exit 9223372036854775808" | bash
-echo $?
-echo
-
 printf "${YELLOW}%s${RESET}\n" "[mini] exit +100"
 ./exit.out exit +100
 echo $?
@@ -222,6 +204,38 @@ printf "${YELLOW}%s${RESET}\n" "[mini] exit 2147483650"
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] exit 2147483650"
 echo "exit 2147483650" | bash
+echo $?
+echo
+
+printf "${YELLOW}%s${RESET}\n" "[mini] exit 9223372036854775807"
+./exit.out exit 9223372036854775807
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] exit 9223372036854775807"
+echo "exit 9223372036854775807" | bash
+echo $?
+echo
+
+printf "${YELLOW}%s${RESET}\n" "[mini] exit 9223372036854775808"
+./exit.out exit 9223372036854775808
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] exit 9223372036854775808"
+echo "exit 9223372036854775808" | bash
+echo $?
+echo
+
+printf "${YELLOW}%s${RESET}\n" "[mini] exit -9223372036854775808"
+./exit.out exit -9223372036854775808
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] exit -9223372036854775808"
+echo "exit -9223372036854775808" | bash
+echo $?
+echo
+
+printf "${YELLOW}%s${RESET}\n" "[mini] exit -9223372036854775809"
+./exit.out exit -9223372036854775809
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] exit -9223372036854775809"
+echo "exit -9223372036854775809" | bash
 echo $?
 echo
 

@@ -68,6 +68,7 @@ t_list	*ft_copy_env(void);
 int		ft_strcmp(const char *s1, const char *s2);
 int		ft_isspace(char c);
 int		ft_isnumeric(char *s);
+int		ft_isover_llrange(char *s);
 char	*ft_get_cmd_option(char *option, const char *arg);
 void	ft_put_error(char *msg);
 void	ft_put_cmderror(char *cmd_name, char *msg);
