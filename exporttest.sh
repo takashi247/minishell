@@ -3,7 +3,7 @@
 cd libft
 make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c srcs/export.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D EXPORTTEST -o export.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c srcs/export.c srcs/init_env.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D EXPORTTEST -o export.out
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
@@ -459,4 +459,99 @@ echo "===diff check start==="
 diff mini_export bash_export
 echo "===diff check end==="
 rm mini_export bash_export
+echo
+
+# unset SHLVL; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "unset SHLVL"
+unset SHLVL
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=-1; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=-1"
+export SHLVL=-1
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=999; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=999"
+export SHLVL=999
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=1000; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=1000"
+export SHLVL=1000
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=a; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=a"
+export SHLVL=a
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=2147483646; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=2147483646"
+export SHLVL=2147483646
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=2147483647; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=2147483647"
+export SHLVL=2147483647
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./export.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+export SHLVL=$MYSHLVL
 echo

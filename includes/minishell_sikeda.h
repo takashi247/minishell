@@ -48,6 +48,10 @@ char	*g_pwd;
 t_list	*g_env;
 
 /*
+** inir_env.c
+*/
+int		ft_init_env(void);
+/*
 ** env_utils.c
 */
 char	*ft_getenv(const char *name);
@@ -94,7 +98,6 @@ int		ft_unset(char **args);
 /*
 ** env.c
 */
-int		ft_init_env(void);
 int		ft_env(char **args);
 /*
 ** exit.c

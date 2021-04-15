@@ -6,27 +6,44 @@ static t_bool
 	t_bool	ret;
 	char	option[3];
 
-	ret = FALSE;
+	ret = TRUE;
 	if (ft_get_cmd_option(option, *args))
 	{
 		ft_put_cmderror_with_arg("cd", CMD_OPTION_ERR, option);
 		ft_put_cmderror_with_help("cd", CMD_CD_HELP);
+		ret = FALSE;
 	}
-	else if (*args == NULL)
-		ft_put_cmderror("cd", strerror(EINVAL));
-	else if (**args != '\0')
-		ret = TRUE;
 	return (ret);
 }
 
+static char
+	*get_path(char **args)
+{
+	char	*path;
+
+	if (!*args)
+	{
+		if (!(path = ft_getenv("HOME")))
+		{
+			ft_put_cmderror("cd", "HOME not set");
+			return (NULL);
+		}
+	}
+	else
+		path = *args;
+	return (path);
+}
+
 static t_bool
-	exec_cd(char **args)
+	exec_cd(char *path)
 {
 	t_bool	ret;
 
 	ret = FALSE;
-	if (chdir(*args) != 0)
-		ft_put_cmderror_with_arg("cd", strerror(errno), *args);
+	if (!path)
+		return (ret);
+	if (chdir(path) != 0)
+		ft_put_cmderror_with_arg("cd", strerror(errno), path);
 	else
 		ret = TRUE;
 	return (ret);
@@ -36,11 +53,17 @@ static t_bool
 	update_path_env()
 {
 	if (ft_getenv("OLDPWD") && ft_setenv_sep("OLDPWD", g_pwd) == UTIL_ERROR)
+	{
+		ft_put_cmderror("cd", strerror(errno));
 		return (FALSE);
+	}
 	FREE(g_pwd);
 	if (!(g_pwd = getcwd(NULL, 0))
 	|| (ft_getenv("PWD") && ft_setenv_sep("PWD", g_pwd) == UTIL_ERROR))
+	{
+		ft_put_cmderror("cd", strerror(errno));
 		return (FALSE);
+	}
 	return (TRUE);
 }
 
@@ -51,23 +74,22 @@ int
 	args++;
 	if (*args && !ft_strcmp(*args, "--"))
 		args++;
-	if (validate_args(args) == TRUE && exec_cd(args) == TRUE)
+	if (validate_args(args) == FALSE)
+		return (KEEP_RUNNING);
+	if (*args && **args == '\0')
 	{
 		if (update_path_env() == FALSE)
-		{
-			ft_put_cmderror("cd", strerror(errno));
 			return (STOP);
-		}
 		g_status = STATUS_SUCCESS;
 	}
-	else if (*args && **args == '\0')
+	else
 	{
-		if (update_path_env() == FALSE)
+		if (exec_cd(get_path(args)) == TRUE)
 		{
-			ft_put_cmderror("cd", strerror(errno));
-			return (STOP);
+			if (update_path_env() == FALSE)
+				return (STOP);
+			g_status = STATUS_SUCCESS;
 		}
-		g_status = STATUS_SUCCESS;
 	}
 #ifdef CDTEST
 	if (g_status == STATUS_SUCCESS)

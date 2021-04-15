@@ -3,7 +3,7 @@
 cd libft
 make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c srcs/export.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D CDTEST -o cd.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c srcs/export.c srcs/init_env.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D CDTEST -o cd.out
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
@@ -13,16 +13,18 @@ WORKDIR=`pwd`
 echo ""
 
 # 引数なし
-echo "※minishellではパスを引数に取らない場合invalid"
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd"
 ./cd.out cd
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd"
-echo "cd" | bash
+cd
 echo $?
-echo "pwd" | bash
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
 echo
 
 # 引数特殊 ~ (シェルスクリプトによりminishellのテストも ~ が変数展開されている)
@@ -248,7 +250,6 @@ cd $WORKDIR
 echo
 
 # cd --
-echo "※minishellではパスを引数に取らない場合invalid"
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd --"
@@ -258,5 +259,62 @@ printf "${YELLOW}%s${RESET}\n" "[bash] cd --"
 cd --
 echo $?
 pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
 cd $WORKDIR
+echo
+
+# unset HOME; cd;
+HOMEDIR=$HOME
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${CYAN}%s${RESET}\n" "unset HOME"
+unset HOME
+printf "${YELLOW}%s${RESET}\n" "[mini] cd"
+./cd.out cd
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd"
+cd
+echo $?
+cd $WORKDIR
+export HOME=$HOMEDIR
+echo
+
+# unset HOME; export HOME; cd;
+HOMEDIR=$HOME
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${CYAN}%s${RESET}\n" "unset HOME"
+unset HOME
+printf "${CYAN}%s${RESET}\n" "export HOME"
+export HOME
+printf "${YELLOW}%s${RESET}\n" "[mini] cd"
+./cd.out cd
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd"
+cd
+echo $?
+cd $WORKDIR
+export HOME=$HOMEDIR
+echo
+
+# unset HOME; export HOME=..; cd;
+HOMEDIR=$HOME
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${CYAN}%s${RESET}\n" "unset HOME"
+unset HOME
+printf "${CYAN}%s${RESET}\n" "export HOME=.."
+export HOME=..
+printf "${YELLOW}%s${RESET}\n" "[mini] cd"
+./cd.out cd
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd"
+cd
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+export HOME=$HOMEDIR
 echo

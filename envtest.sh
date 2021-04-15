@@ -3,7 +3,7 @@
 cd libft
 make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D ENVTEST -o env.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/init_env.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D ENVTEST -o env.out
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
