@@ -64,7 +64,7 @@ int
 }
 
 int
-	ft_setenv_sep(char *name, char *value)
+	ft_setenv_sep(const char *name, const char *value)
 {
 	char	*equal_value;
 	char	*env_str;

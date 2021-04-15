@@ -57,7 +57,7 @@ int		ft_init_env(void);
 char	*ft_getenv(const char *name);
 int		ft_unsetenv(const char *name);
 int		ft_setenv(char *str);
-int		ft_setenv_sep(char *name, char *value);
+int		ft_setenv_sep(const char *name, const char *value);
 int		ft_unsetenv(const char *name);
 void	ft_envsort(t_list **lst);
 void	ft_clear_copied_env(t_list **cpy);

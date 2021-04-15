@@ -251,13 +251,26 @@ echo "===diff check end==="
 rm mini_export bash_export
 echo
 
+printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\" hello\""
+./export.out export EXPORTTEST=" hello" > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\" hello\""
+echo "export EXPORTTEST=\" hello\"" | bash
+echo $?
+echo "export EXPORTTEST=\" hello\" ; export > bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo
+
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST= 0123"
 ./export.out export EXPORTTEST= 0123 > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST= 0123"
 echo "export EXPORTTEST= 0123" | bash
 echo $?
-echo "export EXPORTTEST= 0123 ; export > bash_export" | bash
+echo "export EXPORTTEST= 0123 2> /dev/null ; export 1> bash_export" | bash
 echo "===diff check start==="
 diff mini_export bash_export
 echo "===diff check end==="
@@ -286,7 +299,7 @@ echo
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXP0RT0TEST=0123"
 ./export.out export EXPORT0TEST=0123 > mini_export
 echo $?
-printf "${YELLOW}%s${RESET}\n" "[bash] export 0EXPORT0TEST=0123"
+printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORT0TEST=0123"
 echo "export EXPORT0TEST=0123" | bash
 echo $?
 echo "export EXPORT0TEST=0123 ; export> bash_export" | bash
@@ -294,7 +307,6 @@ echo "===diff check start==="
 diff mini_export bash_export
 echo "===diff check end==="
 rm mini_export bash_export
-echo
 echo
 
 # 最後に数字
@@ -356,6 +368,99 @@ echo "===diff check end==="
 rm mini_export bash_export
 echo
 
+# 既存の環境変数をnameのみで上書きしようとする -> 何もしない
+printf "${YELLOW}%s${RESET}\n" "[mini] export HOME"
+./export.out export HOME
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export HOME"
+echo "export HOME" | bash
+echo $?
+echo
+
+# 既存の環境変数をnameのみで上書きしようとする -> 何もしない & 正常ケース
+printf "${YELLOW}%s${RESET}\n" "[mini] export HOME EXPORTTEST=0123"
+./export.out export HOME EXPORTTEST=0123 > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export HOME EXPORTTEST=0123"
+echo "export HOME EXPORTTEST=0123" | bash
+echo $?
+echo "export HOME EXPORTTEST=0123 ; export > bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo
+
+# 複数ダブルクォート
+printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\"echo \"\$USER\"\""
+./export.out export EXPORTTEST="echo "$USER"" > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\"echo \"\$USER\"\""
+echo "export EXPORTTEST=\"echo \"\$USER\"\"" | bash
+echo $?
+echo "export EXPORTTEST=\"echo \"\$USER\"\" ; export > bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo
+
+# += new
+printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST+=012"
+./export.out export EXPORTTEST+=012 > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST+=012"
+echo "export EXPORTTEST+=012" | bash
+echo $?
+echo "export EXPORTTEST+=012 ; export > bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo
+
+# = new, += join
+printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=012 EXPORTTEST+=34"
+./export.out export EXPORTTEST=012 EXPORTTEST+=34 > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=012 EXPORTTEST+=34"
+echo "export EXPORTTEST=012 EXPORTTEST+=34" | bash
+echo $?
+echo "export EXPORTTEST=012 ; export > bash_export; EXPORTTEST+=34 ; export >> bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo
+
+#  += new, += join, += join
+printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc"
+./export.out export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc"
+echo "export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc" | bash
+echo $?
+echo "export EXPORTTEST+=012 ; export > bash_export; EXPORTTEST+=34 ; export >> bash_export ; EXPORTTEST+=abc ; export >> bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo
+
+# += new (no value)
+printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST+="
+./export.out export EXPORTTEST+= > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST+="
+echo "export EXPORTTEST+=" | bash
+echo $?
+echo "export EXPORTTEST+= ; export > bash_export" | bash
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
+echo
+
 # unset SHLVL; export;
 MYSHLVL=$SHLVL
 printf "${CYAN}%s${RESET}\n" "unset SHLVL"
@@ -383,10 +488,6 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-echo "===diff check start==="
-diff mini_export bash_export
-echo "===diff check end==="
-rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -400,10 +501,6 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-echo "===diff check start==="
-diff mini_export bash_export
-echo "===diff check end==="
-rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -417,10 +514,6 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-echo "===diff check start==="
-diff mini_export bash_export
-echo "===diff check end==="
-rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -434,10 +527,6 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-echo "===diff check start==="
-diff mini_export bash_export
-echo "===diff check end==="
-rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -451,10 +540,6 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-echo "===diff check start==="
-diff mini_export bash_export
-echo "===diff check end==="
-rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -468,9 +553,5 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-echo "===diff check start==="
-diff mini_export bash_export
-echo "===diff check end==="
-rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
