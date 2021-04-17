@@ -247,9 +247,9 @@ int
 				ft_putstr_fd("]\n", STDOUT_FILENO);
 				commands = commands->next;
 			}
-			FREE(trimmed);
 			ft_clear_commands(&head);
 		}
+		FREE(trimmed);
 	}
 	FREE(g_pwd);
 	ft_lstclear(&g_env, free);

@@ -56,7 +56,6 @@ static int
 		!(*content = ft_strjoin(tmp[1], new[2])))
 	{
 		free_all_chars(tmp, new);
-		FREE(*content);
 		return (FAILED);
 	}
 	res = !(*content) ? ENV_DELETED : COMPLETED;
