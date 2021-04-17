@@ -1,12 +1,27 @@
 #include "minishell_sikeda.h"
 
+static t_bool
+	has_n_option(const char *args)
+{
+	if (args && *args++ == '-')
+	{
+		if (*args == '\0')
+			return (FALSE);
+		while (*args == 'n')
+			args++;
+		if (*args == '\0')
+			return (TRUE);
+	}
+	return (FALSE);
+}
+
 int
 	ft_echo(char **args)
 {
 	int	is_n;
 
 	is_n = FALSE;
-	if (args[1] && !ft_strcmp(args[1], "-n"))
+	while (has_n_option(args[1]))
 	{
 		is_n = TRUE;
 		args++;
