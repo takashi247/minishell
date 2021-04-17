@@ -318,3 +318,22 @@ printf "OLDPWD: ${OLDPWD}\n"
 cd $WORKDIR
 export HOME=$HOMEDIR
 echo
+
+# mkdir cdtest; cd cdtest ; rmdir ../cdtest ; cd "" ;
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest ; rmdir ../cdtest ; cd \"\" ; pwd"
+${WORKDIR}/cd.out cd_nodir
+echo $?
+cd $WORKDIR
+printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest ; rmdir ../cdtest ; cd \"\" ; pwd"
+#終了ステータスを取るためのコマンド、出力を消して実行
+mkdir cdtest ; cd cdtest ; rmdir ../cdtest ; cd "" 2> /dev/null ; pwd &> /dev/null
+echo $?
+cd $WORKDIR
+#画面表示用のコマンド
+mkdir cdtest ; cd cdtest ; rmdir ../cdtest ; cd "" ; pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
