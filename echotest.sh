@@ -163,6 +163,63 @@ echo "===diff check end==="
 rm -rf mini_echo bash_echo
 echo
 
+printf "${YELLOW}%s${RESET}\n" "[mini] echo -nnn hello"
+./echo.out echo -nnn hello
+echo $?
+./echo.out echo -nnn hello > mini_echo
+printf "${YELLOW}%s${RESET}\n" "[bash] echo -nnn hello"
+echo "echo -nnn hello" | bash
+echo $?
+echo "echo -nnn hello > bash_echo" | bash
+echo "===diff check start==="
+diff mini_echo bash_echo
+echo "===diff check end==="
+rm -rf mini_echo bash_echo
+echo
+
+printf "${YELLOW}%s${RESET}\n" "[mini] echo -nNn hello"
+./echo.out echo -nNn hello
+echo $?
+./echo.out echo -nNn hello > mini_echo
+printf "${YELLOW}%s${RESET}\n" "[bash] echo -nNn hello"
+echo "echo -nNn hello" | bash
+echo $?
+echo "echo -nNn hello > bash_echo" | bash
+echo "===diff check start==="
+diff mini_echo bash_echo
+echo "===diff check end==="
+rm -rf mini_echo bash_echo
+echo
+
+printf "${YELLOW}%s${RESET}\n" "[mini] echo -n -nnn hello"
+./echo.out echo -n -nnn hello
+echo $?
+./echo.out echo -n -nnn hello > mini_echo
+printf "${YELLOW}%s${RESET}\n" "[bash] echo -n -nnn hello"
+echo "echo -n -nnn hello" | bash
+echo $?
+echo "echo -n -nnn hello > bash_echo" | bash
+echo "===diff check start==="
+diff mini_echo bash_echo
+echo "===diff check end==="
+rm -rf mini_echo bash_echo
+echo
+
+
+printf "${YELLOW}%s${RESET}\n" "[mini] echo -n -N hello"
+./echo.out echo -n -N hello
+echo $?
+./echo.out echo -n -N hello > mini_echo
+printf "${YELLOW}%s${RESET}\n" "[bash] echo -n -N hello"
+echo "echo -n -N hello" | bash
+echo $?
+echo "echo -n -N hello > bash_echo" | bash
+echo "===diff check start==="
+diff mini_echo bash_echo
+echo "===diff check end==="
+rm -rf mini_echo bash_echo
+echo
+
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -"
 ./echo.out echo -
 echo $?
