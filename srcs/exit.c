@@ -12,7 +12,7 @@ static int
 	}
 	if (ft_isnumeric(trimmed_arg))
 	{
-		g_status = ft_atoi(trimmed_arg);
+		g_status = (uint8_t)ft_atoi(trimmed_arg);
 		if (args[2])
 		{
 			ft_put_cmderror("exit", "too many arguments");
@@ -63,11 +63,17 @@ int
 		ft_put_cmderror("main", strerror(EINVAL));
 		return (EXIT_FAILURE);
 	}
-	if (ft_init_pwd() == STOP)
+	if (ft_init_env() == STOP)
 		return (EXIT_FAILURE);
+	if (ft_init_pwd() == STOP)
+	{
+		ft_lstclear(&g_env, free);
+		return (EXIT_FAILURE);
+	}
 	if (!(args = (char **)malloc(sizeof(char*) * (ac + 1))))
 	{
 		FREE(g_pwd);
+		ft_lstclear(&g_env, free);
 		return (EXIT_FAILURE);
 	}
 	i = -1;
@@ -85,8 +91,13 @@ int
 	}
 	else if (!ft_strcmp(args[1], "pwd"))
 		ret = ft_pwd(++args);
-	else
-	if (!ft_strcmp(args[1], "exit"))
+	else if (!ft_strcmp(args[1], "env"))
+		ret = ft_env(++args);
+	else if (!ft_strcmp(args[1], "export"))
+		ret = ft_export(++args);
+	else if (!ft_strcmp(args[1], "unset"))
+		ret = ft_unset(++args);
+	else if (!ft_strcmp(args[1], "exit"))
 		ret = ft_exit(++args);
 	if (ret == STOP)
 	{
@@ -94,6 +105,7 @@ int
 	}
 	FREE(args_head);
 	FREE(g_pwd);
+	ft_lstclear(&g_env, free);
 	// system("leaks exit.out");
 	return (g_status);
 }

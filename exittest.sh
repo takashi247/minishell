@@ -1,9 +1,9 @@
 #!/bin/bash
 
 cd libft
-make
+make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D EXITTEST -o exit.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c srcs/export.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D EXITTEST -o exit.out
 
 YELLOW=$(printf '\033[33m')
 RESET=$(printf '\033[0m')
@@ -124,6 +124,24 @@ printf "${YELLOW}%s${RESET}\n" "[mini] exit 0"
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] exit 0"
 echo "exit 0" | bash
+echo $?
+echo
+
+printf "${YELLOW}%s${RESET}\n" "[mini] exit 9223372036854775807"
+./exit.out exit 9223372036854775807
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] exit 9223372036854775807"
+echo "exit 9223372036854775807" | bash
+echo $?
+echo
+
+# TODO: 未対応
+echo "※今後対応予定です"
+printf "${YELLOW}%s${RESET}\n" "[mini] exit 9223372036854775808"
+./exit.out exit 9223372036854775808
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] exit 9223372036854775808"
+echo "exit 9223372036854775808" | bash
 echo $?
 echo
 
