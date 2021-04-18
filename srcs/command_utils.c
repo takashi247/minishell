@@ -1,4 +1,5 @@
 #include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 int
 	ft_strcmp(const char *s1, const char *s2)
@@ -138,4 +139,18 @@ void
 	ft_putstr_fd(cmd_name, fd);
 	ft_putstr_fd(": usage: ", fd);
 	ft_putendl_fd(help, fd);
+}
+
+void
+	ft_put_syntaxerror_with_token(char *token)
+{
+	int	fd;
+
+	fd = STDERR_FILENO;
+	ft_putstr_fd(PRG_NAME, fd);
+	ft_putstr_fd(": ", fd);
+	ft_putstr_fd(SYNTAX_ERROR_MSG, fd);
+	ft_putstr_fd(" `", fd);
+	ft_putstr_fd(token, fd);
+	ft_putendl_fd("\'", fd);
 }

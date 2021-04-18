@@ -7,150 +7,40 @@ static int
 {
 	FREE(*cpy);
 	ft_lstclear(tokens, free);
+	g_status = STATUS_GENERAL_ERR;
 	return (FAILED);
 }
-/*
-static void
-	free_all_chars(char *tmp[2], char *new[3])
-{
-	FREE(tmp[0]);
-	FREE(tmp[1]);
-	FREE(new[0]);
-	FREE(new[1]);
-	FREE(new[2]);
-}
 
-static int
-	replace_name_with_value(char **content, int env_pos[2])
+t_bool
+	ft_is_delimiter(char c)
 {
-	char	*tmp[2];
-	char	*new[3];
-	int		p[2];
-	int		res;
-
-	ft_memset(tmp, 0, sizeof(char*) * 2);
-	ft_memset(new, 0, sizeof(char*) * 3);
-	tmp[0] = *content;
-	p[0] = (*content)[env_pos[0] + 1] != '{' ? env_pos[0] + 1 : env_pos[0] + 2;
-	p[1] = (*content)[env_pos[0] + 1] == '{' && (*content)[env_pos[1]] == '}' ?
-		env_pos[1] + 1 : env_pos[1];
-	if (!(new[0] = ft_substr(*content, 0, env_pos[0])) ||
-		!(new[1] = ft_substr(*content, p[0], env_pos[1] - p[0])) ||
-		!(new[2] = ft_strdup(*content + p[1])) ||
-		!(tmp[1] = ft_strjoin(new[0], ft_getenv(new[1]))) ||
-		!(*content = ft_strjoin(tmp[1], new[2])))
-	{
-		free_all_chars(tmp, new);
-		FREE(*content);
-		return (FAILED);
-	}
-	res = !ft_getenv(new[1]) ? ENV_DELETED : COMPLETED;
-	free_all_chars(tmp, new);
-	return (res);
-}
-
-static t_bool
-	is_env_name_end(char c)
-{
-	if ((33 <= c && c <= 39) || (42 <= c && c <= 47) || c == 58 || c == 61 ||
-		(63 <= c && c <= 64) || (91 <= c && c <= 96) || c == 123 ||
-		(125 <= c && c <= 126) || !c || c == ' ')
+	if (c == ' ' || c == '|' || c == ';' || c == '<' || c == '>' || !c)
 		return (TRUE);
 	else
 		return (FALSE);
 }
 
-static int
-	find_n_replace_env(char **content)
+t_bool
+	ft_is_delimiter_or_quote(char *l, int i, int *fl)
 {
-	int		i;
-	int		j;
-	int		env_pos[2];
-	int		res;
-	int		flag;
-
-	i = 0;
-	res = COMPLETED;
-	while ((*content)[i])
-	{
-		flag = 1;
-		if ((i == 0 || (*content)[i - 1] != '\\') && (*content)[i] == '$')
-		{
-			flag = 0;
-			env_pos[0] = i;
-			j = i + 1;
-			while (!(is_env_name_end((*content)[j])))
-				j++;
-			env_pos[1] = j;
-			if ((res = replace_name_with_value(content, env_pos)) == FAILED)
-				return (res);
-		}
-		i += flag;
-	}
-	return (res);
-}
-
-static void
-	delete_token(t_list **tokens, t_list **head, t_list *prev)
-{
-	if (!prev)
-	{
-		*head = (*tokens)->next;
-		ft_lstdelone(*tokens, free);
-		*tokens = *head;
-	}
-	else
-	{
-		prev->next = (*tokens)->next;
-		ft_lstdelone(*tokens, free);
-		*tokens = prev->next;
-	}
-}
-
-static int
-	expand_env_var(t_list **tokens)
-{
-	t_list	*head;
-	t_list	*prev;
-	int		res;
-
-	if (!*tokens)
-		return (COMPLETED);
-	head = *tokens;
-	prev = NULL;
-	while (*tokens)
-	{
-		if ((res = find_n_replace_env((char**)&((*tokens)->content))) ==
-			COMPLETED)
-		{
-			prev = *tokens;
-			*tokens = (*tokens)->next;
-		}
-		else if (res == FAILED)
-			return (FAILED);
-		else
-			delete_token(tokens, &head, prev);
-	}
-	*tokens = head;
-	return (COMPLETED);
-}
-*/
-
-static t_bool
-	is_delimiter_or_quote(char *l, int i, int *q)
-{
-	if ((!q[0] && !q[1] && (l[i] == ' ' || l[i] == '|' ||
-		l[i] == '&' || l[i] == ';' || l[i] == '<' || l[i] == '>' ||
-		l[i] == '\0')) || ((!i || l[i - 1] != '\\') && l[i] == '\'' &&
-		q[0]) || ((!i || l[i - 1] != '\\') && l[i] == '\"' && q[1]) ||
-		((q[0] || q[1]) && !l[i]))
+	if ((!fl[0] && !fl[1] && (l[i] == '\0' || l[i] == ' ' || l[i] == '|' || l[i] == ';' || l[i] == '<' ||
+		(i && l[i] == '>') || (l[i] == '>' && l[i + 1] != '>'))) ||
+		((!i || l[i - 1] != '\\') && l[i] == '\'' && fl[0] && ft_is_delimiter(l[i + 1])) ||
+		((!i || l[i - 1] != '\\') && l[i] == '\"' && fl[1] && ft_is_delimiter(l[i + 1])) ||
+		((fl[0] || fl[1]) && !l[i]))
 		return (TRUE);
 	else
 	{
-		if ((!i || l[i - 1] != '\\') && l[i] == '\'' && !q[0] && !q[1])
-			q[0] = 1;
-		else if ((!i || l[i - 1] != '\\') && l[i] == '\"' && !q[0] && !q[1])
-			q[1] = 1;
+		if ((!i || l[i - 1] != '\\') && l[i] == '\'' && !fl[0] && !fl[1])
+			fl[0] = 1;
+		else if ((!i || l[i - 1] != '\\') && l[i] == '\"' && !fl[0] && !fl[1])
+			fl[1] = 1;
+		else if ((!i || l[i - 1] != '\\') && l[i] == '\'' && fl[0] && !ft_is_delimiter(l[i + 1]))
+			fl[0] = 0;
+		else if ((!i || l[i - 1] != '\\') && l[i] == '\"' && fl[1] && !ft_is_delimiter(l[i + 1]))
+			fl[1] = 0;
+		else if (l[i] == '>' && l[i + 1] == '>')
+			fl[2] = 1;
 		return (FALSE);
 	}
 }
@@ -158,38 +48,47 @@ static t_bool
 static int
 	put_quotation_error(char *cpy, t_list **tokens)
 {
-	ft_put_cmderror(cpy, QUOTATION_ERROR);
+	ft_put_cmderror(cpy, QUOTATION_ERROR_MSG);
 	ft_lstclear(tokens, free);
 	g_status = 1;
 	return (COMPLETED);
 }
 
+/*
+** f[3] is a flag array. Each of elements is a flag for the purpose explained
+** below.
+**
+** f[0]: a flag for single quotations (')
+** f[1]: a flag for double quotations (")
+** f[2]: a flag for double arrows (>>)
+*/
+
 int
-	ft_make_token(t_list **tokens, char *line)
+	ft_make_token(t_list **tokens, char *l, t_bool(*f)(char*, int, int*))
 {
-	t_list	*new;
+	t_list	*n;
 	int		i;
 	char	*cpy;
-	int		q[2];
+	int		fl[3];
 
-	if (!line)
-		return (COMPLETED);
 	*tokens = NULL;
-	while (*line)
+	if (!l)
+		return (COMPLETED);
+	while (*l)
 	{
 		i = 0;
-		ft_memset(q, 0, sizeof(int) * 2);
-		while (*line == ' ')
-			line++;
-		while (!(is_delimiter_or_quote(line, i, q)))
+		ft_memset(fl, 0, sizeof(int) * 3);
+		while (*l == ' ')
+			l++;
+		while (!(f(l, i, fl)))
 			i++;
-		if (!(cpy = i != 0 && q[0] == 0 && q[1] == 0 ? ft_substr(line, 0, i) :
-			ft_substr(line, 0, i + 1)) || !(new = ft_lstnew(cpy)))
+		if (!(cpy = i != 0 && fl[0] == 0 && fl[1] == 0 && fl[2] == 0 ?
+		ft_substr(l, 0, i) : ft_substr(l, 0, i + 1)) || !(n = ft_lstnew(cpy)))
 			return (exit_with_error(tokens, &cpy));
-		ft_lstadd_back(tokens, new);
-		if ((q[0] || q[1]) && !line[i])
+		ft_lstadd_back(tokens, n);
+		if ((fl[0] || fl[1]) && !l[i])
 			return (put_quotation_error(cpy, tokens));
-		line = line[i] ? line + i + (!i || q[0] || q[1]) : line + i;
+		l = l[i] ? l + i + (!i || fl[0] || fl[1] || fl[2]) : l + i;
 	}
 	return (COMPLETED);
 }
@@ -210,7 +109,7 @@ int
 		ft_putstr_fd(PROMPT, STDOUT_FILENO);
 		while (get_next_line(STDIN_FILENO, &line) == 1 &&
 			(ft_strncmp(line, "exit", 5)) &&
-			(ft_make_token(&tokens, line) == COMPLETED))
+			(ft_make_token(&tokens, line, ft_is_delimiter_or_quote) == COMPLETED))
 		{
 			head = tokens;
 			while (tokens)
@@ -230,7 +129,7 @@ int
 	}
 	else
 	{
-		if ((ft_make_token(&tokens, av[1])) == COMPLETED)
+		if ((ft_make_token(&tokens, av[1], ft_is_delimiter_or_quote)) == COMPLETED)
 		{
 			head = tokens;
 			while (tokens)
