@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_substr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 10:22:53 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 18:19:15 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/04/18 11:49:27 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,16 @@ char
 
 	if (s == NULL || ft_strlen(s) <= start || len == 0)
 	{
-		if (!(sub_s = ft_calloc(1, sizeof(char))))
+		sub_s = ft_calloc(1, sizeof(char));
+		if (!sub_s)
 			return (NULL);
 		return (sub_s);
 	}
-	i = (len > ft_strlen(s) - start) ? (ft_strlen(s) - start) : len;
-	if (!(sub_s = (char *)malloc(sizeof(char) * (i + 1))))
+	i = len;
+	if (len > ft_strlen(s) - start)
+		i = ft_strlen(s) - start;
+	sub_s = (char *)malloc(sizeof(char) * (i + 1));
+	if (!sub_s)
 		return (NULL);
 	ft_strlcpy(sub_s, s + start, i + 1);
 	return (sub_s);

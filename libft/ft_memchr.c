@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/03 18:58:44 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 18:16:19 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/04/18 11:38:52 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void
 	while (i < n)
 	{
 		if (u_s[i] == u_c)
-			return ((void*)s + i);
+			return ((void *)s + i);
 		i++;
 	}
 	return (NULL);
