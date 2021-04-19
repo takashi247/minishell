@@ -6,9 +6,14 @@ static int
 	t_list	*new;
 	char	*cpy;
 
-	if (!(cpy = ft_strdup(current)) || !(new = ft_lstnew(cpy)))
+	cpy = ft_strdup(current);
+	new = NULL;
+	if (cpy)
+		new = ft_lstnew(cpy);
+	if (!new)
 	{
-		cpy ? FREE(cpy) : cpy;
+		if (cpy)
+			FREE(cpy);
 		ft_lstclear(&g_env, free);
 		return (STOP);
 	}
@@ -26,7 +31,7 @@ static int
 	{
 		ft_putstr_fd(PRG_NAME, STDERR_FILENO);
 		ft_putstr_fd(": warning: shell level (", STDERR_FILENO);
-		ft_putstr_fd((char*)next_level, STDERR_FILENO);
+		ft_putstr_fd((char *)next_level, STDERR_FILENO);
 		ft_putendl_fd(") too high, resetting to 1", STDERR_FILENO);
 		return (ft_setenv_sep("SHLVL", "1"));
 	}
@@ -35,7 +40,7 @@ static int
 	else if (current_level < 0)
 		return (ft_setenv_sep("SHLVL", "0"));
 	else
-		return (ft_setenv_sep("SHLVL", (char*)next_level));
+		return (ft_setenv_sep("SHLVL", (char *)next_level));
 }
 
 static int
@@ -50,8 +55,10 @@ static int
 	if (shlvl)
 	{
 		current_level = ft_atoi(shlvl);
-		current_level = (INT_MAX - 1) < current_level ? -1 : current_level;
-		if (!(next_level = ft_itoa(current_level + 1)))
+		if ((INT_MAX - 1) < current_level)
+			current_level = -1;
+		next_level = ft_itoa(current_level + 1);
+		if (!next_level)
 		{
 			ft_put_error(strerror(errno));
 			return (STOP);
@@ -61,7 +68,9 @@ static int
 	}
 	else
 		result = ft_setenv_sep("SHLVL", "1");
-	return (result == UTIL_ERROR ? STOP : KEEP_RUNNING);
+	if (result == UTIL_ERROR)
+		return (STOP);
+	return (KEEP_RUNNING);
 }
 
 int

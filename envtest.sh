@@ -3,14 +3,20 @@
 cd libft
 make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/init_env.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D ENVTEST -o env.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft -I./test \
+    test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c \
+    srcs/echo.c srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c \
+    srcs/export.c srcs/export_print.c srcs/export_setenv.c \
+    srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c srcs/env_sort.c srcs/env_copy.c \
+    srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c srcs/utils/command_errors.c \
+    -Llibft -lft -D EXPORTTEST -o builtin.out #-D LEAKS
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
 RESET=$(printf '\033[0m')
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env"
-./env.out env > mini_env
+./builtin.out env > mini_env
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env"
 echo "env > bash_env" | bash
@@ -28,7 +34,7 @@ rm mini_env mini_env_sed mini_env_wc bash_env bash_env_sed bash_env_wc
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env --"
-./env.out env -- > mini_env
+./builtin.out env -- > mini_env
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env --"
 echo "env > bash_env --" | bash
@@ -48,7 +54,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "export ENVTEST=0123"
 export ENVTEST=0123
 printf "${YELLOW}%s${RESET}\n" "[mini] env"
-./env.out env > mini_env
+./builtin.out env > mini_env
 echo $?
 printf "${CYAN}%s${RESET}\n" "export ENVTEST=0123"
 export ENVTEST=0123
@@ -70,7 +76,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "export ENVTEST"
 export ENVTEST
 printf "${YELLOW}%s${RESET}\n" "[mini] env"
-./env.out env > mini_env
+./builtin.out env > mini_env
 echo $?
 printf "${CYAN}%s${RESET}\n" "export ENVTEST"
 export ENVTEST
@@ -92,7 +98,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "unset PWD"
 unset PWD
 printf "${YELLOW}%s${RESET}\n" "[mini] env"
-./env.out env > mini_env
+./builtin.out env > mini_env
 echo $?
 printf "${CYAN}%s${RESET}\n" "unset PWD"
 unset PWD
@@ -114,7 +120,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "export PWD=hello"
 export PWD=hello
 printf "${YELLOW}%s${RESET}\n" "[mini] env"
-./env.out env > mini_env
+./builtin.out env > mini_env
 echo $?
 printf "${CYAN}%s${RESET}\n" "export PWD=hello"
 export PWD=hello
@@ -134,7 +140,7 @@ rm mini_env mini_env_sed mini_env_wc bash_env bash_env_sed bash_env_wc
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env -a"
-./env.out env -a
+./builtin.out env -a
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env -a"
 echo "env -a" | bash
@@ -142,7 +148,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env - - -a"
-./env.out env - - -a
+./builtin.out env - - -a
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env - - -a"
 echo "env - - -a" | bash
@@ -150,7 +156,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env --envtestdir"
-./env.out env --envtestdir
+./builtin.out env --envtestdir
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env --envtestdir"
 echo "env --envtestdir" | bash
@@ -158,7 +164,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env envtestdir"
-./env.out env envtestdir
+./builtin.out env envtestdir
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env envtestdir"
 echo "env envtestdir" | bash
@@ -166,7 +172,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env -"
-./env.out env -
+./builtin.out env -
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env -"
 echo "env -" | bash
@@ -174,7 +180,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env - -"
-./env.out env - -
+./builtin.out env - -
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env - -"
 echo "env - -" | bash
@@ -182,7 +188,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env - - - ----"
-./env.out env - - - ----
+./builtin.out env - - - ----
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env - - - ----"
 echo "env - - - ----" | bash
@@ -190,7 +196,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env - - - --"
-./env.out env - - - --
+./builtin.out env - - - --
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env - - - --"
 echo "env - - - --" | bash
@@ -198,7 +204,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env - - - -- -"
-./env.out env - - - -- -
+./builtin.out env - - - -- -
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env - - - -- -"
 echo "env - - - -- -" | bash
@@ -206,7 +212,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env - - - -- -a"
-./env.out env - - - -- -a
+./builtin.out env - - - -- -a
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env - - - -- -a"
 echo "env - - - -- -a" | bash
@@ -214,7 +220,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env - - - --- -a"
-./env.out env - - - --- -a
+./builtin.out env - - - --- -a
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env - - - --- -a"
 echo "env - - - --- -a" | bash
@@ -222,7 +228,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env -- -"
-./env.out env -- -
+./builtin.out env -- -
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env -- -"
 echo "env -- -" | bash
@@ -230,7 +236,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env -- --"
-./env.out env -- --
+./builtin.out env -- --
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env -- --"
 echo "env -- --" | bash
@@ -238,7 +244,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env --- -"
-./env.out env --- -
+./builtin.out env --- -
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env --- -"
 echo "env --- -" | bash
@@ -246,7 +252,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env - envtestdir"
-./env.out env - envtestdir
+./builtin.out env - envtestdir
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env - envtestdir"
 echo "env - envtestdir" | bash
@@ -254,7 +260,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env -- envtestdir"
-./env.out env -- envtestdir
+./builtin.out env -- envtestdir
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env -- envtestdir"
 echo "env -- envtestdir" | bash
@@ -262,7 +268,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] env --- envtestdir"
-./env.out env --- envtestdir
+./builtin.out env --- envtestdir
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] env --- envtestdir"
 echo "env --- envtestdir" | bash

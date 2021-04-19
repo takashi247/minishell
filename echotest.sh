@@ -3,16 +3,22 @@
 cd libft
 make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/echo.c srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c srcs/export.c srcs/init_env.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D ECHOTEST -o echo.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft -I./test \
+    test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c \
+    srcs/echo.c srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c \
+    srcs/export.c srcs/export_print.c srcs/export_setenv.c \
+    srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c srcs/env_sort.c srcs/env_copy.c \
+    srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c srcs/utils/command_errors.c \
+    -Llibft -lft -D EXPORTTEST -o builtin.out #-D LEAKS
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
 RESET=$(printf '\033[0m')
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo"
-./echo.out echo
+./builtin.out echo
 echo $?
-./echo.out echo > mini_echo
+./builtin.out echo > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo"
 echo "echo" | bash
 echo $?
@@ -24,9 +30,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo hello"
-./echo.out echo hello
+./builtin.out echo hello
 echo $?
-./echo.out echo hello > mini_echo
+./builtin.out echo hello > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo hello"
 echo "echo hello" | bash
 echo $?
@@ -38,9 +44,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo hello world"
-./echo.out echo hello world
+./builtin.out echo hello world
 echo $?
-./echo.out echo hello world > mini_echo
+./builtin.out echo hello world > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo hello world"
 echo "echo hello world" | bash
 echo $?
@@ -52,9 +58,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo hello   world"
-./echo.out echo hello   world
+./builtin.out echo hello   world
 echo $?
-./echo.out echo hello   world > mini_echo
+./builtin.out echo hello   world > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo hello   world"
 echo "echo hello   world" | bash
 echo $?
@@ -66,9 +72,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo hello   world hoge"
-./echo.out echo hello   world hoge
+./builtin.out echo hello   world hoge
 echo $?
-./echo.out echo hello   world hoge > mini_echo
+./builtin.out echo hello   world hoge > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo hello   world hoge"
 echo "echo hello   world hoge" | bash
 echo $?
@@ -80,9 +86,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo \"hello   world\""
-./echo.out echo "hello   world"
+./builtin.out echo "hello   world"
 echo $?
-./echo.out echo "hello   world" > mini_echo
+./builtin.out echo "hello   world" > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo \"hello   world\""
 echo "echo \"hello   world\"" | bash
 echo $?
@@ -94,9 +100,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -n"
-./echo.out echo -n
+./builtin.out echo -n
 echo $?
-./echo.out echo -n > mini_echo
+./builtin.out echo -n > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -n"
 echo "echo -n" | bash
 echo $?
@@ -108,9 +114,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -n hello"
-./echo.out echo -n hello
+./builtin.out echo -n hello
 echo $?
-./echo.out echo -n hello > mini_echo
+./builtin.out echo -n hello > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -n hello"
 echo "echo -n hello" | bash
 echo $?
@@ -122,9 +128,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -n hello world"
-./echo.out echo -n hello world
+./builtin.out echo -n hello world
 echo $?
-./echo.out echo -n hello world > mini_echo
+./builtin.out echo -n hello world > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -n hello world"
 echo "echo -n hello world" | bash
 echo $?
@@ -136,9 +142,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -n hello   world"
-./echo.out echo -n hello   world
+./builtin.out echo -n hello   world
 echo $?
-./echo.out echo -n hello   world > mini_echo
+./builtin.out echo -n hello   world > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -n hello   world"
 echo "echo -n hello   world" | bash
 echo $?
@@ -150,9 +156,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -n \"hello   world\""
-./echo.out echo -n "hello   world"
+./builtin.out echo -n "hello   world"
 echo $?
-./echo.out echo -n "hello   world" > mini_echo
+./builtin.out echo -n "hello   world" > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -n \"hello   world\""
 echo "echo -n \"hello   world\"" | bash
 echo $?
@@ -164,9 +170,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -nnn hello"
-./echo.out echo -nnn hello
+./builtin.out echo -nnn hello
 echo $?
-./echo.out echo -nnn hello > mini_echo
+./builtin.out echo -nnn hello > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -nnn hello"
 echo "echo -nnn hello" | bash
 echo $?
@@ -178,9 +184,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -nNn hello"
-./echo.out echo -nNn hello
+./builtin.out echo -nNn hello
 echo $?
-./echo.out echo -nNn hello > mini_echo
+./builtin.out echo -nNn hello > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -nNn hello"
 echo "echo -nNn hello" | bash
 echo $?
@@ -192,9 +198,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -n -nnn hello"
-./echo.out echo -n -nnn hello
+./builtin.out echo -n -nnn hello
 echo $?
-./echo.out echo -n -nnn hello > mini_echo
+./builtin.out echo -n -nnn hello > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -n -nnn hello"
 echo "echo -n -nnn hello" | bash
 echo $?
@@ -207,9 +213,9 @@ echo
 
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -n -N hello"
-./echo.out echo -n -N hello
+./builtin.out echo -n -N hello
 echo $?
-./echo.out echo -n -N hello > mini_echo
+./builtin.out echo -n -N hello > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -n -N hello"
 echo "echo -n -N hello" | bash
 echo $?
@@ -221,9 +227,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -"
-./echo.out echo -
+./builtin.out echo -
 echo $?
-./echo.out echo - > mini_echo
+./builtin.out echo - > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -"
 echo "echo -" | bash
 echo $?
@@ -235,9 +241,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo - hello"
-./echo.out echo - hello
+./builtin.out echo - hello
 echo $?
-./echo.out echo - hello > mini_echo
+./builtin.out echo - hello > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo - hello"
 echo "echo - hello" | bash
 echo $?
@@ -249,9 +255,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo --"
-./echo.out echo --
+./builtin.out echo --
 echo $?
-./echo.out echo -- > mini_echo
+./builtin.out echo -- > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo --"
 echo "echo --" | bash
 echo $?
@@ -263,9 +269,9 @@ rm -rf mini_echo bash_echo
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] echo -- hello"
-./echo.out echo -- hello
+./builtin.out echo -- hello
 echo $?
-./echo.out echo -- hello > mini_echo
+./builtin.out echo -- hello > mini_echo
 printf "${YELLOW}%s${RESET}\n" "[bash] echo -- hello"
 echo "echo -- hello" | bash
 echo $?
