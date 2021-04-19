@@ -9,7 +9,7 @@ gcc -g -Wall -Wextra -Werror -I./includes -I./libft -I./test \
     srcs/export.c srcs/export_print.c srcs/export_setenv.c \
     srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c srcs/env_sort.c srcs/env_copy.c \
     srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c srcs/utils/command_errors.c \
-    -Llibft -lft -D EXPORTTEST -o builtin.out #-D LEAKS
+    -Llibft -lft -D PWDTEST -o builtin.out #-D LEAKS
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
