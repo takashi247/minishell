@@ -15,7 +15,7 @@ static int
 		{
 			ft_put_cmderror("exit", "too many arguments");
 			g_status = STATUS_GENERAL_ERR;
-			FREE(trimmed_arg);
+			ft_free(&trimmed_arg);
 			return (KEEP_RUNNING);
 		}
 	}
@@ -25,7 +25,7 @@ static int
 		g_status = STATUS_OUT_OF_RANGE_ERR;
 	}
 	if (trimmed_arg)
-		FREE(trimmed_arg);
+		ft_free(&trimmed_arg);
 	return (STOP);
 }
 

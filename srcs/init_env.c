@@ -13,7 +13,7 @@ static int
 	if (!new)
 	{
 		if (cpy)
-			FREE(cpy);
+			ft_free(&cpy);
 		ft_lstclear(&g_env, free);
 		return (STOP);
 	}
@@ -64,7 +64,7 @@ static int
 			return (STOP);
 		}
 		result = update_shlvl(next_level, current_level);
-		FREE(next_level);
+		ft_free(&next_level);
 	}
 	else
 		result = ft_setenv_sep("SHLVL", "1");

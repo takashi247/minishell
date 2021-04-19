@@ -7,7 +7,7 @@ int
 	if (!g_pwd || ft_setenv_sep("PWD", g_pwd) == UTIL_ERROR)
 	{
 		ft_put_error(strerror(errno));
-		FREE(g_pwd);
+		ft_free(&g_pwd);
 		return (STOP);
 	}
 	return (KEEP_RUNNING);

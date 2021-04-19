@@ -27,7 +27,7 @@ static int
 		join = ft_strjoin(join, *value);
 		if (join)
 		{
-			FREE(*value);
+			ft_free(value);
 			*value = join;
 		}
 		else
@@ -64,6 +64,6 @@ int
 		if (ret == KEEP_RUNNING)
 			test_print_export();
 	}
-	FREE(value);
+	ft_free(&value);
 	return (ret);
 }

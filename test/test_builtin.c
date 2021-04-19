@@ -23,5 +23,5 @@ int
 	args[i] = NULL;
 	args_head = args;
 	test_commands(args);
-	test_finalize_minishell(args_head, g_status);
+	test_finalize_minishell(&args_head, g_status);
 }

@@ -60,7 +60,7 @@ int
 	if (!cpy || !new)
 	{
 		if (cpy)
-			FREE(cpy);
+			ft_free(&cpy);
 		return (UTIL_ERROR);
 	}
 	ft_lstadd_back(&g_env, new);
@@ -88,8 +88,8 @@ int
 	ret = UTIL_ERROR;
 	if (env_str)
 		ret = ft_setenv(env_str);
-	FREE(equal_value);
-	FREE(env_str);
+	ft_free(&equal_value);
+	ft_free(&env_str);
 	return (ret);
 }
 

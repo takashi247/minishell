@@ -63,10 +63,10 @@ static int
 		}
 		else if (ft_export_setenv(args++, name, plus_mode) == STOP)
 		{
-			FREE(name);
+			ft_free(&name);
 			return (stop_with_puterror(errno));
 		}
-		FREE(name);
+		ft_free(&name);
 	}
 	return (KEEP_RUNNING);
 }

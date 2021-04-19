@@ -37,6 +37,12 @@
 # define QUOTATION_ERROR_MSG "multiline commands are not allowed"
 # define SYNTAX_ERROR_MSG "syntax error near unexpected token"
 
+/*
+** macro
+*/
+
+# define FREE(p) ((p) ? free(p) : (p), (p) = NULL)
+
 typedef enum e_status
 {
 	FAILED,

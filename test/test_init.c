@@ -28,12 +28,15 @@ static void
 #endif
 
 int
-	test_finalize_minishell(char **args_head, const int exit_code)
+	test_finalize_minishell(char ***args_head, const int exit_code)
 {
-	if (args_head)
-		FREE(args_head);
+	if (*args_head)
+	{
+		free(*args_head);
+		*args_head = NULL;
+	}
 	if (g_pwd)
-		FREE(g_pwd);
+		ft_free(&g_pwd);
 	if (g_env)
 		ft_lstclear(&g_env, free);
 	exec_leaks();

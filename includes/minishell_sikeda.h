@@ -54,7 +54,8 @@ void	ft_put_syntaxerror_with_token(char *token);
 /* utils/utils.c */
 int		ft_strcmp(const char *s1, const char *s2);
 int		ft_isspace(char c);
-int		ft_isnumeric(char *s);\
+int		ft_isnumeric(char *s);
+void	ft_free(char **ptr);
 
 /* utils/command_utils.c */
 int		ft_isover_llrange(char *s);

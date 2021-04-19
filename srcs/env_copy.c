@@ -10,7 +10,7 @@ void
 	while (*cpy)
 	{
 		tmp = (*cpy)->next;
-		FREE(*cpy);
+		free(*cpy);
 		*cpy = tmp;
 	}
 }

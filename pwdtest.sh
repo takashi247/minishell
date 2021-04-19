@@ -17,10 +17,6 @@ RESET=$(printf '\033[0m')
 
 WORKDIR=`pwd`
 
-printf "${YELLOW}%s${RESET}\n" "./builtin.out"
-./builtin.out
-echo
-
 printf "${YELLOW}%s${RESET}\n" "[mini] pwd"
 export PWD=hello
 ./builtin.out pwd

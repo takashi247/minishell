@@ -35,3 +35,11 @@ int
 	}
 	return (1);
 }
+
+void
+	ft_free(char **ptr)
+{
+	if (*ptr)
+		free(*ptr);
+	*ptr = NULL;
+}

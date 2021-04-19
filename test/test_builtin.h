@@ -3,18 +3,12 @@
 
 # include "minishell_sikeda.h"
 
-/*
-** test_init.c
-*/
+/* test_init.c */
 int	test_init_minishell(void);
-int	test_finalize_minishell(char **args_head, const int exit_code);
-/*
-** test_exec.c
-*/
+int	test_finalize_minishell(char ***args_head, const int exit_code);
+/* test_exec.c */
 int	test_commands(char **args);
-/*
-** test_launch.c
-*/
+/* test_launch.c */
 int	test_launch(char **args);
 
 #endif

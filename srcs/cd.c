@@ -57,7 +57,7 @@ static t_bool
 		ft_put_cmderror("cd", strerror(errno));
 		return (FALSE);
 	}
-	FREE(g_pwd);
+	ft_free(&g_pwd);
 	g_pwd = getcwd(NULL, 0);
 	if (!g_pwd
 		|| (ft_getenv("PWD") && ft_setenv_sep("PWD", g_pwd) == UTIL_ERROR))
