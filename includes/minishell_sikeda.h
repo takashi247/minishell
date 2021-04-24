@@ -102,8 +102,12 @@ int		ft_echo(char **args);
 /* cd.c */
 int		ft_cd(char **args);
 
-/* cd_utils.c */
+/* cd_error.c */
+void	ft_put_cderror_no_current(const int errornum);
+
+/* cd_path_utils.c */
 char	*ft_join_path(const char *path, const char *new);
+char	*ft_get_home_path(const char *args);
 
 /* cd_fullpath.c */
 char	*ft_make_full_path(const char *input_path);

@@ -16,24 +16,6 @@ static t_bool
 	return (ret);
 }
 
-static char
-	*get_home_path(const char *args)
-{
-	char	*path;
-
-	if (!args)
-	{
-		path = ft_getenv("HOME");
-		if (!path)
-		{
-			ft_put_cmderror("cd", "HOME not set");
-			return (NULL);
-		}
-		return (path);
-	}
-	return ((char *)args);
-}
-
 static t_bool
 	exec_cd(const char *path, const char *args)
 {
@@ -54,19 +36,36 @@ static t_bool
 	return (ret);
 }
 
+static void
+	update_pwd(const char *input_path)
+{
+	char	*oldpwd;
+	char	*cwd;
+
+	oldpwd = g_pwd;
+	cwd = getcwd(NULL, 0);
+	if (cwd)
+	{
+		ft_free(&cwd);
+		g_pwd = ft_make_full_path(input_path);
+	}
+	else
+	{
+		ft_put_cderror_no_current(errno);
+		g_pwd = ft_join_path(g_pwd, input_path);
+	}
+	ft_free(&oldpwd);
+}
+
 static t_bool
 	update_path_env(const char *input_path)
 {
-	char	*oldpwd;
-
 	if (ft_getenv("OLDPWD") && ft_setenv_sep("OLDPWD", g_pwd) == UTIL_ERROR)
 	{
 		ft_put_cmderror("cd", strerror(errno));
 		return (FALSE);
 	}
-	oldpwd = g_pwd;
-	g_pwd = ft_make_full_path(input_path);
-	ft_free(&oldpwd);
+	update_pwd(input_path);
 	if (!g_pwd
 		|| (ft_getenv("PWD") && ft_setenv_sep("PWD", g_pwd) == UTIL_ERROR))
 	{
@@ -91,7 +90,7 @@ int
 		path = g_pwd;
 	else
 		path = *args;
-	path = get_home_path(path);
+	path = ft_get_home_path(path);
 	if (exec_cd(path, *args) == TRUE)
 	{
 		if (update_path_env(path) == FALSE)

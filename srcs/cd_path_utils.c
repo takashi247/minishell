@@ -15,3 +15,21 @@ char
 	free(tmp);
 	return (result);
 }
+
+char
+	*ft_get_home_path(const char *args)
+{
+	char	*path;
+
+	if (!args)
+	{
+		path = ft_getenv("HOME");
+		if (!path)
+		{
+			ft_put_cmderror("cd", "HOME not set");
+			return (NULL);
+		}
+		return (path);
+	}
+	return ((char *)args);
+}

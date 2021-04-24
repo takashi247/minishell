@@ -3,7 +3,7 @@ NAME		:= minishell
 UTILDIR		:= ./srcs/utils/
 
 SRCS		:=
-SRCS		+= srcs/cd.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
+SRCS		+= srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
 				srcs/echo.c srcs/pwd.c srcs/exit.c \
 				srcs/env.c srcs/unset.c \
 				srcs/export.c srcs/export_print.c srcs/export_setenv.c \
@@ -14,7 +14,7 @@ SRCS		+= srcs/cd.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
 OBJS		= $(SRCS:.c=.o)
 
 SRCS_BUITINTEST	:= $(SRCS)
-SRCS_BUITINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c
+SRCS_BUITINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
 OBJS_BUITINTEST	= $(SRCS_BUITINTEST:.c=.o)
 
 INCLUDE		:= -I./includes/ -I./libft/ -I./test/

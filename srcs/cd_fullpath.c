@@ -12,8 +12,12 @@ static int
 	*path_list = NULL;
 	i = 0;
 	while (split[i])
-		if (ft_lstnew_and_lstadd_back(path_list, split[i++]) == UTIL_ERROR)
+	{
+		if (!ft_strcmp(split[i], "."))
+			i++;
+		else if (ft_lstnew_and_lstadd_back(path_list, split[i++]) == UTIL_ERROR)
 			break ;
+	}
 	ft_free_split(&split);
 	if (0 < i && !*path_list)
 		return (UTIL_ERROR);
