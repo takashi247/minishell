@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/02 08:02:41 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 18:12:46 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/04/18 11:32:43 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 static int
 	check_overflow(long long res, char c)
 {
-	if (res > LONG_MAX / 10 ||
-			(res == LONG_MAX / 10 && c - '0' > LONG_MAX % 10))
+	if (res > LONG_MAX / 10
+		|| (res == LONG_MAX / 10 && c - '0' > LONG_MAX % 10))
 		return (-1);
-	if (res < LONG_MIN / 10 ||
-			(res == LONG_MIN / 10 && c - '0' > LONG_MIN % 10 * -1))
+	if (res < LONG_MIN / 10
+		|| (res == LONG_MIN / 10 && c - '0' > LONG_MIN % 10 * -1))
 		return (0);
 	return (1);
 }
@@ -32,8 +32,8 @@ int
 
 	res = 0;
 	sign = 1;
-	while (*str == '\t' || *str == '\n' || *str == '\v' ||
-			*str == '\f' || *str == '\r' || *str == ' ')
+	while (*str == '\t' || *str == '\n' || *str == '\v'
+		|| *str == '\f' || *str == '\r' || *str == ' ')
 		str++;
 	if (*str == '+' || *str == '-')
 	{

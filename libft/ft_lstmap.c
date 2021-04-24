@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstmap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/10 23:05:12 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 18:15:54 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/04/18 11:37:23 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ t_list
 	new_lst = NULL;
 	while (lst)
 	{
-		if (!(new_elem = ft_lstnew((*f)(lst->content))))
+		new_elem = ft_lstnew((*f)(lst->content));
+		if (!new_elem)
 		{
 			ft_lstclear(&new_lst, (*del));
 			return (NULL);
