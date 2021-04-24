@@ -17,7 +17,7 @@ static t_bool
 }
 
 static char
-	*get_path(const char *args)
+	*get_home_path(const char *args)
 {
 	char	*path;
 
@@ -35,7 +35,7 @@ static char
 }
 
 static t_bool
-	exec_cd(char *path, char *args)
+	exec_cd(const char *path, const char *args)
 {
 	t_bool	ret;
 
@@ -43,22 +43,30 @@ static t_bool
 	if (!path)
 		return (ret);
 	if (chdir(path) != 0)
-		ft_put_cmderror_with_arg("cd", strerror(errno), args);
+	{
+		if (args)
+			ft_put_cmderror_with_arg("cd", strerror(errno), (char *)args);
+		else
+			ft_put_cmderror_with_arg("cd", strerror(errno), (char *)path);
+	}
 	else
 		ret = TRUE;
 	return (ret);
 }
 
 static t_bool
-	update_path_env(void)
+	update_path_env(const char *input_path)
 {
+	char	*oldpwd;
+
 	if (ft_getenv("OLDPWD") && ft_setenv_sep("OLDPWD", g_pwd) == UTIL_ERROR)
 	{
 		ft_put_cmderror("cd", strerror(errno));
 		return (FALSE);
 	}
-	ft_free(&g_pwd);
-	g_pwd = getcwd(NULL, 0);
+	oldpwd = g_pwd;
+	g_pwd = ft_make_full_path(input_path);
+	ft_free(&oldpwd);
 	if (!g_pwd
 		|| (ft_getenv("PWD") && ft_setenv_sep("PWD", g_pwd) == UTIL_ERROR))
 	{
@@ -83,9 +91,10 @@ int
 		path = g_pwd;
 	else
 		path = *args;
-	if (exec_cd(get_path(path), *args) == TRUE)
+	path = get_home_path(path);
+	if (exec_cd(path, *args) == TRUE)
 	{
-		if (update_path_env() == FALSE)
+		if (update_path_env(path) == FALSE)
 			return (STOP);
 		g_status = STATUS_SUCCESS;
 	}

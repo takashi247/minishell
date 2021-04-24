@@ -22,14 +22,12 @@ static int
 	const char	*args1[] = {"mkdir", "cdtest", NULL};
 	const char	*args2[] = {"cd", "cdtest", NULL};
 	const char	*args3[] = {"rmdir", "../cdtest", NULL};
-	const char	*args4[] = {"cd", "", NULL};
 	int			ret;
 
-	(void)args;
 	test_launch((char **)args1);
 	ret = ft_cd((char **)args2);
 	test_launch((char **)args3);
-	exec_cd_test((char **)args4, TRUE);
+	exec_cd_test(args, TRUE);
 	return (ret);
 }
 

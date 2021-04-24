@@ -57,6 +57,15 @@ int		ft_isspace(char c);
 int		ft_isnumeric(char *s);
 void	ft_free(char **ptr);
 
+/* utils/split_utils.c */
+void	ft_free_split(char ***split);
+char	*ft_free_split_and_return_str(char ***split, const char *return_value);
+int		ft_free_split_and_return_int(char ***split, const int return_value);
+
+/* utils/tlist_utils.c */
+void	ft_lstdelend(t_list **lst, void (*del)(void*));
+int		ft_lstnew_and_lstadd_back(t_list **path_list, const char *str);
+
 /* utils/command_utils.c */
 int		ft_isover_llrange(char *s);
 char	*ft_get_cmd_option(char *option, const char *arg);
@@ -92,6 +101,12 @@ int		ft_echo(char **args);
 
 /* cd.c */
 int		ft_cd(char **args);
+
+/* cd_utils.c */
+char	*ft_join_path(const char *path, const char *new);
+
+/* cd_fullpath.c */
+char	*ft_make_full_path(const char *input_path);
 
 /* pwd.c */
 int		ft_init_pwd(void);
