@@ -37,10 +37,10 @@ void
 	{
 		tmp = argv[0];
 		if (!(argv[0] = ft_strjoin("/usr", argv[0])))
-			exit_with_error("malloc");
+			exit_with_error("malloc"); //おそらくこのケースもリークが出てしまっているので要修正
 		FREE(tmp);
 		if (execve(argv[0], argv, environ) < 0)
-			exit_with_error("execve");
+			exit_with_error("execve"); //このケースもリークが出てしまっているので要修正
 	}
 }
 
@@ -257,6 +257,7 @@ int
 				{
 					if (ft_set_redirection(&(commands->args)))
 						do_command(commands, environ);
+					//リダイレクトが失敗した場合にはそのままexitする形にしているのですが、exitする際にリークが出てしまっているので要修正
 					exit(g_status);
 				}
 				if ((pid = waitpid(pid, &g_status, 0)) < 0)
