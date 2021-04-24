@@ -154,3 +154,19 @@ void
 	ft_putstr_fd(token, fd);
 	ft_putendl_fd("\'", fd);
 }
+
+void
+	ft_put_fderror(int fd_from)
+{
+	int	fd;
+
+	fd = STDERR_FILENO;
+	ft_putstr_fd(PRG_NAME, fd);
+	ft_putstr_fd(": ", fd);
+	if (fd_from < 0)
+		ft_putstr_fd(FD_OOR_MSG, fd);
+	else
+		ft_putnbr_fd(fd_from, fd);
+	ft_putstr_fd(": ", fd);
+	ft_putendl_fd(FD_ERROR_MSG, fd);
+}

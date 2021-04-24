@@ -19,6 +19,11 @@
 # define PROMPT "minishell$ "
 # define EXIT_PROMPT "exit\n"
 # define STATUS_SYNTAX_ERR 258
+# define REDIRECT_IN "<"
+# define REDIRECT_OUT ">"
+# define APPEND_REDIRECT_OUT ">>"
+# define FD_MAX 255
+# define NEWLINE "newline"
 
 /*
 ** basic GNL parameters
@@ -36,6 +41,8 @@
 
 # define QUOTATION_ERROR_MSG "multiline commands are not allowed"
 # define SYNTAX_ERROR_MSG "syntax error near unexpected token"
+# define FD_OOR_MSG "file descriptor out of range"
+# define FD_ERROR_MSG "Bad file descriptor"
 
 typedef enum e_status
 {
@@ -65,5 +72,6 @@ void		ft_put_syntaxerror_with_token(char *token);
 int			ft_expand_env_var(t_command *c);
 t_bool		ft_is_delimiter_or_quote(char *l, int i, int *fl);
 t_bool		ft_is_delimiter(char c);
+void		ft_put_fderror(int fd_from);
 
 #endif
