@@ -3,14 +3,20 @@
 cd libft
 make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c srcs/export.c srcs/init_env.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D EXPORTTEST -o export.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft -I./test \
+    test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c \
+    srcs/echo.c srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c \
+    srcs/export.c srcs/export_print.c srcs/export_setenv.c \
+    srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c srcs/env_sort.c srcs/env_copy.c \
+    srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c srcs/utils/command_errors.c \
+    -Llibft -lft -D EXPORTTEST -o builtin.out #-D LEAKS
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
 RESET=$(printf '\033[0m')
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
@@ -22,7 +28,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export --"
-./export.out export -- > mini_export
+./builtin.out export -- > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export --"
 echo "export -- > bash_export" | bash
@@ -36,7 +42,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "export EXPORTTEST=0123"
 export EXPORTTEST=0123
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${CYAN}%s${RESET}\n" "export EXPORTTEST=0123"
 export EXPORTTEST=0123
@@ -55,7 +61,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "export EXPORTTEST"
 export EXPORTTEST
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${CYAN}%s${RESET}\n" "export EXPORTTEST"
 export EXPORTTEST
@@ -69,7 +75,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export -z"
-./export.out export -z
+./builtin.out export -z
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export -z"
 echo "export -z" | bash
@@ -77,7 +83,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export \"\""
-./export.out export ""
+./builtin.out export ""
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export \"\""
 echo "export \"\"" | bash
@@ -85,7 +91,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export -"
-./export.out export -
+./builtin.out export -
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export -"
 echo "export -" | bash
@@ -93,7 +99,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export ---"
-./export.out export ---
+./builtin.out export ---
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export ---"
 echo "export ---" | bash
@@ -101,7 +107,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export -- -z"
-./export.out export -- -z
+./builtin.out export -- -z
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export -- -z"
 echo "export -- -z" | bash
@@ -109,7 +115,7 @@ echo $?
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST"
-./export.out export EXPORTTEST > mini_export
+./builtin.out export EXPORTTEST > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST"
 echo "export EXPORTTEST" | bash
@@ -122,7 +128,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST="
-./export.out export EXPORTTEST= > mini_export
+./builtin.out export EXPORTTEST= > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST="
 echo "export EXPORTTEST=" | bash
@@ -135,7 +141,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=0123"
-./export.out export EXPORTTEST=0123 > mini_export
+./builtin.out export EXPORTTEST=0123 > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=0123"
 echo "export EXPORTTEST=0123" | bash
@@ -148,7 +154,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\"B=C\""
-./export.out export EXPORTTEST="B=C" > mini_export
+./builtin.out export EXPORTTEST="B=C" > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\"B=C\""
 echo "export EXPORTTEST=\"B=C\"" | bash
@@ -161,7 +167,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export \"EXPORTTEST=B\"=C"
-./export.out export "EXPORTTEST=B"=C > mini_export
+./builtin.out export "EXPORTTEST=B"=C > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export \"EXPORTTEST=B\"=C"
 echo "export \"EXPORTTEST=B\"=C" | bash
@@ -174,7 +180,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\"aaa     b\""
-./export.out export EXPORTTEST="aaa     b" > mini_export
+./builtin.out export EXPORTTEST="aaa     b" > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\"aaa     b\""
 echo "export EXPORTTEST=\"aaa     b\"" | bash
@@ -187,7 +193,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST==="
-./export.out export EXPORTTEST=== > mini_export
+./builtin.out export EXPORTTEST=== > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST==="
 echo "export EXPORTTEST===" | bash
@@ -200,7 +206,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\\\"hello\\\""
-./export.out export EXPORTTEST=\"hello\" > mini_export
+./builtin.out export EXPORTTEST=\"hello\" > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\\\"hello\\\""
 echo "export EXPORTTEST=\\\"hello\\\"" | bash
@@ -213,7 +219,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\$hello"
-./export.out export EXPORTTEST=\$hello > mini_export
+./builtin.out export EXPORTTEST=\$hello > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\$hello"
 echo "export EXPORTTEST=\\\$hello" | bash
@@ -226,7 +232,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\\hello"
-./export.out export EXPORTTEST=\\hello > mini_export
+./builtin.out export EXPORTTEST=\\hello > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\\hello"
 echo "export EXPORTTEST=\\\\hello" | bash
@@ -239,7 +245,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\`hello"
-./export.out export EXPORTTEST=\`hello > mini_export
+./builtin.out export EXPORTTEST=\`hello > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\`hello"
 echo "export EXPORTTEST=\\\`hello" | bash
@@ -252,7 +258,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\" hello\""
-./export.out export EXPORTTEST=" hello" > mini_export
+./builtin.out export EXPORTTEST=" hello" > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\" hello\""
 echo "export EXPORTTEST=\" hello\"" | bash
@@ -265,7 +271,7 @@ rm mini_export bash_export
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST= 0123"
-./export.out export EXPORTTEST= 0123 > mini_export
+./builtin.out export EXPORTTEST= 0123 > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST= 0123"
 echo "export EXPORTTEST= 0123" | bash
@@ -279,7 +285,7 @@ echo
 
 # $mark
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST$=0123"
-./export.out export EXPORTTEST$=0123
+./builtin.out export EXPORTTEST$=0123
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST$=0123"
 echo "export EXPORTTEST$=0123" | bash
@@ -288,7 +294,7 @@ echo
 
 # 先頭に数字
 printf "${YELLOW}%s${RESET}\n" "[mini] export 0EXPORTTEST=0123"
-./export.out export 0EXPORTTEST=0123
+./builtin.out export 0EXPORTTEST=0123
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export 0EXPORTTEST=0123"
 echo "export 0EXPORTTEST=0123" | bash
@@ -297,7 +303,7 @@ echo
 
 # 途中に数字
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXP0RT0TEST=0123"
-./export.out export EXPORT0TEST=0123 > mini_export
+./builtin.out export EXPORT0TEST=0123 > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORT0TEST=0123"
 echo "export EXPORT0TEST=0123" | bash
@@ -311,7 +317,7 @@ echo
 
 # 最後に数字
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXP0RTTEST0=0123"
-./export.out export EXPORTTEST0=0123 > mini_export
+./builtin.out export EXPORTTEST0=0123 > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export 0EXPORTTEST0=0123"
 echo "export EXPORTTEST0=0123" | bash
@@ -325,7 +331,7 @@ echo
 
 # _ (under score)
 printf "${YELLOW}%s${RESET}\n" "[mini] export _A=0123"
-./export.out export _A=0123 > mini_export
+./builtin.out export _A=0123 > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export _A=0123"
 echo "export _A=0123" | bash
@@ -339,7 +345,7 @@ echo
 
 # OLDPWDにexportで値を設定
 printf "${YELLOW}%s${RESET}\n" "[mini] export OLDPWD=override_oldpwd"
-./export.out export OLDPWD=override_oldpwd > mini_export
+./builtin.out export OLDPWD=override_oldpwd > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export OLDPWD=override_oldpwd"
 echo "export OLDPWD=override_oldpwd" | bash
@@ -355,7 +361,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "unset PWD"
 unset PWD
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${CYAN}%s${RESET}\n" "unset PWD"
 unset PWD
@@ -370,7 +376,7 @@ echo
 
 # 既存の環境変数をnameのみで上書きしようとする -> 何もしない
 printf "${YELLOW}%s${RESET}\n" "[mini] export HOME"
-./export.out export HOME
+./builtin.out export HOME
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export HOME"
 echo "export HOME" | bash
@@ -379,7 +385,7 @@ echo
 
 # 既存の環境変数をnameのみで上書きしようとする -> 何もしない & 正常ケース
 printf "${YELLOW}%s${RESET}\n" "[mini] export HOME EXPORTTEST=0123"
-./export.out export HOME EXPORTTEST=0123 > mini_export
+./builtin.out export HOME EXPORTTEST=0123 > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export HOME EXPORTTEST=0123"
 echo "export HOME EXPORTTEST=0123" | bash
@@ -393,7 +399,7 @@ echo
 
 # 複数ダブルクォート
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\"echo \"\$USER\"\""
-./export.out export EXPORTTEST="echo "$USER"" > mini_export
+./builtin.out export EXPORTTEST="echo "$USER"" > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=\"echo \"\$USER\"\""
 echo "export EXPORTTEST=\"echo \"\$USER\"\"" | bash
@@ -407,7 +413,7 @@ echo
 
 # += new
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST+=012"
-./export.out export EXPORTTEST+=012 > mini_export
+./builtin.out export EXPORTTEST+=012 > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST+=012"
 echo "export EXPORTTEST+=012" | bash
@@ -421,7 +427,7 @@ echo
 
 # = new, += join
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=012 EXPORTTEST+=34"
-./export.out export EXPORTTEST=012 EXPORTTEST+=34 > mini_export
+./builtin.out export EXPORTTEST=012 EXPORTTEST+=34 > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=012 EXPORTTEST+=34"
 echo "export EXPORTTEST=012 EXPORTTEST+=34" | bash
@@ -435,7 +441,7 @@ echo
 
 #  += new, += join, += join
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc"
-./export.out export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc > mini_export
+./builtin.out export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc"
 echo "export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc" | bash
@@ -449,7 +455,7 @@ echo
 
 # += new (no value)
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST+="
-./export.out export EXPORTTEST+= > mini_export
+./builtin.out export EXPORTTEST+= > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST+="
 echo "export EXPORTTEST+=" | bash
@@ -466,7 +472,7 @@ MYSHLVL=$SHLVL
 printf "${CYAN}%s${RESET}\n" "unset SHLVL"
 unset SHLVL
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
@@ -483,7 +489,7 @@ MYSHLVL=$SHLVL
 printf "${CYAN}%s${RESET}\n" "export SHLVL=-1"
 export SHLVL=-1
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
@@ -496,7 +502,7 @@ MYSHLVL=$SHLVL
 printf "${CYAN}%s${RESET}\n" "export SHLVL=999"
 export SHLVL=999
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
@@ -509,7 +515,7 @@ MYSHLVL=$SHLVL
 printf "${CYAN}%s${RESET}\n" "export SHLVL=1000"
 export SHLVL=1000
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
@@ -522,7 +528,7 @@ MYSHLVL=$SHLVL
 printf "${CYAN}%s${RESET}\n" "export SHLVL=a"
 export SHLVL=a
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
@@ -535,7 +541,7 @@ MYSHLVL=$SHLVL
 printf "${CYAN}%s${RESET}\n" "export SHLVL=2147483646"
 export SHLVL=2147483646
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
@@ -548,7 +554,7 @@ MYSHLVL=$SHLVL
 printf "${CYAN}%s${RESET}\n" "export SHLVL=2147483647"
 export SHLVL=2147483647
 printf "${YELLOW}%s${RESET}\n" "[mini] export"
-./export.out export > mini_export
+./builtin.out export > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash

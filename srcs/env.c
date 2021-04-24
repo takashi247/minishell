@@ -23,10 +23,7 @@ static char
 	while (args[1])
 	{
 		if (!ft_strcmp(args[1], "--") && args[2])
-		{
 			*has_path = TRUE;
-			args++;
-		}
 		else
 		{
 			i = 0;
@@ -42,7 +39,7 @@ static char
 		if (*has_path == TRUE || option)
 			break ;
 	}
-	return (option);
+	return ((char *)option);
 }
 
 static void
@@ -91,61 +88,3 @@ int
 	}
 	return (KEEP_RUNNING);
 }
-
-#ifdef ENVTEST
-int
-	main(int ac, char **av)
-{
-	char	**args;
-	char	**args_head;
-	int		ret;
-	int		i;
-
-	if (ac < 2)
-	{
-		ft_put_cmderror("main", strerror(EINVAL));
-		return (EXIT_FAILURE);
-	}
-	if (ft_init_env() == STOP)
-		return (EXIT_FAILURE);
-	if (ft_init_pwd() == STOP)
-	{
-		ft_lstclear(&g_env, free);
-		return (EXIT_FAILURE);
-	}
-	if (!(args = (char **)malloc(sizeof(char*) * (ac + 1))))
-	{
-		FREE(g_pwd);
-		ft_lstclear(&g_env, free);
-		return (EXIT_FAILURE);
-	}
-	i = -1;
-	while (++i < ac)
-		args[i] = av[i];
-	args[i] = NULL;
-	args_head = args;
-	ret = 0;
-	if (!ft_strcmp(args[1], "cd"))
-	{
-		++args;
-		ret = ft_pwd(args);
-		ret = ft_cd(args);
-		ret = ft_pwd(args);
-	}
-	else if (!ft_strcmp(args[1], "pwd"))
-		ret = ft_pwd(++args);
-	else if (!ft_strcmp(args[1], "env"))
-		ret = ft_env(++args);
-	else if (!ft_strcmp(args[1], "exit"))
-		ret = ft_exit(++args);
-	if (ret == STOP)
-	{
-		// TODO: exitが呼ばれたときにSTOPが返されてloopを終了してmainが終了するイメージ
-	}
-	FREE(args_head);
-	FREE(g_pwd);
-	ft_lstclear(&g_env, free);
-	// system("leaks env.out");
-	return (g_status);
-}
-#endif
