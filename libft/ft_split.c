@@ -6,7 +6,7 @@
 /*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 16:05:36 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 21:57:40 by sikeda           ###   ########.fr       */
+/*   Updated: 2021/04/18 11:41:13 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static int
 	ary_size(char *s, char c)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (*s)
@@ -62,7 +62,8 @@ static char
 		len = 0;
 		while (s[len] && s[len] != c)
 			len++;
-		if (!(ary[i] = (ft_substr(s, 0, len))))
+		ary[i] = ft_substr(s, 0, len);
+		if (!ary[i])
 			return (free_ary(ary));
 		i++;
 		s += len;
@@ -78,7 +79,8 @@ char
 
 	if (s == NULL)
 		return (NULL);
-	if (!(ary = (char **)malloc(sizeof(char *) * (ary_size((char *)s, c) + 1))))
+	ary = (char **)malloc(sizeof(char *) * (ary_size((char *)s, c) + 1));
+	if (!ary)
 		return (NULL);
 	return (split_ary(ary, (char *)s, c));
 }

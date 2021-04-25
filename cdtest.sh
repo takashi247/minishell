@@ -3,7 +3,13 @@
 cd libft
 make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c srcs/export.c srcs/init_env.c srcs/command_utils.c srcs/env_utils.c -Llibft -lft -D CDTEST -o cd.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft -I./test \
+    test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c \
+    srcs/echo.c srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c \
+    srcs/export.c srcs/export_print.c srcs/export_setenv.c \
+    srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c srcs/env_sort.c srcs/env_copy.c \
+    srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c srcs/utils/command_errors.c \
+    -Llibft -lft -D CDTEST -o builtin.out #-D LEAKS
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
@@ -16,7 +22,7 @@ echo ""
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd"
-./cd.out cd
+./builtin.out cd
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd"
 cd
@@ -31,7 +37,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd ~"
-./cd.out cd ~
+./builtin.out cd ~
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd ~"
 cd ~
@@ -46,7 +52,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd \"~\""
-./cd.out cd "~"
+./builtin.out cd "~"
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd \"~\""
 cd "~"
@@ -58,7 +64,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd \"\""
-./cd.out cd ""
+./builtin.out cd ""
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd \"\""
 cd ""
@@ -73,7 +79,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd ''"
-./cd.out cd ''
+./builtin.out cd ''
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd ''"
 cd ''
@@ -88,7 +94,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd \$HOME"
-./cd.out cd $HOME
+./builtin.out cd $HOME
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd \$HOME"
 cd $HOME
@@ -103,7 +109,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd hoge"
-./cd.out cd hoge
+./builtin.out cd hoge
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd hoge"
 cd hoge
@@ -117,7 +123,7 @@ ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "mkdir cdtest"
 mkdir cdtest
 printf "${YELLOW}%s${RESET}\n" "[mini] cd cdtest"
-./cd.out cd cdtest
+./builtin.out cd cdtest
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd cdtest"
 cd cdtest
@@ -135,7 +141,7 @@ ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "mkdir cdtest"
 mkdir cdtest
 printf "${YELLOW}%s${RESET}\n" "[mini] cd \"cdtest\""
-./cd.out cd "cdtest"
+./builtin.out cd "cdtest"
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd \"cdtest\""
 cd "cdtest"
@@ -153,7 +159,7 @@ ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "mkdir cdtest"
 mkdir cdtest
 printf "${YELLOW}%s${RESET}\n" "[mini] cd \"cdtest \""
-./cd.out cd "cdtest "
+./builtin.out cd "cdtest "
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd \"cdtest \""
 cd "cdtest "
@@ -168,7 +174,7 @@ ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "mkdir cdtest"
 mkdir cdtest
 printf "${YELLOW}%s${RESET}\n" "[mini] cd cdtest hoge"
-./cd.out cd cdtest hoge
+./builtin.out cd cdtest hoge
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd cdtest hoge"
 cd cdtest hoge
@@ -184,7 +190,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd hoge world"
-./cd.out cd hoge world
+./builtin.out cd hoge world
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd hoge world"
 cd hoge world
@@ -196,7 +202,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd -a"
-./cd.out cd -a
+./builtin.out cd -a
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd -a"
 cd -a
@@ -210,7 +216,7 @@ ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "mkdir ./-a"
 mkdir ./-a
 printf "${YELLOW}%s${RESET}\n" "[mini] cd ./-a"
-./cd.out cd ./-a
+./builtin.out cd ./-a
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd ./-a"
 cd ./-a
@@ -228,7 +234,7 @@ ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "mkdir cdtest"
 mkdir cdtest
 printf "${YELLOW}%s${RESET}\n" "[mini] cd -a cdtest"
-./cd.out cd -a cdtest
+./builtin.out cd -a cdtest
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd -a cdtest"
 cd -a cdtest
@@ -241,7 +247,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd --version"
-./cd.out cd --version
+./builtin.out cd --version
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd --version"
 cd --version
@@ -253,7 +259,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] cd --"
-./cd.out cd --
+./builtin.out cd --
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd --"
 cd --
@@ -271,7 +277,7 @@ ${WORKDIR}"
 printf "${CYAN}%s${RESET}\n" "unset HOME"
 unset HOME
 printf "${YELLOW}%s${RESET}\n" "[mini] cd"
-./cd.out cd
+./builtin.out cd
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd"
 cd
@@ -289,7 +295,7 @@ unset HOME
 printf "${CYAN}%s${RESET}\n" "export HOME"
 export HOME
 printf "${YELLOW}%s${RESET}\n" "[mini] cd"
-./cd.out cd
+./builtin.out cd
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd"
 cd
@@ -307,7 +313,7 @@ unset HOME
 printf "${CYAN}%s${RESET}\n" "export HOME=.."
 export HOME=..
 printf "${YELLOW}%s${RESET}\n" "[mini] cd"
-./cd.out cd
+./builtin.out cd
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd"
 cd
@@ -323,7 +329,7 @@ echo
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest ; rmdir ../cdtest ; cd \"\" ; pwd"
-${WORKDIR}/cd.out cd_nodir
+${WORKDIR}/builtin.out cd_nodir
 echo $?
 cd $WORKDIR
 printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest ; rmdir ../cdtest ; cd \"\" ; pwd"

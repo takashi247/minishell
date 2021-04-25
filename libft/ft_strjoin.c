@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 15:06:48 by tnishina          #+#    #+#             */
-/*   Updated: 2021/04/03 14:40:34 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/04/18 11:42:52 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ char
 	else
 	{
 		size = ft_strlen(s1) + ft_strlen(s2) + 1;
-		if (!(s_comb = (char *)malloc(size)))
+		s_comb = (char *)malloc(size);
+		if (!s_comb)
 			return (NULL);
 		ft_strlcpy(s_comb, s1, size);
 		ft_strlcat(s_comb, s2, size);

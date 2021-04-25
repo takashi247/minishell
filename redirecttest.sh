@@ -3,7 +3,7 @@
 cd libft
 make bonus
 cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/pwd.c srcs/command_utils.c srcs/env.c srcs/init_env.c srcs/env_utils.c srcs/minishell.c srcs/make_command.c srcs/make_token.c srcs/get_next_line.c srcs/expand_env.c -Llibft -lft -o redirect.out
+gcc -g -Wall -Wextra -Werror -I./includes -I./libft srcs/pwd.c srcs/utils/utils.c srcs/utils/command_utils.c srcs/utils/command_errors.c srcs/utils/minishell_errors.c srcs/env.c srcs/init_env.c srcs/env_utils.c srcs/minishell.c srcs/make_command.c srcs/make_token.c srcs/get_next_line.c srcs/expand_env.c -Llibft -lft -o redirect.out
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')

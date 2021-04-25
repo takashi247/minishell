@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 09:40:12 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 18:18:01 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/04/18 11:42:24 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ char
 	char	*dup;
 
 	i = sizeof(char) * (ft_strlen(s1) + 1);
-	if (!(dup = (char *)malloc(i)))
+	dup = (char *)malloc(i);
+	if (!dup)
 		return (NULL);
 	ft_memcpy(dup, s1, i);
 	return (dup);

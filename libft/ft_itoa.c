@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 19:30:29 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 18:14:35 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/04/18 11:35:34 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,8 @@ char
 
 	num = n;
 	num_digit = count_digit(num);
-	if (!(n_string = (char*)malloc(sizeof(char) * (num_digit + 1))))
+	n_string = (char *)malloc(sizeof(char) * (num_digit + 1));
+	if (!n_string)
 		return (NULL);
 	i = 0;
 	if (num < 0)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/08 15:26:48 by tnishina          #+#    #+#             */
-/*   Updated: 2021/02/27 18:19:08 by tnishina         ###   ########.fr       */
+/*   Updated: 2021/04/18 11:44:31 by sikeda           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ char
 		start++;
 	while (end > start && is_set(s1[end - 1], set))
 		end--;
-	if (!(s_trim = (char *)malloc(sizeof(char) * (end - start + 1))))
+	s_trim = (char *)malloc(sizeof(char) * (end - start + 1));
+	if (!s_trim)
 		return (NULL);
 	if (start < end)
 		s_trim = ft_memcpy(s_trim, s1 + start, sizeof(char) * (end - start));
