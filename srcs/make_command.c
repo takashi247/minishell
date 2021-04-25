@@ -104,7 +104,7 @@ static t_command
 	if (prev)
 		prev->next = NULL;
 	command->args = prev ? head : NULL;
-	op = !tokens ? "newline" : (char*)tokens->content;
+	op = !tokens ? NEWLINE : (char*)tokens->content;
 	if (!(command->op = ft_strdup(op)))
 		return (NULL);
 	ft_lstclear(&tokens, free);
