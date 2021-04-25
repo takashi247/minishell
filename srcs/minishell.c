@@ -168,12 +168,15 @@ t_bool
 			prev = *args;
 			*args = (*args)->next;
 		}
-		else if (!(ft_strncmp(redirect_op, APPEND_REDIRECT_OUT, ft_strlen(APPEND_REDIRECT_OUT))))
+		else if (!(ft_strcmp(redirect_op, APPEND_REDIRECT_OUT)))
 		{
 			fd_to = open(path, O_WRONLY | O_CREAT | O_APPEND, 0666);
 			if (fd_to < 0)
 			{
-				//エラーメッセージの表示要確認
+				ft_put_cmderror(path, strerror(errno));
+				g_status = 1;
+				FREE(redirect_op);
+				FREE(path);
 				return (FALSE);
 			}
 			if (fd_from == -1)
@@ -181,12 +184,15 @@ t_bool
 			dup2(fd_to, fd_from);
 			close(fd_to);
 		}
-		else if (!(ft_strncmp(redirect_op, REDIRECT_OUT, ft_strlen(REDIRECT_OUT))))
+		else if (!(ft_strcmp(redirect_op, REDIRECT_OUT)))
 		{
 			fd_to = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 			if (fd_to < 0)
 			{
-				//エラーメッセージの表示要確認
+				ft_put_cmderror(path, strerror(errno));
+				g_status = 1;
+				FREE(redirect_op);
+				FREE(path);
 				return (FALSE);
 			}
 			if (fd_from == -1)
@@ -194,12 +200,15 @@ t_bool
 			dup2(fd_to, fd_from);
 			close(fd_to);
 		}
-		else if (!(ft_strncmp(redirect_op, REDIRECT_IN, ft_strlen(REDIRECT_IN))))
+		else if (!(ft_strcmp(redirect_op, REDIRECT_IN)))
 		{
 			fd_to = open(path, O_RDONLY);
 			if (fd_to < 0)
 			{
-				//エラーメッセージの表示要確認
+				ft_put_cmderror(path, strerror(errno));
+				g_status = 1;
+				FREE(redirect_op);
+				FREE(path);
 				return (FALSE);
 			}
 			if (fd_from == -1)
@@ -235,7 +244,7 @@ int
 	ft_putstr_fd(PROMPT, STDOUT_FILENO);
 	while (get_next_line(STDIN_FILENO, &line) == 1 &&
 		(trimmed = ft_strtrim(line, " \t")) &&
-		ft_strncmp(trimmed, "exit", 5))
+		ft_strcmp(trimmed, "exit"))
 	{
 		if ((ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) != COMPLETED)
 		|| ft_make_command(&commands, tokens) != COMPLETED
@@ -249,7 +258,7 @@ int
 		head = commands;
 		while (commands)
 		{
-			if (!ft_strncmp(commands->op, ";", 1) || !ft_strncmp(commands->op, NEWLINE, ft_strlen(NEWLINE)))
+			if (!ft_strcmp(commands->op, ";") || !ft_strcmp(commands->op, NEWLINE))
 			{
 				if ((pid = fork()) < 0)
 					exit_with_error("fork");
@@ -264,7 +273,7 @@ int
 					exit_with_error("wait");
 				commands = commands->next;
 			}
-			else if (!ft_strncmp(commands->op, "|", 1))
+			else if (!ft_strcmp(commands->op, "|"))
 			{
 				do_simple_pipe(commands, environ);
 				commands = commands->next->next;
