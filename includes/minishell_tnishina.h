@@ -19,6 +19,7 @@
 # define PROMPT "minishell$ "
 # define EXIT_PROMPT "exit\n"
 # define STATUS_SYNTAX_ERR 258
+# define NEWLINE "newline"
 
 /*
 ** basic GNL parameters
@@ -34,7 +35,7 @@
 ** Error messages
 */
 
-# define QUOTATION_ERROR_MSG "multiline commands are not allowed"
+# define MULTILINE_ERROR_MSG "multiline commands are not allowed"
 # define SYNTAX_ERROR_MSG "syntax error near unexpected token"
 
 /*
@@ -59,6 +60,7 @@ typedef struct			s_command
 {
 	t_list				*args;
 	char				*op;
+	pid_t				pid;
 	struct s_command	*next;
 }						t_command;
 
@@ -70,5 +72,9 @@ void		ft_clear_commands(t_command **c);
 int			ft_expand_env_var(t_command *c);
 t_bool		ft_is_delimiter_or_quote(char *l, int i, int *fl);
 t_bool		ft_is_delimiter(char c);
+
+/* utils_tnishina.c */
+char		**ft_convert_list(t_list *l);
+void		ft_clear_argv(char ***argv);
 
 #endif
