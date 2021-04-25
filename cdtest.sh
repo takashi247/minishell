@@ -588,7 +588,7 @@ printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest;
 ${WORKDIR}/builtin.out cd_nodir ""
 echo $?
 cd $WORKDIR
-printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd \"\"; pwd"
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd \"\"; pwd"
 #終了ステータスを取るためのコマンド、出力を消して実行
 mkdir cdtest; cd cdtest; rmdir ../cdtest; cd "" 2> /dev/null; pwd &> /dev/null
 echo $?
@@ -607,7 +607,7 @@ printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest;
 ${WORKDIR}/builtin.out cd_nodir .
 echo $?
 cd $WORKDIR
-printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd"
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd"
 #終了ステータスを取るためのコマンド、出力を消して実行
 mkdir cdtest; cd cdtest; rmdir ../cdtest; cd . 2> /dev/null; pwd &> /dev/null
 echo $?
@@ -626,7 +626,7 @@ printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest;
 ${WORKDIR}/builtin.out cd_nodir .//.//
 echo $?
 cd $WORKDIR
-printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .//.//; pwd"
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .//.//; pwd"
 #終了ステータスを取るためのコマンド、出力を消して実行
 mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .//.// 2> /dev/null; pwd &> /dev/null
 echo $?
@@ -645,7 +645,7 @@ printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest;
 ${WORKDIR}/builtin.out cd_nodir2 .
 echo $?
 cd $WORKDIR
-printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd; cd ..; pwd"
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd; cd ..; pwd"
 #終了ステータスを取るためのコマンド、出力を消して実行
 mkdir cdtest; cd cdtest; rmdir ../cdtest; cd . 2> /dev/null; cd ..; pwd &> /dev/null
 echo $?
@@ -667,7 +667,7 @@ printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest;
 ${WORKDIR}/builtin.out cd_nodir2 ./././.
 echo $?
 cd $WORKDIR
-printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd ./././.; pwd; cd ..; pwd"
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd ./././.; pwd; cd ..; pwd"
 #終了ステータスを取るためのコマンド、出力を消して実行
 mkdir cdtest; cd cdtest; rmdir ../cdtest; cd ./././. 2> /dev/null; cd ..; pwd &> /dev/null
 echo $?
