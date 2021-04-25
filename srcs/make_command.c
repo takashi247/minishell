@@ -136,6 +136,11 @@ static t_bool
 			ft_put_syntaxerror_with_token(c->op);
 			return (FALSE);
 		}
+		if (!(ft_strcmp(c->op, "|")) && !(c->next))
+		{
+			ft_put_cmderror(c->op, MULTILINE_ERROR_MSG);
+			return (FALSE);
+		}
 		prev = c;
 		c = c->next;
 	}
