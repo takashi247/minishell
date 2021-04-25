@@ -125,9 +125,6 @@ static t_command
 static t_bool
 	is_valid_command(t_command *c)
 {
-	t_command	*prev;
-
-	prev = NULL;
 	while (c)
 	{
 		if ((!(ft_strcmp(c->op, "|")) && !(c->args)) ||
@@ -136,12 +133,21 @@ static t_bool
 			ft_put_syntaxerror_with_token(c->op);
 			return (FALSE);
 		}
+		c = c->next;
+	}
+	return (TRUE);
+}
+
+static t_bool
+	is_valid_pipe(t_command *c)
+{
+	while (c)
+	{
 		if (!(ft_strcmp(c->op, "|")) && !(c->next))
 		{
 			ft_put_cmderror(c->op, MULTILINE_ERROR_MSG);
 			return (FALSE);
 		}
-		prev = c;
 		c = c->next;
 	}
 	return (TRUE);
@@ -169,6 +175,8 @@ int
 			return (clear_with_syntax_error(commands, NULL, &tmp));
 		tokens = tmp;
 	}
+	if (!(is_valid_pipe(*commands)))
+		return (clear_with_syntax_error(commands, NULL, NULL));
 	return (COMPLETED);
 }
 
