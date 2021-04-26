@@ -46,9 +46,9 @@ t_bool
 }
 
 static int
-	put_quotation_error(char *cpy, t_list **tokens)
+	exit_w_quotation_error(char *cpy, t_list **tokens)
 {
-	ft_put_cmderror(cpy, QUOTATION_ERROR_MSG);
+	ft_put_cmderror(cpy, MULTILINE_ERROR_MSG);
 	ft_lstclear(tokens, free);
 	g_status = 1;
 	return (COMPLETED);
@@ -87,7 +87,7 @@ int
 			return (exit_with_error(tokens, &cpy));
 		ft_lstadd_back(tokens, n);
 		if ((fl[0] || fl[1]) && !l[i])
-			return (put_quotation_error(cpy, tokens));
+			return (exit_w_quotation_error(cpy, tokens));
 		l = l[i] ? l + i + (!i || fl[0] || fl[1] || fl[2]) : l + i;
 	}
 	return (COMPLETED);

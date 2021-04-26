@@ -39,7 +39,7 @@
 ** Error messages
 */
 
-# define QUOTATION_ERROR_MSG "multiline commands are not allowed"
+# define MULTILINE_ERROR_MSG "multiline commands are not allowed"
 # define SYNTAX_ERROR_MSG "syntax error near unexpected token"
 # define FD_OOR_MSG "file descriptor out of range"
 # define FD_ERROR_MSG "Bad file descriptor"
@@ -66,6 +66,7 @@ typedef struct			s_command
 {
 	t_list				*args;
 	char				*op;
+	pid_t				pid;
 	struct s_command	*next;
 }						t_command;
 
@@ -78,5 +79,9 @@ int			ft_expand_env_var(t_command *c);
 t_bool		ft_is_delimiter_or_quote(char *l, int i, int *fl);
 t_bool		ft_is_delimiter(char c);
 void		ft_put_fderror(int fd_from);
+
+/* utils_tnishina.c */
+char		**ft_convert_list(t_list *l);
+void		ft_clear_argv(char ***argv);
 
 #endif
