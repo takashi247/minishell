@@ -10,5 +10,10 @@ int	test_finalize_minishell(char ***args_head, const int exit_code);
 int	test_commands(char **args);
 /* test_launch.c */
 int	test_launch(char **args);
+/* test_cd.c */
+int	test_cd(char **args, const t_bool is_nodir);
+int	test_cdnodir(char **args);
+int	test_cdnodir2(char **args);
+int	test_cd_and_pwd(char **args);
 
 #endif

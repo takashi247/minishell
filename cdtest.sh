@@ -1,15 +1,27 @@
 #!/bin/bash
 
-cd libft
-make bonus
-cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft -I./test \
-    test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c \
-    srcs/echo.c srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c \
-    srcs/export.c srcs/export_print.c srcs/export_setenv.c \
-    srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c srcs/env_sort.c srcs/env_copy.c \
-    srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c srcs/utils/command_errors.c \
-    -Llibft -lft -D CDTEST -o builtin.out #-D LEAKS
+# USAGE ##################
+#
+# all test
+# ./cdtest.sh
+#
+# all test with leaks
+# ./cdtest.sh leaks
+#
+# make only
+# ./cdtest.sh make
+#
+##########################
+
+if [ $1 = "leaks" ]; then
+    make cdltest # LEAK TEST
+else
+    make cdtest
+fi
+
+if [ $1 = "make" ]; then
+    exit
+fi
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
@@ -57,6 +69,36 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] cd \"~\""
 cd "~"
 echo $?
+cd $WORKDIR
+echo
+
+# cd .
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] cd ."
+./builtin.out cd .
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd ."
+cd .
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+# cd ..
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] cd .."
+./builtin.out cd ..
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd .."
+cd ..
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
 cd $WORKDIR
 echo
 
@@ -135,6 +177,220 @@ cd $WORKDIR
 rm -rf cdtest
 echo
 
+# cd CDtest
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "mkdir cdtest"
+mkdir cdtest
+printf "${YELLOW}%s${RESET}\n" "[mini] cd CDtest"
+./builtin.out cd CDtest
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd CDtest"
+cd CDtest
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+rm -rf cdtest
+echo
+
+# cd /..
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] cd /.."
+./builtin.out cd /..
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd /.."
+cd /..
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+rm -rf cdtest
+echo
+
+# cd /./../
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] cd /./../"
+./builtin.out cd /./../
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd /./../"
+cd /./../
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+rm -rf cdtest
+echo
+
+# cd ./CDtest
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "mkdir cdtest"
+mkdir cdtest
+printf "${YELLOW}%s${RESET}\n" "[mini] cd ./CDtest"
+./builtin.out cd ./CDtest
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd ./CDtest"
+cd ./CDtest
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+rm -rf cdtest
+echo
+
+# cd cdtest; cd ../CDTEST
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "mkdir cdtest ; cd cdtest"
+mkdir cdtest ; cd cdtest
+printf "${YELLOW}%s${RESET}\n" "[mini] cd ../CDTEST"
+${WORKDIR}/builtin.out cd ../CDTEST
+echo $?
+cd $WORKDIR
+rm -rf cdtest
+printf "${YELLOW}%s${RESET}\n" "mkdir cdtest ; cd cdtest"
+mkdir cdtest ; cd cdtest
+printf "${YELLOW}%s${RESET}\n" "[bash] cd ../CDTEST"
+cd ../CDTEST
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+rm -rf cdtest
+echo
+
+# cd test1; cd .../TEST1/TEST2/TEST3/..
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "mkdir -p test1/test2/test3 ; cd test1"
+mkdir -p test1/test2/test3 ; cd test1
+printf "${YELLOW}%s${RESET}\n" "[mini] cd ../TEST1/TEST2/TEST3/.."
+${WORKDIR}/builtin.out cd ../TEST1/TEST2/TEST3/..
+echo $?
+cd $WORKDIR
+rmdir -p test1/test2/test3
+printf "${YELLOW}%s${RESET}\n" "mkdir -p test1/test2/test3 ; cd test1"
+mkdir -p test1/test2/test3 ; cd test1
+printf "${YELLOW}%s${RESET}\n" "[bash] cd ../TEST1/TEST2/TEST3/.."
+cd ../TEST1/TEST2/TEST3/..
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+rmdir -p test1/test2/test3
+echo
+
+# cd test1; cd ../../../TEST1
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "mkdir -p test1/test2/test3 ; cd test1/test2/test3"
+mkdir -p test1/test2/test3 ; cd test1/test2/test3
+printf "${YELLOW}%s${RESET}\n" "[mini] cd ../../../TEST1"
+${WORKDIR}/builtin.out cd ../../../TEST1
+echo $?
+cd $WORKDIR
+rmdir -p test1/test2/test3
+printf "${YELLOW}%s${RESET}\n" "mkdir -p test1/test2/test3 ; cd test1/test2/test3"
+mkdir -p test1/test2/test3 ; cd test1/test2/test3
+printf "${YELLOW}%s${RESET}\n" "[bash] cd ../../../TEST1"
+cd ../../../TEST1
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+rmdir -p test1/test2/test3
+echo
+
+# cd / ; cd ""
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "cd /"
+cd /
+printf "${YELLOW}%s${RESET}\n" "[mini] cd \"\""
+${WORKDIR}/builtin.out cd ""
+echo $?
+cd $WORKDIR
+printf "${YELLOW}%s${RESET}\n" "cd /"
+cd /
+printf "${YELLOW}%s${RESET}\n" "[bash] cd \"\""
+cd /
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+# cd / ; cd .
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "cd /"
+cd /
+printf "${YELLOW}%s${RESET}\n" "[mini] cd ."
+${WORKDIR}/builtin.out cd .
+echo $?
+cd $WORKDIR
+printf "${YELLOW}%s${RESET}\n" "cd /"
+cd /
+printf "${YELLOW}%s${RESET}\n" "[bash] cd ."
+cd .
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+# cd / ; cd /
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "cd /"
+cd /
+printf "${YELLOW}%s${RESET}\n" "[mini] cd /"
+${WORKDIR}/builtin.out cd /
+echo $?
+cd $WORKDIR
+printf "${YELLOW}%s${RESET}\n" "cd /"
+cd /
+printf "${YELLOW}%s${RESET}\n" "[bash] cd /"
+cd /
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+# cd / ; cd
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "cd /"
+cd /
+printf "${YELLOW}%s${RESET}\n" "[mini] cd"
+${WORKDIR}/builtin.out cd
+echo $?
+cd $WORKDIR
+printf "${YELLOW}%s${RESET}\n" "cd /"
+cd /
+printf "${YELLOW}%s${RESET}\n" "[bash] cd"
+cd
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
 # cd "cdtest"
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
@@ -168,7 +424,7 @@ cd $WORKDIR
 rm -rf cdtest
 echo
 
-# cd "cdtest"
+# cd cdtest hoge
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
 printf "${YELLOW}%s${RESET}\n" "mkdir cdtest"
@@ -325,20 +581,102 @@ cd $WORKDIR
 export HOME=$HOMEDIR
 echo
 
-# mkdir cdtest; cd cdtest ; rmdir ../cdtest ; cd "" ;
+# mkdir cdtest; cd cdtest; rmdir ../cdtest; cd "";
 printf "${CYAN}%s${RESET}\n" "pwd:
 ${WORKDIR}"
-printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest ; rmdir ../cdtest ; cd \"\" ; pwd"
-${WORKDIR}/builtin.out cd_nodir
+printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd \"\"; pwd"
+${WORKDIR}/builtin.out cd_nodir ""
 echo $?
 cd $WORKDIR
-printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest ; rmdir ../cdtest ; cd \"\" ; pwd"
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd \"\"; pwd"
 #終了ステータスを取るためのコマンド、出力を消して実行
-mkdir cdtest ; cd cdtest ; rmdir ../cdtest ; cd "" 2> /dev/null ; pwd &> /dev/null
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd "" 2> /dev/null; pwd &> /dev/null
 echo $?
 cd $WORKDIR
 #画面表示用のコマンド
-mkdir cdtest ; cd cdtest ; rmdir ../cdtest ; cd "" ; pwd
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd ""; pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+# mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .;
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd"
+${WORKDIR}/builtin.out cd_nodir .
+echo $?
+cd $WORKDIR
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd"
+#終了ステータスを取るためのコマンド、出力を消して実行
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd . 2> /dev/null; pwd &> /dev/null
+echo $?
+cd $WORKDIR
+#画面表示用のコマンド
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+# mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .//.//;
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .//.//; pwd"
+${WORKDIR}/builtin.out cd_nodir .//.//
+echo $?
+cd $WORKDIR
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .//.//; pwd"
+#終了ステータスを取るためのコマンド、出力を消して実行
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .//.// 2> /dev/null; pwd &> /dev/null
+echo $?
+cd $WORKDIR
+#画面表示用のコマンド
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .//.//; pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+# mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; cd ..; pwd;
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd; cd ..; pwd"
+${WORKDIR}/builtin.out cd_nodir2 .
+echo $?
+cd $WORKDIR
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd; cd ..; pwd"
+#終了ステータスを取るためのコマンド、出力を消して実行
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd . 2> /dev/null; cd ..; pwd &> /dev/null
+echo $?
+cd $WORKDIR
+#画面表示用のコマンド
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; pwd;
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd ..; pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+# mkdir cdtest; cd cdtest; rmdir ../cdtest; cd .; cd ..; pwd;
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd ./././.; pwd; cd ..; pwd"
+${WORKDIR}/builtin.out cd_nodir2 ./././.
+echo $?
+cd $WORKDIR
+printf "${YELLOW}%s${RESET}\n" "[bash] mkdir cdtest; cd cdtest; rmdir ../cdtest; cd ./././.; pwd; cd ..; pwd"
+#終了ステータスを取るためのコマンド、出力を消して実行
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd ./././. 2> /dev/null; cd ..; pwd &> /dev/null
+echo $?
+cd $WORKDIR
+#画面表示用のコマンド
+mkdir cdtest; cd cdtest; rmdir ../cdtest; cd ./././.; pwd;
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd ..; pwd
 printf "PWD: ${PWD}\n"
 printf "OLDPWD: ${OLDPWD}\n"
 cd $WORKDIR
