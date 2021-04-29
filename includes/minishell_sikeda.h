@@ -40,7 +40,8 @@ typedef enum e_bool
 typedef enum e_cmd_signal
 {
 	KEEP_RUNNING,
-	STOP
+	STOP,
+	EXIT
 }	t_cmd_signal;
 
 int		g_status;

@@ -26,7 +26,7 @@ static int
 	}
 	if (trimmed_arg)
 		ft_free(&trimmed_arg);
-	return (STOP);
+	return (EXIT);
 }
 
 int
@@ -38,11 +38,11 @@ int
 		if (!ft_strcmp(args[1], "--"))
 		{
 			if (!args[2])
-				return (STOP);
+				return (EXIT);
 			args++;
 		}
 		g_status = STATUS_GENERAL_ERR;
 		return (exit_with_args(args));
 	}
-	return (STOP);
+	return (EXIT);
 }
