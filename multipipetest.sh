@@ -11,7 +11,7 @@ gcc -g -Wall -Wextra -Werror -I./includes -I./libft \
     srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c \
     srcs/env_sort.c srcs/env_copy.c \
     srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c \
-	srcs/utils/command_errors.c srcs/utils/utils_tnishina.c srcs/minishell_multi.c\
+	srcs/utils/command_errors.c srcs/utils/utils_tnishina.c srcs/minishell.c\
 	srcs/make_command.c srcs/make_token.c srcs/get_next_line.c srcs/expand_env.c \
     srcs/utils/tlist_utils.c srcs/utils/split_utils.c srcs/set_redirection.c\
     -Llibft -lft -o multipipe.out #-D LEAKS
