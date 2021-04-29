@@ -84,4 +84,8 @@ void		ft_put_fderror(int fd_from);
 char		**ft_convert_list(t_list *l);
 void		ft_clear_argv(char ***argv);
 
+/* handle_signal.c */
+void		ft_sig_prior(void);
+void		ft_sig_post(void);
+
 #endif
