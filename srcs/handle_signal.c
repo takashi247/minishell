@@ -7,24 +7,21 @@ void
 {
 	ft_putstr_fd("\b\b  \b\b\n", STDERR_FILENO);
 	ft_putstr_fd(PROMPT, STDERR_FILENO);
-}
-
-void
-	sig_quit_prior()
-{
-	ft_putstr_fd("\b\b  \b\b", STDERR_FILENO);
+	g_status = 1;
 }
 
 void
 	sig_int_post()
 {
 	ft_putstr_fd("\n", STDERR_FILENO);
+	g_status = 130;
 }
 
 void
 	sig_quit_post()
 {
 	ft_putstr_fd("Quit: 3\n", STDERR_FILENO);
+	g_status = 131;
 }
 
 void
