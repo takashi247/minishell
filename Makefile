@@ -1,6 +1,7 @@
 NAME		:= minishell
 
 UTILDIR		:= ./srcs/utils/
+TERMDIR		:= ./srcs/termcaps/
 
 SRCS		:=
 SRCS		+= srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
@@ -17,14 +18,19 @@ SRCS_BUITINTEST	:= $(SRCS)
 SRCS_BUITINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
 OBJS_BUITINTEST	= $(SRCS_BUITINTEST:.c=.o)
 
+SRCS_TERMTEST	:= $(SRCS)
+SRCS_TERMTEST	+= $(TERMDIR)init_term.c
+SRCS_TERMTEST	+= srcs/minishell_term.c srcs/get_next_line.c srcs/make_token.c srcs/make_command.c srcs/expand_env.c
+OBJS_TERMTEST	= $(SRCS_TERMTEST:.c=.o)
+
 INCLUDE		:= -I./includes/ -I./libft/ -I./test/
 
 LIBDIR		:= ./libft
 LIBPATH		:= $(LIBDIR)/libft.a
 
 CC			:= gcc
-CFLAGS		:= -Wall -Wextra -Werror
-# DEBUG		:= -g -fsanitize=address
+CFLAGS		:= -Wall -Wextra -Werror -lcurses
+# DEBUG		:= -g -fsanitize=address -lcurses
 DEBUG		:=
 
 RM			:= rm -f
@@ -55,6 +61,10 @@ cdltest:	$(LIBPATH)
 			$(CC) $(CFLAGS) $(SRCS_BUITINTEST) $(DEBUG) $(INCLUDE) $(LIBPATH) -D CDTEST -D LEAKS -o builtin.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
+termtest:	$(LIBPATH)
+			$(CC) $(CFLAGS) $(SRCS_TERMTEST) $(DEBUG) $(INCLUDE) $(LIBPATH) -D TEST -o term.out
+			@echo $(C_GREEN)"=== Make Done ==="
+
 $(LIBPATH):
 			$(MAKE) bonus -C $(LIBDIR)
 
@@ -69,4 +79,4 @@ fclean:		clean
 
 re:			fclean $(NAME)
 
-.PHONY:		all clean fclean re btest bltest cdtest cdltest
+.PHONY:		all clean fclean re btest bltest cdtest cdltest termtest
