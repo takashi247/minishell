@@ -8,6 +8,7 @@
 # include <string.h>
 # include <errno.h>
 # include "libft.h"
+# include "termcaps.h"
 
 # define PRG_NAME "minishell"
 
@@ -29,8 +30,6 @@
 
 # define SPACE_CHARS " \t\n\v\f\r"
 
-# define FREE(p) ((p) ? free(p) : (p), (p) = NULL)
-
 typedef enum e_bool
 {
 	FALSE,
@@ -43,9 +42,16 @@ typedef enum e_cmd_signal
 	STOP
 }	t_cmd_signal;
 
-int		g_status;
-char	*g_pwd;
-t_list	*g_env;
+typedef struct s_minishell
+{
+	struct termios	term;
+	struct termios	saved_term;
+}	t_minishell;
+
+t_minishell	g_ms;
+int			g_status;
+char		*g_pwd;
+t_list		*g_env;
 
 /* utils/minishell_errors.c */
 void	ft_put_error(char *msg);
