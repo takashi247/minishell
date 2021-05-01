@@ -84,13 +84,13 @@ void		ft_put_fderror(int fd_from);
 char		**ft_convert_list(t_list *l);
 void		ft_clear_argv(char ***argv);
 
+/* handle_signal.c */
+void		ft_sig_prior(void);
+void		ft_sig_post(void);
+
 /* set_redirection.c */
 t_bool		ft_set_redirection(t_list **args);
 void		ft_save_fds(int std_fds[3]);
 void		ft_restore_fds(int std_fds[3]);
-
-/* handle_signal.c */
-void		ft_sig_input(void);
-void		ft_sig_ignore(void);
 
 #endif
