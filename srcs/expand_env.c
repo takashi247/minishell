@@ -46,8 +46,8 @@ static int
 	int		p[2];
 	int		res;
 
-	ft_memset(tmp, 0, sizeof(char*) * 3);
-	ft_memset(new, 0, sizeof(char*) * 3);
+	ft_memset(tmp, 0, sizeof(tmp));
+	ft_memset(new, 0, sizeof(new));
 	tmp[0] = *content;
 	p[0] = (*content)[env_pos[0] + 1] != '{' ? env_pos[0] + 1 : env_pos[0] + 2;
 	p[1] = (*content)[env_pos[0] + 1] == '{' && (*content)[env_pos[1]] == '}' ?
@@ -104,8 +104,8 @@ static int
 	char	*env;
 
 	tokens = NULL;
-	ft_memset(tmp, 0, sizeof(char*) * 2);
-	ft_memset(new, 0, sizeof(char*) * 3);
+	ft_memset(tmp, 0, sizeof(tmp));
+	ft_memset(new, 0, sizeof(new));
 	p[0] = ((char*)(*args)->content)[env_pos[0] + 1] != '{' ? env_pos[0] + 1 : env_pos[0] + 2;
 	p[1] = ((char*)(*args)->content)[env_pos[0] + 1] == '{' && ((char*)(*args)->content)[env_pos[1]] == '}' ?
 		env_pos[1] + 1 : env_pos[1];
@@ -178,6 +178,7 @@ static int
 			ft_free(&new[0]);
 			ft_free(&new[1]);
 			ft_free(&new[2]);
+			ft_free(&env);
 			return (FAILED);
 		}
 	}
@@ -238,7 +239,7 @@ static int
 
 	i = 0;
 	res = COMPLETED;
-	ft_memset(q_flag, 0, sizeof(int) * 2);
+	ft_memset(q_flag, 0, sizeof(q_flag));
 	while (((char*)(*args)->content)[i])
 	{
 		flag = 1;
