@@ -249,21 +249,25 @@ int
 
 	if (!c)
 		return (COMPLETED);
-	head = c->args;
-	prev = NULL;
-	while (c->args)
+	while (c)
 	{
-		if ((res = find_n_replace_env(&(c->args))) == COMPLETED)
+		head = c->args;
+		prev = NULL;
+		while (c->args)
 		{
-			prev = c->args;
-			c->args = c->args->next;
+			if ((res = find_n_replace_env(&(c->args))) == COMPLETED)
+			{
+				prev = c->args;
+				c->args = c->args->next;
+			}
+			else if (res == FAILED)
+				return (FAILED);
+			else
+				delete_token(&(c->args), &head, prev);
 		}
-		else if (res == FAILED)
-			return (FAILED);
-		else
-			delete_token(&(c->args), &head, prev);
+		c->args = head;
+		c = c->next;
 	}
-	c->args = head;
 	return (COMPLETED);
 }
 
