@@ -4,12 +4,16 @@ cd libft
 make bonus
 cd ..
 gcc -g -Wall -Wextra -Werror -I./includes -I./libft \
-    srcs/expand_env.c \
-    srcs/echo.c srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c \
+    srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
+	srcs/echo.c srcs/pwd.c srcs/exit.c \
+	srcs/env.c srcs/unset.c \
     srcs/export.c srcs/export_print.c srcs/export_setenv.c \
-    srcs/make_command.c srcs/make_token.c srcs/get_next_line.c \
-    srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c srcs/env_sort.c srcs/env_copy.c \
-    srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c srcs/utils/command_errors.c \
+    srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c \
+    srcs/env_sort.c srcs/env_copy.c \
+    srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c \
+	srcs/utils/command_errors.c srcs/utils/utils_tnishina.c \
+	srcs/make_command.c srcs/make_token.c srcs/get_next_line.c srcs/expand_env.c \
+    srcs/utils/tlist_utils.c srcs/utils/split_utils.c \
     -Llibft -lft -D EXPANDTEST -o expand.out
 
 YELLOW=$(printf '\033[33m')

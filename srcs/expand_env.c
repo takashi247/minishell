@@ -7,14 +7,15 @@ static void
 {
 	if (tmp)
 	{
-		FREE(tmp[0]);
-		FREE(tmp[1]);
+		ft_free(&tmp[0]);
+		ft_free(&tmp[1]);
+		ft_free(&tmp[2]);
 	}
 	if (new)
 	{
-		FREE(new[0]);
-		FREE(new[1]);
-		FREE(new[2]);
+		ft_free(&new[0]);
+		ft_free(&new[1]);
+		ft_free(&new[2]);
 	}
 }
 
@@ -35,25 +36,34 @@ static void
 	}
 }
 
+
+
 static int
 	replace_name_with_value(char **content, int *env_pos)
 {
-	char	*tmp[2];
+	char	*tmp[3];
 	char	*new[3];
 	int		p[2];
 	int		res;
 
-	ft_memset(tmp, 0, sizeof(char*) * 2);
-	ft_memset(new, 0, sizeof(char*) * 3);
+	ft_memset(tmp, 0, sizeof(tmp));
+	ft_memset(new, 0, sizeof(new));
 	tmp[0] = *content;
 	p[0] = (*content)[env_pos[0] + 1] != '{' ? env_pos[0] + 1 : env_pos[0] + 2;
 	p[1] = (*content)[env_pos[0] + 1] == '{' && (*content)[env_pos[1]] == '}' ?
 		env_pos[1] + 1 : env_pos[1];
-	if (!(new[0] = ft_substr(*content, 0, env_pos[0])) ||
-		!(new[1] = ft_substr(*content, p[0], env_pos[1] - p[0])) ||
-		!(new[2] = ft_strdup(*content + p[1])) ||
-		!(tmp[1] = ft_strjoin(new[0], ft_getenv(new[1]))) ||
-		!(*content = ft_strjoin(tmp[1], new[2])))
+	new[0] = ft_substr(*content, 0, env_pos[0]);
+	new[1] = ft_substr(*content, p[0], env_pos[1] - p[0]);
+	new[2] = ft_strdup(*content + p[1]);
+	if (!ft_strcmp(new[1], "\?"))
+	{
+		tmp[2] = ft_itoa(g_status);
+		tmp[1] = ft_strjoin(new[0], tmp[2]);
+	}
+	else
+		tmp[1] = ft_strjoin(new[0], ft_getenv(new[1]));
+	*content = ft_strjoin(tmp[1], new[2]);
+	if (!new[0] || !new[1] || !new[2] || !tmp[1] || !tmp[2] || !(*content))
 	{
 		free_all_chars(tmp, new);
 		return (FAILED);
@@ -67,8 +77,8 @@ static t_bool
 	is_env_name_end(char c)
 {
 	if ((33 <= c && c <= 39) || (42 <= c && c <= 47) || c == 58 || c == 61 ||
-		(63 <= c && c <= 64) || (91 <= c && c <= 96) || c == 123 ||
-		(125 <= c && c <= 126) || !c || c == ' ')
+		c == 64 || (91 <= c && c <= 96) || c == 123 ||
+		(125 <= c && c <= 126) || c == ' ')
 		return (TRUE);
 	else
 		return (FALSE);
@@ -91,21 +101,33 @@ static int
 	char	*new[3];
 	int		p[2];
 	int		res;
+	char	*env;
 
 	tokens = NULL;
-	ft_memset(tmp, 0, sizeof(char*) * 2);
-	ft_memset(new, 0, sizeof(char*) * 3);
+	ft_memset(tmp, 0, sizeof(tmp));
+	ft_memset(new, 0, sizeof(new));
 	p[0] = ((char*)(*args)->content)[env_pos[0] + 1] != '{' ? env_pos[0] + 1 : env_pos[0] + 2;
 	p[1] = ((char*)(*args)->content)[env_pos[0] + 1] == '{' && ((char*)(*args)->content)[env_pos[1]] == '}' ?
 		env_pos[1] + 1 : env_pos[1];
-	if (!(new[0] = ft_substr((char*)(*args)->content, 0, env_pos[0])) ||
-		!(new[1] = ft_substr((char*)(*args)->content, p[0], env_pos[1] - p[0])) ||
-		!(new[2] = ft_strdup((char*)(*args)->content + p[1])) ||
-		ft_make_token(&tokens, ft_getenv(new[1]), is_space) == FAILED)
+	new[0] = ft_substr((char*)(*args)->content, 0, env_pos[0]);
+	new[1] = ft_substr((char*)(*args)->content, p[0], env_pos[1] - p[0]);
+	new[2] = ft_strdup((char*)(*args)->content + p[1]);
+	if (!ft_strcmp(new[1], "\?"))
+		env = ft_itoa(g_status);
+	else
 	{
-		FREE(new[0]);
-		FREE(new[1]);
-		FREE(new[2]);
+		if ((ft_getenv(new[1])))
+			env = ft_strdup(ft_getenv(new[1]));
+		else
+			env = ft_strdup("");
+	}
+	if (!new[0] || !new[1] || !new[2] || !env ||
+		ft_make_token(&tokens, env, is_space) == FAILED)
+	{
+		ft_free(&new[0]);
+		ft_free(&new[1]);
+		ft_free(&new[2]);
+		ft_free(&env);
 		return (FAILED);
 	}
 	if (tokens)
@@ -115,10 +137,11 @@ static int
 			if (!(tmp[0] = ft_strjoin(new[0], (char*)tokens->content)) ||
 			!(tmp[1] = ft_strjoin((char*)ft_lstlast(tokens)->content, new[2])))
 			{
-				FREE(new[0]);
-				FREE(new[1]);
-				FREE(new[2]);
-				FREE(tmp[0]);
+				ft_free(&new[0]);
+				ft_free(&new[1]);
+				ft_free(&new[2]);
+				ft_free(&env);
+				ft_free(&tmp[0]);
 				return (FAILED);
 			}
 			FREE((*args)->content);
@@ -134,31 +157,34 @@ static int
 			if (!(tmp[0] = ft_strjoin(new[0], (char*)tokens->content)) ||
 			!(tmp[1] = ft_strjoin(tmp[0], new[2])))
 			{
-				FREE(new[0]);
-				FREE(new[1]);
-				FREE(new[2]);
-				FREE(tmp[0]);
+				ft_free(&new[0]);
+				ft_free(&new[1]);
+				ft_free(&new[2]);
+				ft_free(&env);
+				ft_free(&tmp[0]);
 				return (FAILED);
 			}
-			FREE(tmp[0]);
-			FREE((*args)->content);
+			ft_free(&tmp[0]);
+			ft_free((char **)&((*args)->content));
 			(*args)->content = tmp[1];
 			ft_lstdelone(tokens, free);
 		}
 	}
 	else
 	{
-		FREE((*args)->content);
+		ft_free((char **)&((*args)->content));
 		if (!((*args)->content = ft_strjoin(new[0], new[2])))
 		{
-			FREE(new[0]);
-			FREE(new[1]);
-			FREE(new[2]);
+			ft_free(&new[0]);
+			ft_free(&new[1]);
+			ft_free(&new[2]);
+			ft_free(&env);
 			return (FAILED);
 		}
 	}
 	res = !((*args)->content) ? ENV_DELETED : COMPLETED;
 	free_all_chars(NULL, new);
+	ft_free(&env);
 	return (res);
 }
 
@@ -213,7 +239,7 @@ static int
 
 	i = 0;
 	res = COMPLETED;
-	ft_memset(q_flag, 0, sizeof(int) * 2);
+	ft_memset(q_flag, 0, sizeof(q_flag));
 	while (((char*)(*args)->content)[i])
 	{
 		flag = 1;
@@ -221,12 +247,17 @@ static int
 			return (FAILED);
 		if (!(((char*)(*args)->content)[i]))
 			break;
-		if (!q_flag[0] && (i == 0 || ((char*)(*args)->content)[i - 1] != '\\') && ((char*)(*args)->content)[i] == '$')
+		if (!q_flag[0] && (i == 0 || ((char*)(*args)->content)[i - 1] != '\\')
+			&& ((char*)(*args)->content)[i] == '$' && !(is_env_name_end(((char *)(*args)->content)[i + 1])))
 		{
 			flag = 0;
 			env_pos[0] = i;
 			j = i + 1;
-			while (!(is_env_name_end(((char*)(*args)->content)[j])))
+			while (!(is_env_name_end(((char*)(*args)->content)[j]))
+				&& ((char*)(*args)->content)[j] != '?'
+				&& ((char*)(*args)->content)[j] != '\0')
+				j++;
+			if (j == 1 && ((char*)(*args)->content)[j] == '?')
 				j++;
 			env_pos[1] = j;
 			if (q_flag[1] && ((res = replace_name_with_value(((char**)&(*args)->content), env_pos)) == FAILED))
