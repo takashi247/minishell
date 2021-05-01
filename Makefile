@@ -10,11 +10,11 @@ SRCS		:= srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
 				srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c \
 				srcs/env_sort.c srcs/env_copy.c \
 				srcs/get_next_line.c srcs/make_token.c srcs/make_command.c srcs/expand_env.c \
-				srcs/handle_signal.c \
+				srcs/handle_signal.c srcs/set_redirection.c \
 				$(UTILDIR)command_utils.c $(UTILDIR)command_errors.c $(UTILDIR)minishell_errors.c \
 				$(UTILDIR)tlist_utils.c $(UTILDIR)split_utils.c $(UTILDIR)utils_tnishina.c $(UTILDIR)utils.c
 SRCS_PRODUCTION	:= $(SRCS)
-SRCS_PRODUCTION	+= srcs/minishell.c srcs/set_redirection.c
+SRCS_PRODUCTION	+= srcs/minishell.c
 OBJS_PRODUCTION	:= $(SRCS_PRODUCTION:.c=.o)
 
 SRCS_BUILTINTEST	:= $(SRCS)
