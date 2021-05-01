@@ -16,6 +16,5 @@
 
 /* init_term.c */
 int	ft_init_term(void);
-int	ft_finalize_term(void);
 
 #endif

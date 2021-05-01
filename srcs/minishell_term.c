@@ -229,7 +229,7 @@ int ft_putchar(int c)
 }
 
 int
-	get_line(int fd, char **line)
+	ft_get_line(int fd, char **line)
 {
 	ssize_t	len;
 	ssize_t	rc;
@@ -237,12 +237,13 @@ int
 
 	len = 0;
 	ft_bzero(buf, sizeof(buf));
+	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.ms_term);
 	rc = read(fd, buf, sizeof(buf) / sizeof(buf[0]));
 	while (0 <= rc)
 	{
 		if (*buf == '\n' || *buf == '\r')
 		{
-			write(STDOUT_FILENO, "\n", 1);
+			write(STDERR_FILENO, "\n", 1);
 			tputs(tgetstr("cr", 0), 1, ft_putchar);
 			len = 0;
 		}
@@ -259,11 +260,13 @@ int
 			tputs(tgetstr("nd", 0), 1, ft_putchar);
 		else if (ft_isprint(*buf) && buf[1] == '\0')
 		{
-			write(STDOUT_FILENO, buf, rc);
+			write(STDERR_FILENO, buf, rc);
 			len++;
 		}
+		ft_bzero(buf, sizeof(buf));
 		rc = read(fd, buf, sizeof(buf) / sizeof(buf[0]));
 	}
+	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.origin_term);
 	return (GNL_SUCCESS);
 }
 
@@ -293,7 +296,7 @@ int
 		FREE(g_pwd);
 		return (EXIT_FAILURE);
 	}
-	while (get_line(STDIN_FILENO, &line) == 1 &&
+	while (ft_get_line(STDIN_FILENO, &line) == 1 &&
 		(trimmed = ft_strtrim(line, " \t")) &&
 		ft_strcmp(trimmed, "exit"))
 	{
@@ -304,7 +307,6 @@ int
 			FREE(line);
 			FREE(trimmed);
 			ft_lstclear(&tokens, free);
-			ft_finalize_term();
 			return (1);
 		}
 		head = commands;
@@ -313,23 +315,16 @@ int
 			if (!ft_strcmp(commands->op, ";") || !ft_strcmp(commands->op, NEWLINE))
 			{
 				if ((pid = fork()) < 0)
-				{
-					ft_finalize_term();
 					exit_with_error("fork");
-				}
 				else if (pid == 0)
 				{
 					if (ft_set_redirection(&(commands->args)))
 						do_command(commands, environ);
 					//リダイレクトが失敗した場合にはそのままexitする形にしているのですが、exitする際にリークが出てしまっているので要修正
-					ft_finalize_term();
 					exit(g_status);
 				}
 				if ((pid = waitpid(pid, &g_status, 0)) < 0)
-				{
-					ft_finalize_term();
 					exit_with_error("wait");
-				}
 				commands = commands->next;
 			}
 			else if (!ft_strcmp(commands->op, "|"))
@@ -344,7 +339,6 @@ int
 		ft_clear_commands(&head);
 		ft_putstr_fd(PROMPT, STDOUT_FILENO);
 	}
-	ft_finalize_term();
 	FREE(line);
 	FREE(trimmed);
 	get_next_line(STDIN_FILENO, NULL);

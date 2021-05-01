@@ -44,8 +44,8 @@ typedef enum e_cmd_signal
 
 typedef struct s_minishell
 {
-	struct termios	term;
-	struct termios	saved_term;
+	struct termios	ms_term;
+	struct termios	origin_term;
 }	t_minishell;
 
 t_minishell	g_ms;
