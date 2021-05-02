@@ -7,6 +7,7 @@ void
 {
 	ft_putstr_fd("\n", STDERR_FILENO);
 	ft_putstr_fd(PROMPT, STDERR_FILENO);
+	g_ms.interrupted = TRUE;
 	g_status = 1;
 }
 

@@ -48,12 +48,16 @@ typedef struct s_minishell
 {
 	struct termios	ms_term;
 	struct termios	origin_term;
+	t_bool			interrupted;
 }	t_minishell;
 
 t_minishell	g_ms;
 int			g_status;
 char		*g_pwd;
 t_list		*g_env;
+
+/* init_minishell.c */
+int		init_minishell(void);
 
 /* utils/minishell_errors.c */
 void	ft_put_error(char *msg);

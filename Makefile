@@ -3,7 +3,8 @@ NAME		:= minishell
 UTILDIR		:= ./srcs/utils/
 TERMDIR		:= ./srcs/termcaps/
 
-SRCS		:= srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
+SRCS		:= srcs/init_minishell.c \
+				srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
 				srcs/echo.c srcs/pwd.c srcs/exit.c \
 				srcs/env.c srcs/unset.c \
 				srcs/export.c srcs/export_print.c srcs/export_setenv.c \
