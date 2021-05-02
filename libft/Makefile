@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tnishina <tnishina@student.42tokyo.jp>     +#+  +:+       +#+         #
+#    By: sikeda <sikeda@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/03 20:47:42 by tnishina          #+#    #+#              #
-#    Updated: 2020/11/14 16:05:05 by tnishina         ###   ########.fr        #
+#    Updated: 2021/05/01 23:41:31 by sikeda           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,10 +36,11 @@ ARFLAGS = rc
 
 RM = rm -f
 
-all:			$(NAME)
+all:		$(NAME)
 
-$(NAME):		$(OBJS)
-	$(AR) $(ARFLAGS) $(NAME) $(OBJS)
+# Bonus rule applied
+$(NAME):	$(OBJS) $(OBJS_BONUS)
+	$(AR) $(ARFLAGS) $(NAME) $(OBJS) $(OBJS_BONUS)
 
 bonus:		$(OBJS) $(OBJS_BONUS)
 	$(AR) $(ARFLAGS) $(NAME) $(OBJS) $(OBJS_BONUS)

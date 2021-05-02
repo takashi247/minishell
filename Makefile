@@ -3,34 +3,35 @@ NAME		:= minishell
 UTILDIR		:= ./srcs/utils/
 TERMDIR		:= ./srcs/termcaps/
 
-SRCS		:=
-SRCS		+= srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
+SRCS		:= srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
 				srcs/echo.c srcs/pwd.c srcs/exit.c \
 				srcs/env.c srcs/unset.c \
 				srcs/export.c srcs/export_print.c srcs/export_setenv.c \
 				srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c \
 				srcs/env_sort.c srcs/env_copy.c \
+				srcs/get_next_line.c srcs/make_token.c srcs/make_command.c srcs/expand_env.c \
+				srcs/handle_signal.c \
 				$(UTILDIR)command_utils.c $(UTILDIR)command_errors.c $(UTILDIR)minishell_errors.c \
-				$(UTILDIR)tlist_utils.c $(UTILDIR)split_utils.c $(UTILDIR)utils.c
-OBJS		= $(SRCS:.c=.o)
+				$(UTILDIR)tlist_utils.c $(UTILDIR)split_utils.c $(UTILDIR)utils_tnishina.c $(UTILDIR)utils.c
+SRCS_PRODUCTION	:= $(SRCS)
+SRCS_PRODUCTION	+= srcs/minishell.c srcs/set_redirection.c
+OBJS_PRODUCTION	:= $(SRCS_PRODUCTION:.c=.o)
 
-SRCS_BUITINTEST	:= $(SRCS)
-SRCS_BUITINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
-OBJS_BUITINTEST	= $(SRCS_BUITINTEST:.c=.o)
+SRCS_BUILTINTEST	:= $(SRCS)
+SRCS_BUILTINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
 
 SRCS_TERMTEST	:= $(SRCS)
-SRCS_TERMTEST	+= $(TERMDIR)init_term.c
-SRCS_TERMTEST	+= srcs/minishell_term.c srcs/get_next_line.c srcs/make_token.c srcs/make_command.c srcs/expand_env.c
-OBJS_TERMTEST	= $(SRCS_TERMTEST:.c=.o)
+SRCS_TERMTEST	+= $(TERMDIR)init_term.c srcs/minishell_term.c
 
 INCLUDE		:= -I./includes/ -I./libft/ -I./test/
 
 LIBDIR		:= ./libft
 LIBPATH		:= $(LIBDIR)/libft.a
+LFLAGS		:= -L${LIBDIR} -lft -lcurses
 
 CC			:= gcc
-CFLAGS		:= -Wall -Wextra -Werror -lcurses
-# DEBUG		:= -g -fsanitize=address -lcurses
+CFLAGS		:= -Wall -Wextra -Werror
+# DEBUG		:= -g -fsanitize=address
 DEBUG		:=
 
 RM			:= rm -f
@@ -41,36 +42,35 @@ C_GREEN		:= "\x1b[32m"
 
 all:		$(NAME)
 
-$(NAME):	$(OBJS) $(LIBPATH)
-			$(CC) $(CFLAGS) $(OBJ) $(DEBUG) $(LIBPATH) -o $(NAME)
+$(NAME):	$(OBJS_PRODUCTION) $(LIBPATH)
+			$(CC) $(CFLAGS) $(OBJS_PRODUCTION) $(DEBUG) $(LFLAGS) -o $(NAME)
 			@echo $(C_GREEN)"=== Make Done ==="
 
 btest:		$(LIBPATH)
-			$(CC) $(CFLAGS) $(SRCS_BUITINTEST) $(DEBUG) $(INCLUDE) $(LIBPATH) -D TEST -o builtin.out
+			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -o builtin.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
 bltest:		$(LIBPATH)
-			$(CC) $(CFLAGS) $(SRCS_BUITINTEST) $(DEBUG) $(INCLUDE) $(LIBPATH) -D CDTEST -D LEAKS -o builtin.out
+			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D CDTEST -D LEAKS -o builtin.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
 cdtest:		$(LIBPATH)
-			$(CC) $(CFLAGS) $(SRCS_BUITINTEST) $(DEBUG) $(INCLUDE) $(LIBPATH) -D CDTEST -o builtin.out
+			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D CDTEST -o builtin.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
 cdltest:	$(LIBPATH)
-			$(CC) $(CFLAGS) $(SRCS_BUITINTEST) $(DEBUG) $(INCLUDE) $(LIBPATH) -D CDTEST -D LEAKS -o builtin.out
+			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D CDTEST -D LEAKS -o builtin.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
 termtest:	$(LIBPATH)
-			$(CC) $(CFLAGS) $(SRCS_TERMTEST) $(DEBUG) $(INCLUDE) $(LIBPATH) -D TEST -o term.out
+			$(CC) $(CFLAGS) $(SRCS_TERMTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -o term.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
 $(LIBPATH):
-			$(MAKE) bonus -C $(LIBDIR)
+			$(MAKE) -C $(LIBDIR)
 
 clean:
-			$(RM) $(OBJS)
-			$(RM) $(OBJS_BUITINTEST)
+			$(RM) $(OBJS_PRODUCTION)
 			$(MAKE) clean -C $(LIBDIR)
 
 fclean:		clean
