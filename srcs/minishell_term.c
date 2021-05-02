@@ -170,50 +170,85 @@ t_command
 	return (c);
 }
 
-int ft_putchar(int c)
-{
-	return (write(1, &c, 1));
-}
-
 int
-	ft_get_line(int fd, char **line)
+	ft_get_line(char **line)
 {
-	ssize_t	len;
 	ssize_t	rc;
+	size_t	len;
+	size_t	allocated;
 	char	buf[4];
+	char	*pre_line;
 
+	if (!line)
+		return (GNL_ERROR);
+	*line = NULL;
 	len = 0;
 	ft_bzero(buf, sizeof(buf));
+	pre_line = (char *)malloc(BUFFER_SIZE);
+	allocated = BUFFER_SIZE;
+	if (!pre_line)
+	{
+		ft_put_error(strerror(errno));
+		return (GNL_ERROR);
+	}
 	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.ms_term);
-	rc = read(fd, buf, sizeof(buf) / sizeof(buf[0]));
+	rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
 	while (0 <= rc)
 	{
 		if (*buf == '\n' || *buf == '\r')
 		{
 			write(STDERR_FILENO, "\n", 1);
 			tputs(tgetstr("cr", 0), 1, ft_putchar);
-			len = 0;
+			break ;
 		}
 		else if (*buf == C_EOF && !len)
 		{
-			*line = ft_strdup("exit");
+			len = ft_strlen("exit");
+			ft_strlcpy(pre_line, "exit", len + 1);
 			break ;
 		}
-		else if (*buf == C_DEL)
-			tputs(tgetstr("le", 0), 1, ft_putchar);
-		else if (!ft_strcmp(buf, K_LEFT))
-			tputs(tgetstr("le", 0), 1, ft_putchar);
-		else if (!ft_strcmp(buf, K_RIGHT))
-			tputs(tgetstr("nd", 0), 1, ft_putchar);
+		else if (*buf == C_DEL && 0 < len)
+		{
+			len--;
+			ft_clear_line();
+			write(STDERR_FILENO, pre_line, len);
+		}
 		else if (ft_isprint(*buf) && buf[1] == '\0')
 		{
+			if (SIZE_MAX == len || allocated < len + 1)
+			{
+				if (SIZE_MAX == len || SIZE_MAX - BUFFER_SIZE < allocated)
+				{
+					rc = IS_OVERFLOW;
+					break ;
+				}
+				pre_line = ft_realloc(pre_line, allocated + BUFFER_SIZE, allocated);
+				if (!pre_line)
+				{
+					write(STDERR_FILENO, "\n", 1);
+					tputs(tgetstr("cr", 0), 1, ft_putchar);
+					rc = -1;
+					break ;
+				}
+				allocated += BUFFER_SIZE;
+			}
 			write(STDERR_FILENO, buf, rc);
+			pre_line[len] = *buf;
 			len++;
 		}
 		ft_bzero(buf, sizeof(buf));
-		rc = read(fd, buf, sizeof(buf) / sizeof(buf[0]));
+		rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
 	}
 	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.origin_term);
+	if (0 <= rc)
+		*line = ft_substr(pre_line, 0, len);
+	ft_free(&pre_line);
+	if ((0 <= rc && !*line) || rc < 0)
+	{
+		if (rc != IS_OVERFLOW)
+			ft_put_error(strerror(errno));
+		return (GNL_ERROR);
+	}
 	return (GNL_SUCCESS);
 }
 
@@ -235,7 +270,6 @@ int
 		ft_lstclear(&g_env, free);
 		return (EXIT_FAILURE);
 	}
-	ft_putstr_fd(PROMPT, STDERR_FILENO);
 	if (ft_init_term() == UTIL_ERROR)
 	{
 		printf("error\n");
@@ -243,27 +277,37 @@ int
 		FREE(g_pwd);
 		return (EXIT_FAILURE);
 	}
-	while (ft_get_line(STDIN_FILENO, &line) == 1
-		&& (trimmed = ft_strtrim(line, " \t")))
+	line = NULL;
+	trimmed = NULL;
+	head = NULL;
+	while (1)
 	{
-		if (ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) != COMPLETED
-		|| ft_make_command(&commands, tokens) != COMPLETED
-		|| ft_expand_env_var(commands) != COMPLETED)
+		ft_putstr_fd(PROMPT, STDERR_FILENO);
+		ft_sig_prior();
+		res = ft_get_line(&line);
+		if (res == GNL_ERROR)
+		{
+			g_status = STATUS_GENERAL_ERR;
+			break ;
+		}
+		ft_sig_post();
+		trimmed = ft_strtrim(line, " \t");
+		if ((ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) != COMPLETED)
+			|| ft_make_command(&commands, tokens) != COMPLETED
+			|| ft_expand_env_var(commands) != COMPLETED)
 		{
 			ft_free(&line);
 			ft_free(&trimmed);
 			ft_lstclear(&tokens, free);
 			return (1);
 		}
-		res = KEEP_RUNNING;
 		head = commands;
 		while (commands)
 		{
 			if (is_builtin(commands) && !is_pipe(commands))
 			{
-				res = ft_execute_builtin(commands);
-				if (res != KEEP_RUNNING)
-					break;
+				if (ft_execute_builtin(commands) != KEEP_RUNNING)
+					exit(g_status);
 				commands = commands->next;
 				continue ;
 			}
@@ -272,19 +316,15 @@ int
 				exit_with_error();
 			commands = commands->next;
 		}
-		if (res != KEEP_RUNNING)
-			break;
 		ft_free(&line);
 		ft_free(&trimmed);
-		get_next_line(STDIN_FILENO, NULL);
 		ft_clear_commands(&head);
-		ft_putstr_fd(PROMPT, STDERR_FILENO);
 	}
 	ft_free(&line);
 	ft_free(&trimmed);
-	get_next_line(STDIN_FILENO, NULL);
 	ft_clear_commands(&head);
 	ft_free(&g_pwd);
 	ft_lstclear(&g_env, free);
+	ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 	exit(g_status);
 }

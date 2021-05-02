@@ -21,7 +21,7 @@ SRCS_BUILTINTEST	:= $(SRCS)
 SRCS_BUILTINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
 
 SRCS_TERMTEST	:= $(SRCS)
-SRCS_TERMTEST	+= $(TERMDIR)init_term.c srcs/minishell_term.c
+SRCS_TERMTEST	+= $(TERMDIR)edit_term.c $(TERMDIR)init_term.c $(TERMDIR)term_utils.c srcs/minishell_term.c
 
 INCLUDE		:= -I./includes/ -I./libft/ -I./test/
 

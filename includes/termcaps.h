@@ -17,4 +17,10 @@
 /* init_term.c */
 int	ft_init_term(void);
 
+/* edit_term.c */
+int	ft_clear_line(void);
+
+/* term_utils.c */
+int ft_putchar(int c);
+
 #endif

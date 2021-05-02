@@ -1,5 +1,24 @@
 #include "minishell_sikeda.h"
 
+void
+	*ft_realloc(void *original, size_t size, size_t original_size)
+{
+	void	*new;
+
+	if (!original)
+		return (malloc(size));
+	new = malloc(size);
+	if (new)
+	{
+		if (original_size < size)
+			ft_memcpy(new, original, original_size);
+		else
+			ft_memcpy(new, original, size);
+	}
+	free(original);
+	return (new);
+}
+
 int
 	ft_strcmp(const char *s1, const char *s2)
 {
