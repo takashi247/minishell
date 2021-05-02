@@ -27,6 +27,7 @@
 
 # define UTIL_SUCCESS 0
 # define UTIL_ERROR -1
+# define IS_OVERFLOW -127
 
 # define SPACE_CHARS " \t\n\v\f\r"
 
@@ -59,6 +60,7 @@ void	ft_put_error(char *msg);
 void	ft_put_syntaxerror_with_token(char *token);
 
 /* utils/utils.c */
+void	*ft_realloc(void *original, size_t size, size_t original_size);
 int		ft_strcmp(const char *s1, const char *s2);
 int		ft_isspace(char c);
 int		ft_isnumeric(char *s);

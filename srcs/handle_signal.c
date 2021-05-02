@@ -5,7 +5,7 @@
 void
 	sig_int_prior()
 {
-	ft_putstr_fd("\b\b  \b\b\n", STDERR_FILENO);
+	ft_putstr_fd("\n", STDERR_FILENO);
 	ft_putstr_fd(PROMPT, STDERR_FILENO);
 	g_status = 1;
 }

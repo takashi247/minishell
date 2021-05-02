@@ -3,270 +3,252 @@
 #include "libft.h"
 
 int
-	exit_with_error(char *str)
+	exit_with_error(void)
 {
-	printf("%s: %s\n", str, strerror(errno));
-	exit(1);
+	ft_put_error(strerror(errno));
+	exit(g_status);
 }
 
 void
 	do_command(t_command *c, char **environ)
 {
 	char	**argv;
-	char	**head;
+	char	**paths;
 	char	*tmp;
+	char	*command;
 
 	if (!c || !environ)
 		exit(1);
-	if (!(argv = (char**)malloc(sizeof(char*) * (ft_lstsize(c->args) + 1))))
+	argv = ft_convert_list(c->args);
+	if (!argv)
 		exit(1);
-	head = argv;
-	while (c->args)
-	{
-		*argv = c->args->content;
-		argv++;
-		c->args = c->args->next;
-	}
-	*argv = NULL;
-	argv = head;
-	tmp = argv[0];
-	if (!(argv[0] = ft_strjoin("/bin/", argv[0])))
-		exit_with_error("malloc");
-	FREE(tmp);
+	command = ft_strdup(argv[0]);
+	if (!command)
+		exit(1);
 	if (execve(argv[0], argv, environ) < 0)
 	{
-		tmp = argv[0];
-		if (!(argv[0] = ft_strjoin("/usr", argv[0])))
-			exit_with_error("malloc"); //おそらくこのケースもリークが出てしまっているので要修正
-		FREE(tmp);
-		if (execve(argv[0], argv, environ) < 0)
-			exit_with_error("execve"); //このケースもリークが出てしまっているので要修正
+		paths = ft_split(ft_getenv("PATH"), ':');
+		while (*paths)
+		{
+			ft_free(&(argv[0]));
+			tmp = ft_strjoin(*paths, "/");
+			if (tmp)
+				argv[0] = ft_strjoin(tmp, command);
+			ft_free(&tmp);
+			if (!argv[0])
+				exit(1);
+			if (execve(argv[0], argv, environ) < 0)
+				paths++;
+		}
+		ft_put_cmderror(command, "command not found");
+		ft_free(&command);
+		exit(1); // still reachable, possibly lostのリークが残っているため要修正
 	}
-}
-
-static void
-	close_n_wait(int pipefd[2], pid_t childs[2], int *status, int *res)
-{
-	close(pipefd[0]);
-	close(pipefd[1]);
-	*res = waitpid(childs[0], status, 0);
-	*res = waitpid(childs[1], status, 0);
-}
-
-static void
-	do_simple_pipe(t_command *commands, char **environ)
-{
-	int		pipefd[2];
-	int		res;
-	int		status;
-	pid_t	childs[2];
-
-	res = pipe(pipefd);
-	if ((childs[0] = fork()) < 0)
-		exit_with_error("fork");
-	else if (childs[0] == 0)
-	{
-		close(pipefd[0]);
-		dup2(pipefd[1], 1);
-		close(pipefd[1]);
-		do_command(commands, environ);
-	}
-	if ((childs[1] = fork()) < 0)
-		exit_with_error("fork");
-	else if (childs[1] == 0)
-	{
-		close(pipefd[1]);
-		dup2(pipefd[0], 0);
-		close(pipefd[0]);
-		do_command(commands->next, environ);
-	}
-	close_n_wait(pipefd, childs, &status, &res);
 }
 
 static t_bool
-	is_redirect(char *str)
+	is_pipe(t_command *c)
 {
-	if (!ft_strncmp(str, REDIRECT_IN, ft_strlen(REDIRECT_IN))
-	|| !ft_strncmp(str, REDIRECT_OUT, ft_strlen(REDIRECT_OUT))
-	|| !ft_strncmp(str, APPEND_REDIRECT_OUT, ft_strlen(APPEND_REDIRECT_OUT)))
+	if (!ft_strncmp(c->op, "|", ft_strlen("|") + 1))
 		return (TRUE);
 	else
 		return (FALSE);
 }
 
-t_bool
-	ft_set_redirection(t_list **args)
+int
+	ft_execute_builtin(t_command *c)
 {
-	t_list	*head;
-	t_list	*prev;
-	int		fd_from;
-	int		fd_to;
-	char	*path;
-	char	*redirect_op;
+	char	**argv;
+	int		res;
+	int		std_fds[3];
 
-	prev = NULL;
-	head = *args;
-	fd_from = -1;
-	redirect_op = NULL;
-	path = NULL;
-	while (*args)
+	res = STOP;
+	ft_save_fds(std_fds);
+	if (ft_set_redirection(&(c->args)) == FALSE)
+		return (res);
+	argv = ft_convert_list(c->args);
+	if (!argv)
 	{
-		if (ft_isdigit(((char*)((*args)->content))[0]) && ft_isnumeric((char*)((*args)->content)) && is_redirect((char*)((*args)->next->content)))
-		{
-			fd_from = ft_atoi((char*)((*args)->content));
-			if (fd_from < 0 || FD_MAX < fd_from)
-			{
-				ft_put_fderror(fd_from);
-				g_status = 1;
-				return (FALSE);
-			}
-			redirect_op = ft_strdup((char*)((*args)->next->content));
-			path = ft_strdup((char*)((*args)->next->next->content));
-			if (!redirect_op || !path)
-			{
-				FREE(redirect_op);
-				FREE(path);
-				g_status = 1;
-				return (FALSE);
-			}
-			if (prev)
-				prev->next = (*args)->next->next->next;
-			else
-				head = (*args)->next->next->next;
-			ft_lstdelone((*args)->next->next, free);
-			ft_lstdelone((*args)->next, free);
-			ft_lstdelone((*args), free);
-			if (prev)
-				*args = prev->next;
-			else
-				*args = head;
-		}
-		else if (is_redirect((char*)((*args)->content)))
-		{
-			redirect_op = ft_strdup((char*)((*args)->content));
-			path = ft_strdup((char*)((*args)->next->content));
-			if (!redirect_op || !path)
-			{
-				FREE(redirect_op);
-				FREE(path);
-				g_status = 1;
-				return (FALSE);
-			}
-			if (prev)
-				prev->next = (*args)->next->next;
-			else
-				head = (*args)->next->next;
-			ft_lstdelone((*args)->next, free);
-			ft_lstdelone((*args), free);
-			if (prev)
-				*args = prev->next;
-			else
-				*args = head;
-		}
-		if (!redirect_op)
-		{
-			prev = *args;
-			*args = (*args)->next;
-		}
-		else if (!(ft_strcmp(redirect_op, APPEND_REDIRECT_OUT)))
-		{
-			fd_to = open(path, O_WRONLY | O_CREAT | O_APPEND, 0666);
-			if (fd_to < 0)
-			{
-				ft_put_cmderror(path, strerror(errno));
-				g_status = 1;
-				FREE(redirect_op);
-				FREE(path);
-				return (FALSE);
-			}
-			if (fd_from == -1)
-				fd_from = STDOUT_FILENO;
-			dup2(fd_to, fd_from);
-			close(fd_to);
-		}
-		else if (!(ft_strcmp(redirect_op, REDIRECT_OUT)))
-		{
-			fd_to = open(path, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			if (fd_to < 0)
-			{
-				ft_put_cmderror(path, strerror(errno));
-				g_status = 1;
-				FREE(redirect_op);
-				FREE(path);
-				return (FALSE);
-			}
-			if (fd_from == -1)
-				fd_from = STDOUT_FILENO;
-			dup2(fd_to, fd_from);
-			close(fd_to);
-		}
-		else if (!(ft_strcmp(redirect_op, REDIRECT_IN)))
-		{
-			fd_to = open(path, O_RDONLY);
-			if (fd_to < 0)
-			{
-				ft_put_cmderror(path, strerror(errno));
-				g_status = 1;
-				FREE(redirect_op);
-				FREE(path);
-				return (FALSE);
-			}
-			if (fd_from == -1)
-				fd_from = STDIN_FILENO;
-			dup2(fd_to, fd_from);
-			close(fd_to);
-		}
-		FREE(redirect_op);
-		FREE(path);
+		g_status = 1;
+		return (STOP);
 	}
-	*args = head;
-	return (TRUE);
+	if (!ft_strcmp(argv[0], "echo"))
+		res = ft_echo(argv);
+	else if (!ft_strcmp(argv[0], "cd"))
+		res = ft_cd(argv);
+	else if (!ft_strcmp(argv[0], "pwd"))
+		res = ft_pwd(argv);
+	else if (!ft_strcmp(argv[0], "export"))
+		res = ft_export(argv);
+	else if (!ft_strcmp(argv[0], "unset"))
+		res = ft_unset(argv);
+	else if (!ft_strcmp(argv[0], "env"))
+		res = ft_env(argv);
+	else if (!ft_strcmp(argv[0], "exit"))
+		res = ft_exit(argv);
+	ft_clear_argv(&argv);
+	ft_restore_fds(std_fds);
+	return (res);
 }
 
-int ft_putchar(int c)
+static t_bool
+	is_builtin(t_command *c)
 {
-	return (write(1, &c, 1));
+	if (!ft_strcmp((char* )(c->args->content), "echo")
+		|| !ft_strcmp((char* )(c->args->content), "cd")
+		|| !ft_strcmp((char* )(c->args->content), "pwd")
+		|| !ft_strcmp((char* )(c->args->content), "export")
+		|| !ft_strcmp((char* )(c->args->content), "unset")
+		|| !ft_strcmp((char* )(c->args->content), "env")
+		|| !ft_strcmp((char* )(c->args->content), "exit"))
+		return (TRUE);
+	else
+		return (FALSE);
+}
+
+static pid_t
+	start_command(t_command *c, t_bool ispipe, t_bool haspipe, int lastpipe[2], char **environ)
+{
+	pid_t	pid;
+	int		newpipe[2];
+
+	if (ispipe)
+		pipe(newpipe);
+	pid = fork();
+	if (pid == 0)
+	{
+		if (haspipe)
+		{
+			close(lastpipe[1]);
+			dup2(lastpipe[0], STDIN_FILENO);
+			close(lastpipe[0]);
+		}
+		if (ispipe)
+		{
+			close(newpipe[0]);
+			dup2(newpipe[1], STDOUT_FILENO);
+			close(newpipe[1]);
+		}
+		if (is_builtin(c))
+		{
+			ft_execute_builtin(c);
+			exit(0); // still reachableのリークが残っているため要修正
+		}
+		else if (ft_set_redirection(&(c->args)))
+			do_command(c, environ);
+	}
+	if (haspipe)
+	{
+		close(lastpipe[0]);
+		close(lastpipe[1]);
+	}
+	if (ispipe)
+	{
+		lastpipe[0] = newpipe[0];
+		lastpipe[1] = newpipe[1];
+	}
+	return (pid);
+}
+
+t_command
+	*ft_execute_pipeline(t_command *c, char **environ)
+{
+	t_bool	haspipe;
+	int		lastpipe[2];
+
+	haspipe = FALSE;
+	ft_memset(lastpipe, -1, sizeof(int) * 2);
+	while (c)
+	{
+		c->pid = start_command(c, is_pipe(c), haspipe, lastpipe, environ);
+		haspipe = is_pipe(c);
+		if (haspipe)
+			c = c->next;
+		else
+			break ;
+	}
+	return (c);
 }
 
 int
-	ft_get_line(int fd, char **line)
+	ft_get_line(char **line)
 {
-	ssize_t	len;
 	ssize_t	rc;
+	size_t	len;
+	size_t	allocated;
 	char	buf[4];
+	char	*pre_line;
 
+	if (!line)
+		return (GNL_ERROR);
+	*line = NULL;
 	len = 0;
 	ft_bzero(buf, sizeof(buf));
+	pre_line = (char *)malloc(BUFFER_SIZE);
+	allocated = BUFFER_SIZE;
+	if (!pre_line)
+	{
+		ft_put_error(strerror(errno));
+		return (GNL_ERROR);
+	}
 	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.ms_term);
-	rc = read(fd, buf, sizeof(buf) / sizeof(buf[0]));
+	rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
 	while (0 <= rc)
 	{
 		if (*buf == '\n' || *buf == '\r')
 		{
 			write(STDERR_FILENO, "\n", 1);
 			tputs(tgetstr("cr", 0), 1, ft_putchar);
-			len = 0;
+			break ;
 		}
 		else if (*buf == C_EOF && !len)
 		{
-			*line = ft_strdup("exit");
+			len = ft_strlen("exit");
+			ft_strlcpy(pre_line, "exit", len + 1);
 			break ;
 		}
-		else if (*buf == C_DEL)
-			tputs(tgetstr("le", 0), 1, ft_putchar);
-		else if (!ft_strcmp(buf, K_LEFT))
-			tputs(tgetstr("le", 0), 1, ft_putchar);
-		else if (!ft_strcmp(buf, K_RIGHT))
-			tputs(tgetstr("nd", 0), 1, ft_putchar);
+		else if (*buf == C_DEL && 0 < len)
+		{
+			len--;
+			ft_clear_line();
+			write(STDERR_FILENO, pre_line, len);
+		}
 		else if (ft_isprint(*buf) && buf[1] == '\0')
 		{
+			if (SIZE_MAX == len || allocated < len + 1)
+			{
+				if (SIZE_MAX == len || SIZE_MAX - BUFFER_SIZE < allocated)
+				{
+					rc = IS_OVERFLOW;
+					break ;
+				}
+				pre_line = ft_realloc(pre_line, allocated + BUFFER_SIZE, allocated);
+				if (!pre_line)
+				{
+					write(STDERR_FILENO, "\n", 1);
+					tputs(tgetstr("cr", 0), 1, ft_putchar);
+					rc = -1;
+					break ;
+				}
+				allocated += BUFFER_SIZE;
+			}
 			write(STDERR_FILENO, buf, rc);
+			pre_line[len] = *buf;
 			len++;
 		}
 		ft_bzero(buf, sizeof(buf));
-		rc = read(fd, buf, sizeof(buf) / sizeof(buf[0]));
+		rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
 	}
 	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.origin_term);
+	if (0 <= rc)
+		*line = ft_substr(pre_line, 0, len);
+	ft_free(&pre_line);
+	if ((0 <= rc && !*line) || rc < 0)
+	{
+		if (rc != IS_OVERFLOW)
+			ft_put_error(strerror(errno));
+		return (GNL_ERROR);
+	}
 	return (GNL_SUCCESS);
 }
 
@@ -275,11 +257,11 @@ int
 {
 	char		*line;
 	char		*trimmed;
-	pid_t		pid;
 	extern char	**environ;
 	t_list		*tokens;
 	t_command	*head;
 	t_command	*commands;
+	int			res;
 
 	if (ft_init_env() == STOP)
 		return (EXIT_FAILURE);
@@ -288,7 +270,6 @@ int
 		ft_lstclear(&g_env, free);
 		return (EXIT_FAILURE);
 	}
-	ft_putstr_fd(PROMPT, STDOUT_FILENO);
 	if (ft_init_term() == UTIL_ERROR)
 	{
 		printf("error\n");
@@ -296,54 +277,54 @@ int
 		FREE(g_pwd);
 		return (EXIT_FAILURE);
 	}
-	while (ft_get_line(STDIN_FILENO, &line) == 1 &&
-		(trimmed = ft_strtrim(line, " \t")) &&
-		ft_strcmp(trimmed, "exit"))
+	line = NULL;
+	trimmed = NULL;
+	head = NULL;
+	while (1)
 	{
-		if ((ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) != COMPLETED)
-		|| ft_make_command(&commands, tokens) != COMPLETED
-		|| ft_expand_env_var(commands) != COMPLETED)
+		ft_putstr_fd(PROMPT, STDERR_FILENO);
+		ft_sig_prior();
+		res = ft_get_line(&line);
+		if (res == GNL_ERROR)
 		{
-			FREE(line);
-			FREE(trimmed);
+			g_status = STATUS_GENERAL_ERR;
+			break ;
+		}
+		ft_sig_post();
+		trimmed = ft_strtrim(line, " \t");
+		if ((ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) != COMPLETED)
+			|| ft_make_command(&commands, tokens) != COMPLETED
+			|| ft_expand_env_var(commands) != COMPLETED)
+		{
+			ft_free(&line);
+			ft_free(&trimmed);
 			ft_lstclear(&tokens, free);
 			return (1);
 		}
 		head = commands;
 		while (commands)
 		{
-			if (!ft_strcmp(commands->op, ";") || !ft_strcmp(commands->op, NEWLINE))
+			if (is_builtin(commands) && !is_pipe(commands))
 			{
-				if ((pid = fork()) < 0)
-					exit_with_error("fork");
-				else if (pid == 0)
-				{
-					if (ft_set_redirection(&(commands->args)))
-						do_command(commands, environ);
-					//リダイレクトが失敗した場合にはそのままexitする形にしているのですが、exitする際にリークが出てしまっているので要修正
+				if (ft_execute_builtin(commands) != KEEP_RUNNING)
 					exit(g_status);
-				}
-				if ((pid = waitpid(pid, &g_status, 0)) < 0)
-					exit_with_error("wait");
 				commands = commands->next;
+				continue ;
 			}
-			else if (!ft_strcmp(commands->op, "|"))
-			{
-				do_simple_pipe(commands, environ);
-				commands = commands->next->next;
-			}
+			commands = ft_execute_pipeline(commands, environ);
+			if (waitpid(commands->pid, &g_status, 0) < 0)
+				exit_with_error();
+			commands = commands->next;
 		}
-		FREE(line);
-		FREE(trimmed);
-		get_next_line(STDIN_FILENO, NULL);
+		ft_free(&line);
+		ft_free(&trimmed);
 		ft_clear_commands(&head);
-		ft_putstr_fd(PROMPT, STDOUT_FILENO);
 	}
-	FREE(line);
-	FREE(trimmed);
-	get_next_line(STDIN_FILENO, NULL);
-	FREE(g_pwd);
+	ft_free(&line);
+	ft_free(&trimmed);
+	ft_clear_commands(&head);
+	ft_free(&g_pwd);
 	ft_lstclear(&g_env, free);
-	ft_putstr_fd(EXIT_PROMPT, STDOUT_FILENO);
-	exit(0);
+	ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
+	exit(g_status);
 }
