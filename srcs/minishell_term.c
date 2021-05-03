@@ -186,9 +186,15 @@ int
 		return (GNL_ERROR);
 	}
 	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.ms_term);
+	if (ft_get_cursor_position(
+		&(g_ms.terminfo.start.row), &(g_ms.terminfo.start.col))
+		== UTIL_ERROR)
+		return (GNL_ERROR);
+	ft_putstr_fd(PROMPT, STDERR_FILENO);
 	rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
 	while (0 <= rc)
 	{
+		ft_update_current_position();
 		if (g_ms.interrupted == TRUE)
 		{
 			g_ms.interrupted = FALSE;
@@ -197,7 +203,7 @@ int
 		if (*buf == '\n' || *buf == '\r')
 		{
 			write(STDERR_FILENO, "\n", 1);
-			tputs(tgetstr("cr", 0), 1, ft_putchar);
+			tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
 			break ;
 		}
 		else if (*buf == C_EOF && !len)
@@ -209,8 +215,7 @@ int
 		else if (*buf == C_DEL && 0 < len)
 		{
 			len--;
-			ft_clear_line();
-			write(STDERR_FILENO, pre_line, len);
+			ft_backspace(pre_line, len);
 		}
 		else if (ft_isprint(*buf) && buf[1] == '\0')
 		{
@@ -225,7 +230,7 @@ int
 				if (!pre_line)
 				{
 					write(STDERR_FILENO, "\n", 1);
-					tputs(tgetstr("cr", 0), 1, ft_putchar);
+					tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
 					rc = -1;
 					break ;
 				}
@@ -234,6 +239,9 @@ int
 			write(STDERR_FILENO, buf, rc);
 			pre_line[len] = *buf;
 			len++;
+			if (g_ms.terminfo.prev.col == g_ms.terminfo.maxcol - 1
+				&& g_ms.terminfo.prev.row == g_ms.terminfo.maxrow - 1)
+				g_ms.terminfo.start.row--;
 		}
 		ft_bzero(buf, sizeof(buf));
 		rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
@@ -269,7 +277,6 @@ int
 	head = NULL;
 	while (1)
 	{
-		ft_putstr_fd(PROMPT, STDERR_FILENO);
 		ft_sig_prior();
 		res = ft_get_line(&line);
 		if (res == GNL_ERROR)

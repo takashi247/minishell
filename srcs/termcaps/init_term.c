@@ -1,5 +1,26 @@
 #include "minishell_sikeda.h"
 
+static int
+	get_definition_from_termcap(void)
+{
+	g_ms.terminfo.def.cm = tgetstr("cm", 0);
+	g_ms.terminfo.def.ce = tgetstr("cd", 0);
+	g_ms.terminfo.def.cr = tgetstr("cr", 0);
+	if (!g_ms.terminfo.def.cm
+		|| !g_ms.terminfo.def.ce
+		|| !g_ms.terminfo.def.cr)
+		return (UTIL_ERROR);
+	return (UTIL_SUCCESS);
+}
+
+static void
+	set_settings(void)
+{
+	g_ms.ms_term.c_lflag &= ~(ICANON | ECHO);
+	g_ms.ms_term.c_cc[VMIN] = 1;
+	g_ms.ms_term.c_cc[VTIME] = 0;
+}
+
 int
 	ft_init_term(void)
 {
@@ -13,6 +34,9 @@ int
 		ft_put_error("Cannot find terminfo entry.");
 		return (UTIL_ERROR);
 	}
+	ft_get_win_size();
+	if (get_definition_from_termcap() == UTIL_ERROR)
+		return (UTIL_ERROR);
 	if (tcgetattr(STDIN_FILENO, &g_ms.ms_term) != 0)
 	{
 		ft_put_error(strerror(errno));
@@ -23,8 +47,6 @@ int
 		ft_put_error(strerror(errno));
 		return (UTIL_ERROR);
 	}
-	g_ms.ms_term.c_lflag &= ~(ICANON | ECHO);
-	g_ms.ms_term.c_cc[VMIN] = 1;
-	g_ms.ms_term.c_cc[VTIME] = 0;
+	set_settings();
 	return (UTIL_SUCCESS);
 }
