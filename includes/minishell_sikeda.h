@@ -46,6 +46,7 @@ typedef enum e_cmd_signal
 
 typedef struct s_minishell
 {
+	t_terminfo		terminfo;
 	struct termios	ms_term;
 	struct termios	origin_term;
 	t_bool			interrupted;
