@@ -45,6 +45,9 @@ int	ft_init_term(void);
 /* edit_term.c */
 int	ft_backspace(const char *pre_line, size_t len);
 
+/* get_line.c */
+int	ft_get_line(char **line);
+
 /* term_utils.c */
 int ft_putchar(int c);
 int	ft_get_cursor_position(int *row, int *col);

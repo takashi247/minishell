@@ -64,7 +64,7 @@ int
 
 	res = STOP;
 	ft_save_fds(std_fds);
-	if (ft_set_redirection(&(c->args)) == FALSE)
+	if (ft_set_redirection(c->redirects) == FALSE)
 		return (res);
 	argv = ft_convert_list(c->args);
 	if (!argv)
@@ -129,7 +129,13 @@ static pid_t
 			dup2(newpipe[1], STDOUT_FILENO);
 			close(newpipe[1]);
 		}
-		do_command(c, environ);
+		if (is_builtin(c))
+		{
+			ft_execute_builtin(c);
+			exit(0); // still reachableのリークが残っているため要修正
+		}
+		else if (ft_set_redirection(c->redirects))
+			do_command(c, environ);
 	}
 	if (haspipe)
 	{
@@ -164,99 +170,48 @@ t_command
 	return (c);
 }
 
-int
-	ft_get_line(char **line)
+static t_bool
+	is_end_with_escape(char *line)
 {
-	ssize_t	rc;
-	size_t	len;
-	size_t	allocated;
-	char	buf[4];
-	char	*pre_line;
+	if ((ft_strlen(line) == 1 || line[ft_strlen(line) - 2] != '\\')
+		&& line[ft_strlen(line) - 1] == '\\')
+		return (TRUE);
+	else
+		return (FALSE);
+}
 
-	if (!line)
-		return (GNL_ERROR);
-	*line = NULL;
-	len = 0;
-	ft_bzero(buf, sizeof(buf));
-	pre_line = (char *)malloc(BUFFER_SIZE);
-	allocated = BUFFER_SIZE;
-	if (!pre_line)
+static void
+	add_final_char(char **trimmed, char *line)
+{
+	char	*final;
+	char	*tmp;
+	size_t	size;
+	size_t	len;
+
+	if (*trimmed && line)
 	{
-		ft_put_error(strerror(errno));
-		return (GNL_ERROR);
-	}
-	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.ms_term);
-	if (ft_get_cursor_position(
-		&(g_ms.terminfo.start.row), &(g_ms.terminfo.start.col))
-		== UTIL_ERROR)
-		return (GNL_ERROR);
-	ft_putstr_fd(PROMPT, STDERR_FILENO);
-	rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
-	while (0 <= rc)
-	{
-		ft_update_current_position();
-		if (g_ms.interrupted == TRUE)
+		tmp = *trimmed;
+		size = ft_strlen(*trimmed) + 2;
+		*trimmed = (char *)malloc(sizeof(char) * size);
+		if ((*trimmed))
 		{
-			g_ms.interrupted = FALSE;
-			len = 0;
-		}
-		if (*buf == '\n' || *buf == '\r')
-		{
-			write(STDERR_FILENO, "\n", 1);
-			tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
-			break ;
-		}
-		else if (*buf == C_EOF && !len)
-		{
-			len = ft_strlen("exit");
-			ft_strlcpy(pre_line, "exit", len + 1);
-			break ;
-		}
-		else if (*buf == C_DEL && 0 < len)
-		{
-			len--;
-			ft_backspace(pre_line, len);
-		}
-		else if (ft_isprint(*buf) && buf[1] == '\0')
-		{
-			if (SIZE_MAX == len || allocated < len + 1)
+			ft_strlcpy(*trimmed, tmp, size);
+			ft_free(&tmp);
+			final = (char *)malloc(sizeof(char) * 2);
+			if (final)
 			{
-				if (SIZE_MAX == len || SIZE_MAX - BUFFER_SIZE < allocated)
-				{
-					rc = IS_OVERFLOW;
-					break ;
-				}
-				pre_line = ft_realloc(pre_line, allocated + BUFFER_SIZE, allocated);
-				if (!pre_line)
-				{
-					write(STDERR_FILENO, "\n", 1);
-					tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
-					rc = -1;
-					break ;
-				}
-				allocated += BUFFER_SIZE;
+				len = ft_strlen(line);
+				while (line[len] != '\\')
+					final[0] = line[len--];
+				final[1] = '\0';
+				ft_strlcat(*trimmed, final, size);
 			}
-			write(STDERR_FILENO, buf, rc);
-			pre_line[len] = *buf;
-			len++;
-			if (g_ms.terminfo.prev.col == g_ms.terminfo.maxcol - 1
-				&& g_ms.terminfo.prev.row == g_ms.terminfo.maxrow - 1)
-				g_ms.terminfo.start.row--;
+			else
+				ft_free(trimmed);
 		}
-		ft_bzero(buf, sizeof(buf));
-		rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
+		else
+			ft_free(&tmp);
 	}
-	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.origin_term);
-	if (0 <= rc)
-		*line = ft_substr(pre_line, 0, len);
-	ft_free(&pre_line);
-	if ((0 <= rc && !*line) || rc < 0)
-	{
-		if (rc != IS_OVERFLOW)
-			ft_put_error(strerror(errno));
-		return (GNL_ERROR);
-	}
-	return (GNL_SUCCESS);
 }
 
 int
@@ -285,30 +240,47 @@ int
 			break ;
 		}
 		ft_sig_post();
-		trimmed = ft_strtrim(line, " \t");
-		if ((ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) != COMPLETED)
-			|| ft_make_command(&commands, tokens) != COMPLETED
-			|| ft_expand_env_var(commands) != COMPLETED)
+		if (is_end_with_escape(line))
+			ft_put_cmderror("\\", MULTILINE_ERROR_MSG);
+		else
 		{
-			ft_free(&line);
-			ft_free(&trimmed);
-			ft_lstclear(&tokens, free);
-			return (1);
-		}
-		head = commands;
-		while (commands)
-		{
-			if (is_builtin(commands) && !is_pipe(commands))
+			res = ft_add_space(&line);
+			trimmed = ft_strtrim(line, " \t");
+			if (is_end_with_escape(trimmed))
+				add_final_char(&trimmed, line);
+			if (res != KEEP_RUNNING || !trimmed
+				|| ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) != COMPLETED
+				|| ft_make_command(&commands, tokens) != COMPLETED)
 			{
-				if (ft_execute_builtin(commands) != KEEP_RUNNING)
-					exit(g_status);
-				commands = commands->next;
-				continue ;
+				ft_free(&line);
+				ft_free(&trimmed);
+				ft_lstclear(&tokens, free);
+				return (1);
 			}
-			commands = ft_execute_pipeline(commands, environ);
-			if (waitpid(commands->pid, &g_status, 0) < 0)
-				exit_with_error();
-			commands = commands->next;
+			res = KEEP_RUNNING;
+			head = commands;
+			while (commands)
+			{
+				if (ft_expand_env_var(commands) != COMPLETED)
+					break;
+				if (commands->args)
+				{
+					if (is_builtin(commands) && !is_pipe(commands))
+					{
+						res = ft_execute_builtin(commands);
+						if (res != KEEP_RUNNING)
+							break;
+						commands = commands->next;
+						continue ;
+					}
+					commands = ft_execute_pipeline(commands, environ);
+					if (waitpid(commands->pid, &g_status, 0) < 0)
+						exit_with_error();
+				}
+				commands = commands->next;
+			}
+			if (res == EXIT)
+				break;
 		}
 		ft_free(&line);
 		ft_free(&trimmed);
@@ -319,6 +291,5 @@ int
 	ft_clear_commands(&head);
 	ft_free(&g_pwd);
 	ft_lstclear(&g_env, free);
-	ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 	exit(g_status);
 }
