@@ -11,6 +11,7 @@
 # include <string.h>
 # include "libft.h"
 # include "minishell_sikeda.h"
+# include <sys/stat.h>
 
 /*
 ** basic parameters for minishell
