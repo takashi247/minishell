@@ -17,6 +17,7 @@ static char
 	char*	tmp;
 	char*	front;
 	char*	back;
+	char*	pwd;
 
 	if (!s)
 		return (NULL);
@@ -24,39 +25,49 @@ static char
 	if (!path_env)
 		exit(1);
 	tmp = NULL;
+	pwd = getcwd(NULL, 0);
+	if (!pwd)
+		return (path_env);
 	i = 0;
-	while (s[i])
+	while (path_env[i])
 	{
-		if (!i && s[i] == ':')
+		if (!i && path_env[i] == ':')
 		{
 			tmp = path_env;
-			path_env = ft_strjoin(ft_getenv("PWD"), path_env);
+			path_env = ft_strjoin(pwd, path_env);
 			if (!path_env)
 				exit(1);
 			ft_free(&tmp);
+			i += ft_strlen(pwd);
 		}
-		else if (s[i] == ':' && s[i + 1] == ':')
+		else if (path_env[i] == ':' && path_env[i + 1] == ':')
 		{
 			tmp = path_env;
 			front = ft_substr(path_env, 0, i + 1);
 			back = ft_strdup(path_env + i + 1);
 			ft_free(&tmp);
-			tmp = ft_strjoin(front, ft_getenv("PWD"));
+			tmp = ft_strjoin(front, pwd);
 			path_env = ft_strjoin(tmp, back);
 			if (!front || !back || !tmp || !path_env)
 				exit(1);
+			ft_free(&front);
+			ft_free(&back);
 			ft_free(&tmp);
+			i += ft_strlen(pwd);
 		}
-		else if (s[i] == ':' && !s[i + 1])
+		else if (path_env[i] == ':' && !path_env[i + 1])
 		{
 			tmp = path_env;
-			path_env = ft_strjoin(path_env, ft_getenv("PWD"));
+			path_env = ft_strjoin(path_env, pwd);
 			if (!path_env)
 				exit(1);
 			ft_free(&tmp);
+			i += ft_strlen(pwd);
 		}
-		i++;
+		else
+			i++;
 	}
+	ft_free(&pwd);
 	return (path_env);
 }
 
