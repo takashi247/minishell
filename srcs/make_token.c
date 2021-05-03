@@ -23,11 +23,14 @@ t_bool
 t_bool
 	ft_is_delimiter_or_quote(char *l, int i, int *fl)
 {
-	if ((!fl[0] && !fl[1] && (l[i] == '\0' || l[i] == ' ' || l[i] == '|' || l[i] == ';' || l[i] == '<' ||
-		(i && l[i] == '>') || (l[i] == '>' && l[i + 1] != '>'))) ||
-		((!i || l[i - 1] != '\\') && l[i] == '\'' && fl[0] && ft_is_delimiter(l[i + 1])) ||
-		((!i || l[i - 1] != '\\') && l[i] == '\"' && fl[1] && ft_is_delimiter(l[i + 1])) ||
-		((fl[0] || fl[1]) && !l[i]))
+	if ((!fl[0] && !fl[1] && (!i || l[i - 1] != '\\')
+		&& (l[i] == '\0' || (l[i] == ' ' || l[i] == '|' || l[i] == ';')
+		|| (!fl[3] && l[i] == '<') || (!fl[3] && i && l[i] == '>')
+		|| (!fl[3] && l[i] == '>' && l[i + 1] != '>')
+		|| (fl[2] && l[i] == '>')))
+		|| ((!i || l[i - 1] != '\\') && l[i] == '\'' && fl[0] && ft_is_delimiter(l[i + 1]))
+		|| ((!i || l[i - 1] != '\\') && l[i] == '\"' && fl[1] && ft_is_delimiter(l[i + 1]))
+		|| ((fl[0] || fl[1]) && !l[i]))
 		return (TRUE);
 	else
 	{
@@ -41,6 +44,10 @@ t_bool
 			fl[1] = 0;
 		else if (l[i] == '>' && l[i + 1] == '>')
 			fl[2] = 1;
+		else if (!i && ft_isdigit(l[i]))
+			fl[3] = 1;
+		else if (fl[3] && !ft_isdigit(l[i]))
+			fl[3] = 0;
 		return (FALSE);
 	}
 }
@@ -55,12 +62,13 @@ static int
 }
 
 /*
-** f[3] is a flag array. Each of elements is a flag for the purpose explained
+** f[4] is a flag array. Each of elements is a flag for the purpose explained
 ** below.
 **
 ** f[0]: a flag for single quotations (')
 ** f[1]: a flag for double quotations (")
 ** f[2]: a flag for double arrows (>>)
+** f[3]: a flag for file descriptor before arrow (1>, 2>, etc.)
 */
 
 int
@@ -69,7 +77,7 @@ int
 	t_list	*n;
 	int		i;
 	char	*cpy;
-	int		fl[3];
+	int		fl[4];
 
 	*tokens = NULL;
 	if (!l)
@@ -77,7 +85,7 @@ int
 	while (*l)
 	{
 		i = 0;
-		ft_memset(fl, 0, sizeof(int) * 3);
+		ft_bzero(fl, sizeof(fl));
 		while (*l == ' ')
 			l++;
 		while (!(f(l, i, fl)))
