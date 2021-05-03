@@ -18,6 +18,8 @@ static void
 	{
 		if (command->args)
 			ft_lstclear(&(command->args), free);
+		if (command->redirects)
+			ft_lstclear(&(command->redirects), free);
 		FREE(command->op);
 		FREE(command);
 	}
@@ -118,13 +120,29 @@ static t_command
 
 	if (!token_head || !(new_command = (t_command *)malloc(sizeof(t_command))))
 		return (NULL);
-	ft_memset(new_command, 0, sizeof(t_command));
+	ft_bzero(new_command, sizeof(t_command));
 	return (set_args_and_op(new_command, token_head));
+}
+
+t_bool
+	ft_is_redirect(char *arg)
+{
+	int		len;
+
+	if (!arg)
+		return (FALSE);
+	len = ft_strlen(arg);
+	if (arg[len - 1] == '>' || arg[len - 1] == '<')
+		return (TRUE);
+	else
+		return (FALSE);
 }
 
 static t_bool
 	is_valid_command(t_command *c)
 {
+	t_list	*head;
+
 	while (c)
 	{
 		if ((!(ft_strcmp(c->op, "|")) && !(c->args)) ||
@@ -133,6 +151,25 @@ static t_bool
 			ft_put_syntaxerror_with_token(c->op);
 			return (FALSE);
 		}
+		head = c->args;
+		while (c->args)
+		{
+			if (ft_is_redirect((char *)(c->args->content)))
+			{
+				if (!(c->args->next))
+				{
+					ft_put_syntaxerror_with_token(c->op);
+					return (FALSE);
+				}
+				else if (ft_is_redirect((char *)(c->args->next->content)))
+				{
+					ft_put_syntaxerror_with_token((char *)(c->args->next->content));
+					return (FALSE);
+				}
+			}
+			c->args = c->args->next;
+		}
+		c->args = head;
 		c = c->next;
 	}
 	return (TRUE);
@@ -173,6 +210,7 @@ int
 		add_command(commands, new_command);
 		if (!(is_valid_command(*commands)))
 			return (clear_with_syntax_error(commands, NULL, &tmp));
+		ft_extract_redirect(*commands);
 		tokens = tmp;
 	}
 	if (!(is_valid_pipe(*commands)))
@@ -218,6 +256,7 @@ int
 	{
 		ft_putstr_fd(PROMPT, STDOUT_FILENO);
 		while (get_next_line(STDIN_FILENO, &line) == 1 &&
+			ft_add_space(&line) == KEEP_RUNNING &&
 			(trimmed = ft_strtrim(line, " ")) &&
 			(ft_strncmp(trimmed, "exit", 5)) &&
 			(ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) == COMPLETED) &&

@@ -33,7 +33,7 @@ void
 	fd = STDERR_FILENO;
 	ft_putstr_fd(PRG_NAME, fd);
 	ft_putstr_fd(": ", fd);
-	if (fd_from < 0)
+	if (fd_from == -3)
 		ft_putstr_fd(FD_OOR_MSG, fd);
 	else
 		ft_putnbr_fd(fd_from, fd);

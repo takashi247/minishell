@@ -19,14 +19,32 @@ static void
 	}
 }
 
-static void
-	delete_token(t_list **tokens, t_list **head, t_list *prev)
+static t_bool
+	delete_env(t_list **tokens, t_list **head, t_list *prev, int res)
 {
+	char	*str;
+
 	if (!prev)
 	{
-		*head = (*tokens)->next;
-		ft_lstdelone(*tokens, free);
-		*tokens = *head;
+		if (res == TOKEN_DELETED || (*tokens)->next)
+		{
+			*head = (*tokens)->next;
+			ft_lstdelone(*tokens, free);
+			*tokens = *head;
+		}
+		else
+		{
+			str = ft_strdup("");
+			if (!str)
+			{
+				g_status = 1;
+				ft_lstdelone(*tokens, free);
+				return (FALSE);
+			}
+			*head = ft_lstnew(str);
+			ft_lstdelone(*tokens, free);
+			*tokens = (*head)->next;
+		}
 	}
 	else
 	{
@@ -34,12 +52,13 @@ static void
 		ft_lstdelone(*tokens, free);
 		*tokens = prev->next;
 	}
+	return (TRUE);
 }
 
 
 
 static int
-	replace_name_with_value(char **content, int *env_pos)
+	replace_env_in_quote(char **content, int *env_pos)
 {
 	char	*tmp[3];
 	char	*new[3];
@@ -56,13 +75,13 @@ static int
 	new[1] = ft_substr(*content, p[0], env_pos[1] - p[0]);
 	new[2] = ft_strdup(*content + p[1]);
 	if (!ft_strcmp(new[1], "\?"))
-	{
-		tmp[2] = ft_itoa(g_status);
-		tmp[1] = ft_strjoin(new[0], tmp[2]);
-	}
+		tmp[1] = ft_itoa(g_status);
+	else if (ft_getenv(new[1]))
+		tmp[1] = ft_strdup(ft_getenv(new[1]));
 	else
-		tmp[1] = ft_strjoin(new[0], ft_getenv(new[1]));
-	*content = ft_strjoin(tmp[1], new[2]);
+		tmp[1] = ft_strdup("");
+	tmp[2] = ft_strjoin(new[0], tmp[1]);
+	*content = ft_strjoin(tmp[2], new[2]);
 	if (!new[0] || !new[1] || !new[2] || !tmp[1] || !tmp[2] || !(*content))
 	{
 		free_all_chars(tmp, new);
@@ -78,7 +97,7 @@ static t_bool
 {
 	if ((33 <= c && c <= 39) || (42 <= c && c <= 47) || c == 58 || c == 61 ||
 		c == 64 || (91 <= c && c <= 96) || c == 123 ||
-		(125 <= c && c <= 126) || c == ' ')
+		(125 <= c && c <= 126) || c == ' ' || !c)
 		return (TRUE);
 	else
 		return (FALSE);
@@ -94,7 +113,7 @@ static t_bool
 }
 
 static int
-	replace_env_with_token(t_list **args, int *env_pos)
+	replace_env_token(t_list **args, int *env_pos)
 {
 	t_list	*tokens;
 	char	*tmp[2];
@@ -169,6 +188,7 @@ static int
 			(*args)->content = tmp[1];
 			ft_lstdelone(tokens, free);
 		}
+		res = COMPLETED;
 	}
 	else
 	{
@@ -181,15 +201,18 @@ static int
 			ft_free(&env);
 			return (FAILED);
 		}
+		if (ft_strlen((char *)(*args)->content))
+			res = COMPLETED;
+		else
+			res = TOKEN_DELETED;
 	}
-	res = !((*args)->content) ? ENV_DELETED : COMPLETED;
 	free_all_chars(NULL, new);
 	ft_free(&env);
 	return (res);
 }
 
-static t_bool
-	remove_quotation(char **s, int i)
+t_bool
+	ft_remove_char(char **s, int i)
 {
 	char	*tmp;
 	char	*front;
@@ -201,31 +224,45 @@ static t_bool
 	if (!(front = ft_substr(*s, 0, i)) || !(back = ft_strdup(*s + i + 1)) ||
 	!(*s = ft_strjoin(front, back)))
 	{
-		FREE(front);
-		FREE(back);
+		g_status = 1;
+		ft_free(&front);
+		ft_free(&back);
 		return (FALSE);
 	}
-	FREE(tmp);
-	FREE(front);
-	FREE(back);
+	ft_free(&tmp);
+	ft_free(&front);
+	ft_free(&back);
 	return (TRUE);
 }
 
 static t_bool
-	check_quotation(char** s, int i, int *q)
+	check_quotation(char** s, int *i, int *q)
 {
-	if ((!i || (*s)[i - 1] != '\\') && (*s)[i] == '\'' && !q[1])
+	if ((!(*i) || (*s)[*i - 1] != '\\') && (*s)[*i] == '\'' && !q[1])
 	{
 		q[0] = !q[0];
-		return (remove_quotation(s, i));
+		return (ft_remove_char(s, *i));
 	}
-	else if ((!i || (*s)[i - 1] != '\\') && (*s)[i] == '\"' && !q[0])
+	else if ((!(*i) || (*s)[*i - 1] != '\\') && (*s)[*i] == '\"' && !q[0])
 	{
 		q[1] = !q[1];
-		return (remove_quotation(s, i));
+		return (ft_remove_char(s, *i));
 	}
+	else if (((!(*i) || (*s)[*i - 1] != '\\') && (*s)[*i] == '\'' && q[1])
+		|| ((!(*i) || (*s)[*i - 1] != '\\') && (*s)[*i] == '\"' && q[0]))
+		(*i)++;
 	return (TRUE);
 }
+
+t_bool
+	is_quote(char *s, int i)
+{
+	if ((!i || s[i - 1] != '\\') && (s[i] == '\'' || s[i] == '\"'))
+		return (TRUE);
+	else
+		return (FALSE);
+}
+
 
 static int
 	find_n_replace_env(t_list **args)
@@ -238,13 +275,15 @@ static int
 	int		res;
 
 	i = 0;
-	res = COMPLETED;
 	ft_memset(q_flag, 0, sizeof(q_flag));
 	while (((char*)(*args)->content)[i])
 	{
 		flag = 1;
-		if (!check_quotation(((char**)&(*args)->content), i, q_flag))
-			return (FAILED);
+		while (is_quote((char *)(*args)->content, i))
+		{
+			if (!check_quotation((char**)&((*args)->content), &i, q_flag))
+				return (FAILED);
+		}
 		if (!(((char*)(*args)->content)[i]))
 			break;
 		if (!q_flag[0] && (i == 0 || ((char*)(*args)->content)[i - 1] != '\\')
@@ -254,52 +293,78 @@ static int
 			env_pos[0] = i;
 			j = i + 1;
 			while (!(is_env_name_end(((char*)(*args)->content)[j]))
-				&& ((char*)(*args)->content)[j] != '?'
-				&& ((char*)(*args)->content)[j] != '\0')
+				&& ((char*)(*args)->content)[j] != '?')
 				j++;
-			if (j == 1 && ((char*)(*args)->content)[j] == '?')
+			if (j - env_pos[0] == 1 && ((char*)(*args)->content)[j] == '?')
 				j++;
 			env_pos[1] = j;
-			if (q_flag[1] && ((res = replace_name_with_value(((char**)&(*args)->content), env_pos)) == FAILED))
-				return (FAILED);
-			else if (!q_flag[1] && (res = replace_env_with_token(args, env_pos)) == FAILED)
-				return (FAILED);
+			if (q_flag[1])
+			{
+				res = replace_env_in_quote(((char**)&((*args)->content)), env_pos);
+				if (res == FAILED)
+					return (FAILED);
+				else if (res == ENV_DELETED)
+					return (ENV_DELETED);
+			}
+			else
+			{
+				res = replace_env_token(args, env_pos);
+				if (res == FAILED)
+					return (FAILED);
+				else if (res == TOKEN_DELETED)
+					return (TOKEN_DELETED);
+			}
 		}
 		i += flag;
 	}
-	res = !(ft_strlen(((char*)(*args)->content))) ? ENV_DELETED : res;
+	return (COMPLETED);
+}
+
+static int
+	expand_list(t_list **head)
+{
+	t_list	*current;
+	t_list	*prev;
+	int		res;
+
+	if (!(*head))
+		return (COMPLETED);
+	current = *head;
+	prev = NULL;
+	while (current)
+	{
+		res = find_n_replace_env(&current);
+		if (res == COMPLETED)
+		{
+			prev = current;
+			current = current->next;
+		}
+		else if (res == FAILED)
+			break;
+		else
+		{
+			if (!delete_env(&current, head, prev, res))
+				return (FAILED);
+		}
+	}
 	return (res);
 }
 
 int
 	ft_expand_env_var(t_command *c)
 {
-	t_list	*head;
-	t_list	*prev;
-	int		res;
-
 	if (!c)
 		return (COMPLETED);
-	while (c)
+	else
 	{
-		head = c->args;
-		prev = NULL;
-		while (c->args)
-		{
-			if ((res = find_n_replace_env(&(c->args))) == COMPLETED)
-			{
-				prev = c->args;
-				c->args = c->args->next;
-			}
-			else if (res == FAILED)
-				return (FAILED);
-			else
-				delete_token(&(c->args), &head, prev);
-		}
-		c->args = head;
-		c = c->next;
+		if (expand_list(&(c->args)) == FAILED
+		|| expand_list(&(c->redirects)) == FAILED)
+			return (FAILED);
+		if (ft_remove_escape(c->args) == FAILED
+		|| ft_remove_escape(c->redirects) == FAILED)
+			return (FAILED);
+		return (COMPLETED);
 	}
-	return (COMPLETED);
 }
 
 #ifdef EXPANDTEST
