@@ -4,6 +4,7 @@ int
 	ft_get_line(char **line)
 {
 	ssize_t	rc;
+	ssize_t	ret;
 	size_t	len;
 	size_t	allocated;
 	char	buf[4];
@@ -36,48 +37,11 @@ int
 			g_ms.interrupted = FALSE;
 			len = 0;
 		}
-		if (*buf == '\n' || *buf == '\r')
+		ret = ft_handle_keys(buf, pre_line, &len, &allocated);
+		if (ret < 0 || ret == GNL_EOF)
 		{
-			write(STDERR_FILENO, "\n", 1);
-			tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
+			rc = ret;
 			break ;
-		}
-		else if (*buf == C_EOF && !len)
-		{
-			len = ft_strlen("exit");
-			ft_strlcpy(pre_line, "exit", len + 1);
-			break ;
-		}
-		else if (*buf == C_DEL && 0 < len)
-		{
-			len--;
-			ft_backspace(pre_line, len);
-		}
-		else if (ft_isprint(*buf) && buf[1] == '\0')
-		{
-			if (SIZE_MAX == len || allocated < len + 1)
-			{
-				if (SIZE_MAX == len || SIZE_MAX - BUFFER_SIZE < allocated)
-				{
-					rc = IS_OVERFLOW;
-					break ;
-				}
-				pre_line = ft_realloc(pre_line, allocated + BUFFER_SIZE, allocated);
-				if (!pre_line)
-				{
-					write(STDERR_FILENO, "\n", 1);
-					tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
-					rc = -1;
-					break ;
-				}
-				allocated += BUFFER_SIZE;
-			}
-			write(STDERR_FILENO, buf, rc);
-			pre_line[len] = *buf;
-			len++;
-			if (g_ms.terminfo.prev.col == g_ms.terminfo.maxcol - 1
-				&& g_ms.terminfo.prev.row == g_ms.terminfo.maxrow - 1)
-				g_ms.terminfo.start.row--;
 		}
 		ft_bzero(buf, sizeof(buf));
 		rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));

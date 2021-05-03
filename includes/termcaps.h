@@ -19,7 +19,7 @@
 typedef struct s_termdef
 {
 	char	*cm;
-	char	*ce;
+	char	*cd;
 	char	*cr;
 }	t_termdef;
 
@@ -47,6 +47,9 @@ int	ft_backspace(const char *pre_line, size_t len);
 
 /* get_line.c */
 int	ft_get_line(char **line);
+
+/* handle_keys.c */
+int	ft_handle_keys(const char *buf, char *pre_line, size_t *len, size_t *allocated);
 
 /* term_utils.c */
 int ft_putchar(int c);
