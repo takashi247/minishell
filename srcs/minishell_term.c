@@ -42,7 +42,7 @@ void
 		}
 		ft_put_cmderror(command, "command not found");
 		ft_free(&command);
-		exit(1); // still reachable, possibly lostのリークが残っているため要修正
+		exit(1);
 	}
 }
 
@@ -129,13 +129,7 @@ static pid_t
 			dup2(newpipe[1], STDOUT_FILENO);
 			close(newpipe[1]);
 		}
-		if (is_builtin(c))
-		{
-			ft_execute_builtin(c);
-			exit(0); // still reachableのリークが残っているため要修正
-		}
-		else if (ft_set_redirection(&(c->args)))
-			do_command(c, environ);
+		do_command(c, environ);
 	}
 	if (haspipe)
 	{
@@ -195,6 +189,11 @@ int
 	rc = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
 	while (0 <= rc)
 	{
+		if (g_ms.interrupted == TRUE)
+		{
+			g_ms.interrupted = FALSE;
+			len = 0;
+		}
 		if (*buf == '\n' || *buf == '\r')
 		{
 			write(STDERR_FILENO, "\n", 1);
@@ -263,20 +262,8 @@ int
 	t_command	*commands;
 	int			res;
 
-	if (ft_init_env() == STOP)
+	if (init_minishell() == UTIL_ERROR)
 		return (EXIT_FAILURE);
-	if (ft_init_pwd() == STOP)
-	{
-		ft_lstclear(&g_env, free);
-		return (EXIT_FAILURE);
-	}
-	if (ft_init_term() == UTIL_ERROR)
-	{
-		printf("error\n");
-		ft_lstclear(&g_env, free);
-		FREE(g_pwd);
-		return (EXIT_FAILURE);
-	}
 	line = NULL;
 	trimmed = NULL;
 	head = NULL;
