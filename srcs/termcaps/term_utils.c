@@ -51,7 +51,7 @@ int
 	struct winsize	ws;
 
 	ioctl(1, TIOCGWINSZ, &ws);
-	g_ms.terminfo.maxcol = ws.ws_col;
-	g_ms.terminfo.maxrow = ws.ws_row;
+	g_ms.terminfo.maxcol = ws.ws_col - 1;
+	g_ms.terminfo.maxrow = ws.ws_row - 1;
 	return (UTIL_SUCCESS);
 }

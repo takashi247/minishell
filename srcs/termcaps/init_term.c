@@ -4,11 +4,13 @@ static int
 	get_definition_from_termcap(void)
 {
 	g_ms.terminfo.def.cm = tgetstr("cm", 0);
-	g_ms.terminfo.def.ce = tgetstr("cd", 0);
+	g_ms.terminfo.def.cd = tgetstr("cd", 0);
 	g_ms.terminfo.def.cr = tgetstr("cr", 0);
+	g_ms.terminfo.def.sf = tgetstr("sf", 0);
 	if (!g_ms.terminfo.def.cm
-		|| !g_ms.terminfo.def.ce
-		|| !g_ms.terminfo.def.cr)
+		|| !g_ms.terminfo.def.cd
+		|| !g_ms.terminfo.def.cr
+		|| !g_ms.terminfo.def.sf)
 		return (UTIL_ERROR);
 	return (UTIL_SUCCESS);
 }
