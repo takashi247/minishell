@@ -75,8 +75,7 @@ int	ft_input_char(const char *buf, char *pre_line,
 int	ft_get_line(char **line);
 
 /* handle_keys.c */
-int	ft_handle_keys(const char *buf, char *pre_line,
-		size_t *len, size_t *allocated);
+int	ft_handle_keys_loop(char *pre_line, size_t *len);
 
 /* term_utils.c */
 int	ft_putchar(int c);
