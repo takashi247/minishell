@@ -350,3 +350,10 @@ echo
 printf "${YELLOW}%s${RESET}\n\n" "[bash] echo hello \">\""
 echo "echo hello \">\"" | bash
 echo
+
+printf "${YELLOW}%s${RESET}\n\n" "[mini] "
+echo "" | ./multipipe.out
+echo
+printf "${YELLOW}%s${RESET}\n\n" "[bash] echo hello \">\""
+echo "echo hello \">\"" | bash
+echo

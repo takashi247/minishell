@@ -160,6 +160,8 @@ t_command
 	ft_memset(lastpipe, -1, sizeof(int) * 2);
 	while (c)
 	{
+		if (ft_expand_env_var(c) != COMPLETED)
+			break;
 		c->pid = start_command(c, is_pipe(c), haspipe, lastpipe, environ);
 		haspipe = is_pipe(c);
 		if (haspipe)
@@ -173,8 +175,19 @@ t_command
 static t_bool
 	is_end_with_escape(char *line)
 {
-	if ((ft_strlen(line) == 1 || line[ft_strlen(line) - 2] != '\\')
-		&& line[ft_strlen(line) - 1] == '\\')
+	int	len;
+	int	count;
+
+	if (!line || !(*line))
+		return (FALSE);
+	len = ft_strlen(line);
+	count = 0;
+	while (line[len - 1] == '\\')
+	{
+		count++;
+		len--;
+	}
+	if (count % 2 != 0)
 		return (TRUE);
 	else
 		return (FALSE);
