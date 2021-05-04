@@ -71,6 +71,7 @@ typedef struct			s_command
 	t_list				*redirects;
 	pid_t				pid;
 	struct s_command	*next;
+	t_bool				expanded;
 }						t_command;
 
 int			get_next_line(int fd, char **line);
@@ -83,6 +84,7 @@ void		ft_put_fderror(int fd_from);
 /* expand_env.c */
 int			ft_expand_env_var(t_command *c);
 t_bool		ft_remove_char(char **s, int i);
+t_bool		ft_is_quote(char *s, int i);
 
 /* utils_tnishina.c */
 char		**ft_convert_list(t_list *l);

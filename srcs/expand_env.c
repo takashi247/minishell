@@ -238,31 +238,38 @@ t_bool
 static t_bool
 	check_quotation(char** s, int *i, int *q)
 {
-	if ((!(*i) || (*s)[*i - 1] != '\\') && (*s)[*i] == '\'' && !q[1])
+	if ((*s)[*i] == '\'' && !q[1])
 	{
 		q[0] = !q[0];
 		return (ft_remove_char(s, *i));
 	}
-	else if ((!(*i) || (*s)[*i - 1] != '\\') && (*s)[*i] == '\"' && !q[0])
+	else if ((*s)[*i] == '\"' && !q[0])
 	{
 		q[1] = !q[1];
 		return (ft_remove_char(s, *i));
 	}
-	else if (((!(*i) || (*s)[*i - 1] != '\\') && (*s)[*i] == '\'' && q[1])
-		|| ((!(*i) || (*s)[*i - 1] != '\\') && (*s)[*i] == '\"' && q[0]))
+	else if (((*s)[*i] == '\'' && q[1]) || ((*s)[*i] == '\"' && q[0]))
 		(*i)++;
 	return (TRUE);
 }
 
 t_bool
-	is_quote(char *s, int i)
+	ft_is_quote(char *s, int i)
 {
-	if ((!i || s[i - 1] != '\\') && (s[i] == '\'' || s[i] == '\"'))
+	if (s[i] == '\'' || s[i] == '\"')
 		return (TRUE);
 	else
 		return (FALSE);
 }
 
+t_bool
+	ft_is_escapable_in_dquote(char c)
+{
+	if (c == '$' || c == '\"' || c == '\\')
+		return (TRUE);
+	else
+		return (FALSE);
+}
 
 static int
 	find_n_replace_env(t_list **args)
@@ -273,21 +280,30 @@ static int
 	int		flag;
 	int		q_flag[2];
 	int		res;
+	int		b_flag;
 
 	i = 0;
 	ft_memset(q_flag, 0, sizeof(q_flag));
 	while (((char*)(*args)->content)[i])
 	{
 		flag = 1;
-		while (is_quote((char *)(*args)->content, i))
+		b_flag = 0;
+		while (!b_flag && ft_is_quote((char *)(*args)->content, i))
 		{
 			if (!check_quotation((char**)&((*args)->content), &i, q_flag))
 				return (FAILED);
 		}
+		if (((char *)(*args)->content)[i] == '\\' && !q_flag[0] && (!q_flag[1]
+			|| ft_is_escapable_in_dquote(((char *)(*args)->content)[i + 1])))
+		{
+			b_flag = 1;
+			if (!ft_remove_char((char **)&((*args)->content), i))
+				return (FAILED);
+		}
 		if (!(((char*)(*args)->content)[i]))
 			break;
-		if (!q_flag[0] && (i == 0 || ((char*)(*args)->content)[i - 1] != '\\')
-			&& ((char*)(*args)->content)[i] == '$' && !(is_env_name_end(((char *)(*args)->content)[i + 1])))
+		if (!q_flag[0] && !b_flag && ((char*)(*args)->content)[i] == '$'
+			&& !(is_env_name_end(((char *)(*args)->content)[i + 1])))
 		{
 			flag = 0;
 			env_pos[0] = i;
@@ -353,16 +369,14 @@ static int
 int
 	ft_expand_env_var(t_command *c)
 {
-	if (!c)
+	if (!c || c->expanded)
 		return (COMPLETED);
 	else
 	{
 		if (expand_list(&(c->args)) == FAILED
 		|| expand_list(&(c->redirects)) == FAILED)
 			return (FAILED);
-		if (ft_remove_escape(c->args) == FAILED
-		|| ft_remove_escape(c->redirects) == FAILED)
-			return (FAILED);
+		c->expanded = TRUE;
 		return (COMPLETED);
 	}
 }
