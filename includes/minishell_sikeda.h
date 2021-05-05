@@ -52,10 +52,12 @@ typedef struct s_history
 	struct s_history	*next;
 }	t_history;
 
-typedef struct s_history_manager
+typedef struct s_history_list
 {
 	t_history	*current;
 	t_history	*last;
+	char		*input;
+	size_t		input_len;
 }	t_history_list;
 
 typedef struct s_minishell
@@ -88,6 +90,7 @@ void	ft_put_syntaxerror_with_token(char *token);
 
 /* utils/utils.c */
 void	*ft_realloc(void *original, size_t size, size_t original_size);
+char	*ft_strndup_append_null(const char *s, size_t n);
 int		ft_strcmp(const char *s1, const char *s2);
 int		ft_isspace(char c);
 int		ft_isnumeric(char *s);

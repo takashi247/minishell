@@ -13,7 +13,7 @@ static void
 }
 
 int
-	ft_up_history(void)
+	ft_up_history(size_t *allocated)
 {
 	if (!g_ms.hist.last)
 		return (GNL_SUCCESS);
@@ -21,33 +21,50 @@ int
 		g_ms.hist.current = g_ms.hist.last;
 	else if (g_ms.hist.current->prev)
 		g_ms.hist.current = g_ms.hist.current->prev;
-	put_line(g_ms.hist.current->line, g_ms.hist.current->len);
+	else if (!g_ms.hist.current->prev)
+		return (GNL_SUCCESS);
+	ft_free(&g_ms.hist.input);
+	g_ms.hist.input = ft_strdup(g_ms.hist.current->line);
+	if (!g_ms.hist.input)
+		return (GNL_ERROR);
+	g_ms.hist.input_len = g_ms.hist.current->len;
+	*allocated = g_ms.hist.input_len + 1;
+	put_line(g_ms.hist.input, g_ms.hist.input_len);
 	return (GNL_SUCCESS);
 }
 
 int
-	ft_down_history(const char *pre_line, size_t *len)
+	ft_down_history(size_t *allocated)
 {
 	if (!g_ms.hist.current)
 		return (GNL_SUCCESS);
+	ft_free(&g_ms.hist.input);
 	if (!g_ms.hist.current->next)
 	{
 		g_ms.hist.current = NULL;
-		put_line(pre_line, *len);
+		g_ms.hist.input = ft_strdup("");
+		if (!g_ms.hist.input)
+			return (GNL_ERROR);
+		g_ms.hist.input_len = 0;
 	}
 	else
 	{
 		g_ms.hist.current = g_ms.hist.current->next;
-		put_line(g_ms.hist.current->line, g_ms.hist.current->len);
+		g_ms.hist.input = ft_strdup(g_ms.hist.current->line);
+		if (!g_ms.hist.input)
+			return (GNL_ERROR);
+		g_ms.hist.input_len = g_ms.hist.current->len;
 	}
+	*allocated = g_ms.hist.input_len + 1;
+	put_line(g_ms.hist.input, g_ms.hist.input_len);
 	return (GNL_SUCCESS);
 }
 
 int
-	ft_backspace(const char *pre_line, size_t *len)
+	ft_backspace(void)
 {
-	(*len)--;
-	put_line(pre_line, *len);
+	g_ms.hist.input_len--;
+	put_line(g_ms.hist.input, g_ms.hist.input_len);
 	if (g_ms.terminfo.current.col == 1)
 	{
 		tputs(tgoto(g_ms.terminfo.def.cm, 0, g_ms.terminfo.current.row),
@@ -57,17 +74,17 @@ int
 }
 
 int
-	ft_input_char(const char *buf, char *pre_line,
-		size_t *len, size_t *allocated)
+	ft_input_char(const char *buf, size_t *allocated)
 {
-	if (SIZE_MAX == *len || *allocated < *len + 1)
+	if (SIZE_MAX == g_ms.hist.input_len
+		|| *allocated < g_ms.hist.input_len + 1)
 	{
-		if (SIZE_MAX == *len || SIZE_MAX - BUFFER_SIZE < *allocated)
-		{
+		if (SIZE_MAX == g_ms.hist.input_len
+			|| SIZE_MAX - BUFFER_SIZE < *allocated)
 			return (IS_OVERFLOW);
-		}
-		pre_line = ft_realloc(pre_line, *allocated + BUFFER_SIZE, *allocated);
-		if (!pre_line)
+		g_ms.hist.input
+			= ft_realloc(g_ms.hist.input, *allocated + BUFFER_SIZE, *allocated);
+		if (!g_ms.hist.input)
 		{
 			write(STDERR_FILENO, "\n", 1);
 			tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
@@ -76,8 +93,8 @@ int
 		*allocated += BUFFER_SIZE;
 	}
 	write(STDERR_FILENO, buf, 1);
-	pre_line[*len] = *buf;
-	(*len)++;
+	g_ms.hist.input[g_ms.hist.input_len] = *buf;
+	g_ms.hist.input_len++;
 	if (g_ms.terminfo.current.col == g_ms.terminfo.maxcol)
 	{
 		tputs(tgoto(g_ms.terminfo.def.cm, 0, g_ms.terminfo.current.row + 1),

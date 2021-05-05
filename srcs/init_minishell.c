@@ -18,7 +18,5 @@ int
 		return (UTIL_ERROR);
 	}
 	g_ms.interrupted = FALSE;
-	g_ms.hist.current = NULL;
-	g_ms.hist.last = NULL;
 	return (UTIL_SUCCESS);
 }

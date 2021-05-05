@@ -9,6 +9,8 @@ static t_history
 	new = (t_history *)malloc(sizeof(t_history));
 	if (!new)
 		return (NULL);
+	if (len == SIZE_MAX)
+		return (NULL);
 	new->line = (char *)malloc((len + 1) * sizeof(char));
 	if (!new->line)
 	{
@@ -38,24 +40,6 @@ int
 	else
 		hlist->last->next = new;
 	hlist->last = new;
-	return (UTIL_SUCCESS);
-}
-
-int
-	ft_next_history(t_history_list *hlist)
-{
-	if (!hlist->current || !hlist->current->next)
-		return (UTIL_ERROR);
-	hlist->current = hlist->current->next;
-	return (UTIL_SUCCESS);
-}
-
-int
-	ft_prev_history(t_history_list *hlist)
-{
-	if (!hlist->current || !hlist->current->prev)
-		return (UTIL_ERROR);
-	hlist->current = hlist->current->prev;
 	return (UTIL_SUCCESS);
 }
 

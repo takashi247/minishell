@@ -214,21 +214,6 @@ static void
 	}
 }
 
-void
-	show_histories(void)
-{
-	while (g_ms.hist.current && g_ms.hist.current->prev)
-		g_ms.hist.current = g_ms.hist.current->prev;
-	while (g_ms.hist.current)
-	{
-		printf("%s<-%s->%s\n",
-			g_ms.hist.current->prev ? g_ms.hist.current->prev->line : "(null)",
-			g_ms.hist.current->line,
-			g_ms.hist.current->next ? g_ms.hist.current->next->line : "(null)");
-		g_ms.hist.current = g_ms.hist.current->next;
-	}
-}
-
 int
 	main(void)
 {
@@ -272,7 +257,6 @@ int
 				ft_lstclear(&tokens, free);
 				return (1);
 			}
-			// show_histories();
 			res = KEEP_RUNNING;
 			head = commands;
 			while (commands)
