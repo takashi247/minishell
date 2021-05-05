@@ -1,5 +1,6 @@
 NAME		:= minishell
 
+HISTDIR		:= ./srcs/history/
 UTILDIR		:= ./srcs/utils/
 TERMDIR		:= ./srcs/termcaps/
 
@@ -15,10 +16,11 @@ SRCS		:= srcs/init_minishell.c \
 				srcs/get_next_line.c srcs/make_token.c srcs/make_command.c srcs/expand_env.c \
 				srcs/handle_signal.c srcs/set_redirection.c \
 				srcs/remove_escape.c \
+				$(HISTDIR)hlist_utils.c \
 				$(UTILDIR)command_utils.c $(UTILDIR)command_errors.c $(UTILDIR)minishell_errors.c \
 				$(UTILDIR)tlist_utils.c $(UTILDIR)split_utils.c $(UTILDIR)utils_tnishina.c $(UTILDIR)utils.c \
-				$(TERMDIR)edit_term.c $(TERMDIR)get_line.c $(TERMDIR)handle_keys.c \
-				$(TERMDIR)init_term.c $(TERMDIR)term_utils.c
+				$(TERMDIR)edit_term_history.c $(TERMDIR)edit_term.c $(TERMDIR)get_line.c \
+				$(TERMDIR)handle_keys.c $(TERMDIR)init_term.c $(TERMDIR)term_utils.c
 SRCS_PRODUCTION	:= $(SRCS)
 SRCS_PRODUCTION	+= srcs/minishell.c
 OBJS_PRODUCTION	:= $(SRCS_PRODUCTION:.c=.o)

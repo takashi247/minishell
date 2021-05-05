@@ -64,23 +64,28 @@ typedef struct s_terminfo
 }	t_terminfo;
 
 /* init_term.c */
-int	ft_init_term(void);
+int		ft_init_term(void);
 
 /* edit_term.c */
-int	ft_backspace(const char *pre_line, size_t *len);
-int	ft_input_char(const char *buf, char *pre_line,
-		size_t *len, size_t *allocated);
+void	put_line(const char *pre_line, size_t len);
+int		ft_enter(void);
+int		ft_backspace(void);
+int		ft_input_char(const char *buf, size_t *allocated);
+
+/* edit_term_history.c */
+int		ft_up_history(size_t *allocated);
+int		ft_down_history(size_t *allocated);
 
 /* get_line.c */
-int	ft_get_line(char **line);
+int		ft_get_line(char **line);
 
 /* handle_keys.c */
-int	ft_handle_keys_loop(char *pre_line, size_t *len);
+int		ft_handle_keys_loop(void);
 
 /* term_utils.c */
-int	ft_putchar(int c);
-int	ft_get_cursor_position(int *row, int *col);
-int	ft_update_current_position(void);
-int	ft_get_win_size(void);
+int		ft_putchar(int c);
+int		ft_get_cursor_position(int *row, int *col);
+int		ft_update_current_position(void);
+int		ft_get_win_size(void);
 
 #endif
