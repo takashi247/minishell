@@ -44,18 +44,40 @@ typedef enum e_cmd_signal
 	EXIT
 }	t_cmd_signal;
 
+typedef struct s_history
+{
+	size_t				len;
+	char				*line;
+	struct s_history	*prev;
+	struct s_history	*next;
+}	t_history;
+
+typedef struct s_history_manager
+{
+	t_history	*current;
+	t_history	*last;
+}	t_history_list;
+
 typedef struct s_minishell
 {
 	t_terminfo		terminfo;
 	struct termios	ms_term;
 	struct termios	origin_term;
 	t_bool			interrupted;
+	t_history_list	hist;
 }	t_minishell;
 
 t_minishell	g_ms;
 int			g_status;
 char		*g_pwd;
 t_list		*g_env;
+
+/* history/utils.c */
+int		ft_add_history(t_history_list *hlist, const char *line, const size_t len);
+int		ft_next_history(t_history_list *hlist);
+int		ft_prev_history(t_history_list *hlist);
+void	ft_delone_history(t_history *node);
+void	ft_clear_history(t_history **node_ptr);
 
 /* init_minishell.c */
 int		init_minishell(void);

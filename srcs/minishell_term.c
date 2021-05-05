@@ -214,6 +214,21 @@ static void
 	}
 }
 
+void
+	show_histories(void)
+{
+	while (g_ms.hist.current && g_ms.hist.current->prev)
+		g_ms.hist.current = g_ms.hist.current->prev;
+	while (g_ms.hist.current)
+	{
+		printf("%s<-%s->%s\n",
+			g_ms.hist.current->prev ? g_ms.hist.current->prev->line : "(null)",
+			g_ms.hist.current->line,
+			g_ms.hist.current->next ? g_ms.hist.current->next->line : "(null)");
+		g_ms.hist.current = g_ms.hist.current->next;
+	}
+}
+
 int
 	main(void)
 {
@@ -257,6 +272,7 @@ int
 				ft_lstclear(&tokens, free);
 				return (1);
 			}
+			// show_histories();
 			res = KEEP_RUNNING;
 			head = commands;
 			while (commands)
@@ -289,7 +305,9 @@ int
 	ft_free(&line);
 	ft_free(&trimmed);
 	ft_clear_commands(&head);
+	ft_clear_history(&g_ms.hist.last);
 	ft_free(&g_pwd);
 	ft_lstclear(&g_env, free);
+	// system("leaks term.out");
 	exit(g_status);
 }

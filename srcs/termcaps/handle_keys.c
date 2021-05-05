@@ -10,6 +10,8 @@ static int
 	{
 		write(STDERR_FILENO, "\n", 1);
 		tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
+		if (0 < len)
+			ft_add_history(&g_ms.hist, pre_line, *len);
 		return (GNL_EOF);
 	}
 	else if (*buf == C_EOF && !*len)
@@ -20,6 +22,10 @@ static int
 	}
 	else if (*buf == C_DEL && 0 < *len)
 		return (ft_backspace(pre_line, len));
+	else if (!ft_strcmp(buf, K_UP))
+		return (ft_up_history());
+	else if (!ft_strcmp(buf, K_DOWN))
+		return (ft_down_history(pre_line, len));
 	else if (ft_isprint(*buf) && buf[1] == '\0')
 		return (ft_input_char(buf, pre_line, len, allocated));
 	return (GNL_SUCCESS);
@@ -34,6 +40,7 @@ int
 
 	ft_bzero(buf, sizeof(buf));
 	allocated = BUFFER_SIZE;
+	g_ms.hist.current = NULL;
 	ft_putstr_fd(PROMPT, STDERR_FILENO);
 	ret = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
 	while (0 <= ret)

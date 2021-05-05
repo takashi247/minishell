@@ -67,6 +67,8 @@ typedef struct s_terminfo
 int	ft_init_term(void);
 
 /* edit_term.c */
+int	ft_up_history(void);
+int	ft_down_history(const char *pre_line, size_t *len);
 int	ft_backspace(const char *pre_line, size_t *len);
 int	ft_input_char(const char *buf, char *pre_line,
 		size_t *len, size_t *allocated);

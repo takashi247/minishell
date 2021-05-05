@@ -1,7 +1,7 @@
 #include "minishell_tnishina.h"
 
 static void
-	put_line(const char *pre_line, size_t *len)
+	put_line(const char *pre_line, size_t len)
 {
 	int	row;
 
@@ -9,14 +9,45 @@ static void
 	tputs(tgoto(g_ms.terminfo.def.cm, 0, row), 1, ft_putchar);
 	tputs(g_ms.terminfo.def.cd, 1, ft_putchar);
 	ft_putstr_fd(PROMPT, STDERR_FILENO);
-	write(STDERR_FILENO, pre_line, *len);
+	write(STDERR_FILENO, pre_line, len);
+}
+
+int
+	ft_up_history(void)
+{
+	if (!g_ms.hist.last)
+		return (GNL_SUCCESS);
+	if (!g_ms.hist.current)
+		g_ms.hist.current = g_ms.hist.last;
+	else if (g_ms.hist.current->prev)
+		g_ms.hist.current = g_ms.hist.current->prev;
+	put_line(g_ms.hist.current->line, g_ms.hist.current->len);
+	return (GNL_SUCCESS);
+}
+
+int
+	ft_down_history(const char *pre_line, size_t *len)
+{
+	if (!g_ms.hist.current)
+		return (GNL_SUCCESS);
+	if (!g_ms.hist.current->next)
+	{
+		g_ms.hist.current = NULL;
+		put_line(pre_line, *len);
+	}
+	else
+	{
+		g_ms.hist.current = g_ms.hist.current->next;
+		put_line(g_ms.hist.current->line, g_ms.hist.current->len);
+	}
+	return (GNL_SUCCESS);
 }
 
 int
 	ft_backspace(const char *pre_line, size_t *len)
 {
 	(*len)--;
-	put_line(pre_line, len);
+	put_line(pre_line, *len);
 	if (g_ms.terminfo.current.col == 1)
 	{
 		tputs(tgoto(g_ms.terminfo.def.cm, 0, g_ms.terminfo.current.row),
