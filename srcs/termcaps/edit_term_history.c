@@ -1,5 +1,25 @@
 #include "minishell_tnishina.h"
 
+static void
+	adjust_start_row(void)
+{
+	int64_t	total_len;
+	int		need_rows;
+	int		exist_rows;
+
+	total_len = g_ms.hist.input_len + ft_strlen(PROMPT);
+	exist_rows = g_ms.terminfo.maxrow - g_ms.terminfo.start.row + 1;
+	need_rows = total_len / g_ms.terminfo.maxcol;
+	if (0 < total_len % g_ms.terminfo.maxcol)
+		need_rows++;
+	need_rows -= exist_rows;
+	while (0 < need_rows--)
+	{
+		tputs(g_ms.terminfo.def.sf, 1, ft_putchar);
+		g_ms.terminfo.start.row--;
+	}
+}
+
 int
 	ft_up_history(size_t *allocated)
 {
@@ -17,6 +37,7 @@ int
 		return (GNL_ERROR);
 	g_ms.hist.input_len = g_ms.hist.current->len;
 	*allocated = g_ms.hist.input_len + 1;
+	adjust_start_row();
 	put_line(g_ms.hist.input, g_ms.hist.input_len);
 	return (GNL_SUCCESS);
 }
