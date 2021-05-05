@@ -9,13 +9,78 @@ int
 	exit(g_status);
 }
 
+static char
+	*get_pathenv(char *s)
+{
+	int		i;
+	char*	path_env;
+	char*	tmp;
+	char*	front;
+	char*	back;
+	char*	pwd;
+
+	if (!s)
+		return (NULL);
+	path_env = ft_strdup(s);
+	if (!path_env)
+		exit(1);
+	tmp = NULL;
+	pwd = getcwd(NULL, 0);
+	if (!pwd)
+		return (path_env);
+	i = 0;
+	while (path_env[i])
+	{
+		if (!i && path_env[i] == ':')
+		{
+			tmp = path_env;
+			path_env = ft_strjoin(pwd, path_env);
+			if (!path_env)
+				exit(1);
+			ft_free(&tmp);
+			i += ft_strlen(pwd);
+		}
+		else if (path_env[i] == ':' && path_env[i + 1] == ':')
+		{
+			tmp = path_env;
+			front = ft_substr(path_env, 0, i + 1);
+			back = ft_strdup(path_env + i + 1);
+			ft_free(&tmp);
+			tmp = ft_strjoin(front, pwd);
+			path_env = ft_strjoin(tmp, back);
+			if (!front || !back || !tmp || !path_env)
+				exit(1);
+			ft_free(&front);
+			ft_free(&back);
+			ft_free(&tmp);
+			i += ft_strlen(pwd);
+		}
+		else if (path_env[i] == ':' && !path_env[i + 1])
+		{
+			tmp = path_env;
+			path_env = ft_strjoin(path_env, pwd);
+			if (!path_env)
+				exit(1);
+			ft_free(&tmp);
+			i += ft_strlen(pwd);
+		}
+		else
+			i++;
+	}
+	ft_free(&pwd);
+	return (path_env);
+}
+
 void
 	do_command(t_command *c, char **environ)
 {
-	char	**argv;
-	char	**paths;
-	char	*tmp;
-	char	*command;
+	char		**argv;
+	char		**paths;
+	char		*tmp;
+	char		*command;
+	char		*path_env;
+	char		**head;
+	struct stat	buf;
 
 	if (!c || !environ)
 		exit(1);
@@ -25,24 +90,70 @@ void
 	command = ft_strdup(argv[0]);
 	if (!command)
 		exit(1);
-	if (execve(argv[0], argv, environ) < 0)
+	path_env = ft_getenv("PATH");
+	if (argv[0][0] == '/' || !path_env)
 	{
-		paths = ft_split(ft_getenv("PATH"), ':');
+		if (stat(argv[0], &buf) != 0)
+		{
+			ft_put_cmderror(argv[0], strerror(errno));
+			g_status = STATUS_COMMAND_NOT_FOUND;
+			exit(g_status);
+		}
+		else if (buf.st_mode & S_IFDIR)
+		{
+			ft_put_cmderror(argv[0], IS_DIR_ERROR_MSG);
+			g_status = STATUS_CANNOT_EXECUTE;
+			exit(g_status);
+		}
+		if (execve(argv[0], argv, environ) < 0)
+		{
+			ft_put_cmderror(argv[0], strerror(errno));
+			g_status = STATUS_CANNOT_EXECUTE;
+			exit(g_status);
+		}
+	}
+	else
+	{
+		path_env = get_pathenv(path_env);
+		paths = ft_split(path_env, ':');
+		if (!path_env || !paths)
+			exit(STATUS_GENERAL_ERR);
+		head = paths;
 		while (*paths)
 		{
 			ft_free(&(argv[0]));
 			tmp = ft_strjoin(*paths, "/");
 			if (tmp)
 				argv[0] = ft_strjoin(tmp, command);
-			ft_free(&tmp);
-			if (!argv[0])
+			if (!tmp || !argv[0])
 				exit(1);
-			if (execve(argv[0], argv, environ) < 0)
+			ft_free(&tmp);
+			if (stat(argv[0], &buf) == 0)
+			{
+				if (buf.st_mode & S_IFDIR)
+				{
+					ft_put_cmderror(argv[0], IS_DIR_ERROR_MSG);
+					g_status = STATUS_COMMAND_NOT_FOUND;
+					exit(g_status);
+				}
+				if (execve(argv[0], argv, environ) < 0)
+				{
+					ft_put_cmderror(argv[0], strerror(errno));
+					g_status = STATUS_CANNOT_EXECUTE;
+					exit(g_status);
+				}
+			}
+			else
 				paths++;
 		}
-		ft_put_cmderror(command, "command not found");
+		ft_put_cmderror(command, COMMAND_NOT_FOUND_ERR_MSG);
 		ft_free(&command);
-		exit(1); // still reachable, possibly lostのリークが残っているため要修正
+		ft_free(&path_env);
+		ft_free_split(&head);
+		ft_free_split(&argv);
+		ft_free(&g_pwd);
+		ft_lstclear(&g_env, free);
+		exit(1); // still reachableのリークが残っているため要修正
 	}
 }
 

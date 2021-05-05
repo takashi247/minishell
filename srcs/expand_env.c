@@ -96,7 +96,7 @@ static t_bool
 	is_env_name_end(char c)
 {
 	if ((33 <= c && c <= 39) || (42 <= c && c <= 47) || c == 58 || c == 61 ||
-		c == 64 || (91 <= c && c <= 96) || c == 123 ||
+		c == 64 || (91 <= c && c <= 94) || c == 96 || c == 123 ||
 		(125 <= c && c <= 126) || c == ' ' || !c)
 		return (TRUE);
 	else
@@ -163,9 +163,9 @@ static int
 				ft_free(&tmp[0]);
 				return (FAILED);
 			}
-			FREE((*args)->content);
+			ft_free((char**)&((*args)->content));
 			(*args)->content = tmp[0];
-			FREE(ft_lstlast(tokens)->content);
+			ft_free((char**)&(ft_lstlast(tokens)->content));
 			ft_lstlast(tokens)->content = tmp[1];
 			ft_lstlast(tokens)->next = (*args)->next;
 			(*args)->next = tokens->next;
@@ -284,21 +284,23 @@ static int
 
 	i = 0;
 	ft_memset(q_flag, 0, sizeof(q_flag));
+	b_flag = 0;
 	while (((char*)(*args)->content)[i])
 	{
 		flag = 1;
-		b_flag = 0;
-		while (!b_flag && ft_is_quote((char *)(*args)->content, i))
-		{
-			if (!check_quotation((char**)&((*args)->content), &i, q_flag))
-				return (FAILED);
-		}
-		if (((char *)(*args)->content)[i] == '\\' && !q_flag[0] && (!q_flag[1]
+		if (!b_flag && ((char *)(*args)->content)[i] == '\\' && !q_flag[0] && (!q_flag[1]
 			|| ft_is_escapable_in_dquote(((char *)(*args)->content)[i + 1])))
 		{
 			b_flag = 1;
 			if (!ft_remove_char((char **)&((*args)->content), i))
 				return (FAILED);
+			continue ;
+		}
+		if (!b_flag && ft_is_quote((char *)(*args)->content, i))
+		{
+			if (!check_quotation((char**)&((*args)->content), &i, q_flag))
+				return (FAILED);
+			continue ;
 		}
 		if (!(((char*)(*args)->content)[i]))
 			break;
@@ -332,6 +334,7 @@ static int
 			}
 		}
 		i += flag;
+		b_flag = 0;
 	}
 	return (COMPLETED);
 }

@@ -29,20 +29,20 @@ static int
 	int		fd_num;
 
 	if (!arg)
-		return (-2);
+		return (TOKEN_ERROR);
 	len = ft_strlen(arg);
 	if (len == 1)
-		return (-1);
+		return (NO_FD_SETTING);
 	else if (arg[0] == '>')
-		return (-1);
+		return (NO_FD_SETTING);
 	else
 	{
 		if (ft_isdigit(arg[len - 2]))
 			fd_str = ft_substr(arg, 0, len - 1);
 		else
 			fd_str = ft_substr(arg, 0, len - 2);
-		if (ft_isover_intrange(fd_str) != 0)
-			fd_num = -3;
+		if (ft_isover_intrange(fd_str))
+			fd_num = OVER_INT_RANGE;
 		else
 			fd_num = ft_atoi(fd_str);
 		ft_free(&fd_str);
@@ -69,10 +69,10 @@ static t_bool
 	if (fd_to < 0)
 	{
 		ft_put_cmderror(path, strerror(errno));
-		g_status = 1;
+		g_status = STATUS_GENERAL_ERR;
 		return (FALSE);
 	}
-	if (fd_from == -1)
+	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
 	dup2(fd_to, fd_from);
 	close(fd_to);
@@ -88,10 +88,10 @@ static t_bool
 	if (fd_to < 0)
 	{
 		ft_put_cmderror(path, strerror(errno));
-		g_status = 1;
+		g_status = STATUS_GENERAL_ERR;
 		return (FALSE);
 	}
-	if (fd_from == -1)
+	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
 	dup2(fd_to, fd_from);
 	close(fd_to);
@@ -107,10 +107,10 @@ static t_bool
 	if (fd_to < 0)
 	{
 		ft_put_cmderror(path, strerror(errno));
-		g_status = 1;
+		g_status = STATUS_GENERAL_ERR;
 		return (FALSE);
 	}
-	if (fd_from == -1)
+	if (fd_from == NO_FD_SETTING)
 		fd_from = STDIN_FILENO;
 	dup2(fd_to, fd_from);
 	close(fd_to);
@@ -142,13 +142,13 @@ t_bool
 	while (rd && res)
 	{
 		fd_from = get_fd((char *)(rd->content));
-		if (fd_from == -3 || FD_MAX < fd_from)
+		if (fd_from == OVER_INT_RANGE || FD_MAX < fd_from)
 			ft_put_fderror(fd_from);
 		redirect_op = get_op((char *)(rd->content));
 		path = ft_strdup((char *)(rd->next->content));
-		if (fd_from <= -2 || FD_MAX < fd_from || !redirect_op || !path)
+		if (fd_from <= TOKEN_ERROR || FD_MAX < fd_from || !redirect_op || !path)
 		{
-			g_status = 1;
+			g_status = STATUS_GENERAL_ERR;
 			return (FALSE);
 		}
 		if (!execute_redirection(fd_from, redirect_op, path))

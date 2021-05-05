@@ -3,7 +3,7 @@ NAME		:= minishell
 UTILDIR		:= ./srcs/utils/
 TERMDIR		:= ./srcs/termcaps/
 
-SRCS		:= srcs/init_minishell.c \
+SRCS		:= \
 				srcs/add_space.c \
 				srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
 				srcs/echo.c srcs/pwd.c srcs/exit.c \
@@ -13,8 +13,7 @@ SRCS		:= srcs/init_minishell.c \
 				srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c \
 				srcs/env_sort.c srcs/env_copy.c \
 				srcs/get_next_line.c srcs/make_token.c srcs/make_command.c srcs/expand_env.c \
-				srcs/handle_signal.c srcs/set_redirection.c \
-				srcs/remove_escape.c \
+				srcs/handle_signal.c srcs/set_redirection.c\
 				$(UTILDIR)command_utils.c $(UTILDIR)command_errors.c $(UTILDIR)minishell_errors.c \
 				$(UTILDIR)tlist_utils.c $(UTILDIR)split_utils.c $(UTILDIR)utils_tnishina.c $(UTILDIR)utils.c \
 				$(TERMDIR)edit_term.c $(TERMDIR)get_line.c $(TERMDIR)handle_keys.c \

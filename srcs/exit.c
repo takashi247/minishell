@@ -16,7 +16,7 @@ static int
 			ft_put_cmderror("exit", "too many arguments");
 			g_status = STATUS_GENERAL_ERR;
 			ft_free(&trimmed_arg);
-			return (KEEP_RUNNING);
+			return (STOP);
 		}
 	}
 	else
