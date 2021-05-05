@@ -289,7 +289,9 @@ int
 	ft_free(&line);
 	ft_free(&trimmed);
 	ft_clear_commands(&head);
+	ft_clear_history(&g_ms.hist.last);
 	ft_free(&g_pwd);
 	ft_lstclear(&g_env, free);
+	// system("leaks term.out");
 	exit(g_status);
 }

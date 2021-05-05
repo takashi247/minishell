@@ -19,6 +19,29 @@ void
 	return (new);
 }
 
+char
+	*ft_strndup_append_null(const char *s, size_t n)
+{
+	char	*p;
+	size_t	i;
+
+	if (!s)
+		return (NULL);
+	if (n == SIZE_MAX)
+		return (NULL);
+	p = (char *)malloc(sizeof(char) * (n + 1));
+	if (!p)
+		return (NULL);
+	i = 0;
+	while (s[i] && i < n)
+	{
+		p[i] = s[i];
+		i++;
+	}
+	p[i] = '\0';
+	return (p);
+}
+
 int
 	ft_strcmp(const char *s1, const char *s2)
 {
