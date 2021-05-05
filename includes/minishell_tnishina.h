@@ -28,6 +28,12 @@
 # define FD_MAX 255
 # define NEWLINE "newline"
 
+/* redirection parameters */
+
+# define NO_FD_SETTING -1
+# define TOKEN_ERROR -2
+# define OVER_INT_RANGE -3
+
 /*
 ** basic GNL parameters
 */
