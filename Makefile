@@ -4,7 +4,7 @@ HISTDIR		:= ./srcs/history/
 UTILDIR		:= ./srcs/utils/
 TERMDIR		:= ./srcs/termcaps/
 
-SRCS		:= \
+SRCS		:= srcs/init_minishell.c \
 				srcs/add_space.c \
 				srcs/cd.c srcs/cd_error.c srcs/cd_path_utils.c srcs/cd_fullpath.c \
 				srcs/echo.c srcs/pwd.c srcs/exit.c \
