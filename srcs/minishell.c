@@ -272,7 +272,7 @@ t_command
 	while (c)
 	{
 		if (ft_expand_env_var(c) != COMPLETED)
-			break;
+			return (NULL);
 		c->pid = start_command(c, is_pipe(c), haspipe, lastpipe, environ);
 		haspipe = is_pipe(c);
 		if (haspipe)
@@ -401,7 +401,7 @@ int
 						continue ;
 					}
 					commands = ft_execute_pipeline(commands, environ);
-					if (waitpid(commands->pid, &g_status, 0) < 0)
+					if (!commands || waitpid(commands->pid, &g_status, 0) < 0)
 						exit_with_error();
 				}
 				commands = commands->next;
