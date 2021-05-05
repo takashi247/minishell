@@ -1,13 +1,8 @@
 #include "minishell_tnishina.h"
 
-int
-	ft_get_line(char **line)
+static int
+	init_input_and_position(void)
 {
-	ssize_t	ret;
-
-	if (!line)
-		return (GNL_ERROR);
-	*line = NULL;
 	g_ms.hist.input = (char *)malloc(BUFFER_SIZE);
 	if (!g_ms.hist.input)
 	{
@@ -17,7 +12,23 @@ int
 	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.ms_term);
 	if (ft_get_cursor_position(&(g_ms.terminfo.start.row),
 			&(g_ms.terminfo.start.col)) == UTIL_ERROR)
+	{
+		ft_free(&g_ms.hist.input);
 		return (GNL_ERROR);
+	}
+	return (GNL_SUCCESS);
+}
+
+int
+	ft_get_line(char **line)
+{
+	ssize_t	ret;
+
+	if (!line)
+		return (GNL_ERROR);
+	*line = NULL;
+	if (init_input_and_position() == GNL_ERROR)
+		return (GNL_SUCCESS);
 	ret = ft_handle_keys_loop();
 	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.origin_term);
 	if (0 <= ret)

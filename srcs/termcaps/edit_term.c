@@ -1,6 +1,6 @@
 #include "minishell_tnishina.h"
 
-static void
+void
 	put_line(const char *pre_line, size_t len)
 {
 	int	row;
@@ -13,51 +13,14 @@ static void
 }
 
 int
-	ft_up_history(size_t *allocated)
+	ft_enter(void)
 {
-	if (!g_ms.hist.last)
-		return (GNL_SUCCESS);
-	if (!g_ms.hist.current)
-		g_ms.hist.current = g_ms.hist.last;
-	else if (g_ms.hist.current->prev)
-		g_ms.hist.current = g_ms.hist.current->prev;
-	else if (!g_ms.hist.current->prev)
-		return (GNL_SUCCESS);
-	ft_free(&g_ms.hist.input);
-	g_ms.hist.input = ft_strdup(g_ms.hist.current->line);
-	if (!g_ms.hist.input)
-		return (GNL_ERROR);
-	g_ms.hist.input_len = g_ms.hist.current->len;
-	*allocated = g_ms.hist.input_len + 1;
-	put_line(g_ms.hist.input, g_ms.hist.input_len);
-	return (GNL_SUCCESS);
-}
-
-int
-	ft_down_history(size_t *allocated)
-{
-	if (!g_ms.hist.current)
-		return (GNL_SUCCESS);
-	ft_free(&g_ms.hist.input);
-	if (!g_ms.hist.current->next)
-	{
-		g_ms.hist.current = NULL;
-		g_ms.hist.input = ft_strdup("");
-		if (!g_ms.hist.input)
-			return (GNL_ERROR);
-		g_ms.hist.input_len = 0;
-	}
-	else
-	{
-		g_ms.hist.current = g_ms.hist.current->next;
-		g_ms.hist.input = ft_strdup(g_ms.hist.current->line);
-		if (!g_ms.hist.input)
-			return (GNL_ERROR);
-		g_ms.hist.input_len = g_ms.hist.current->len;
-	}
-	*allocated = g_ms.hist.input_len + 1;
-	put_line(g_ms.hist.input, g_ms.hist.input_len);
-	return (GNL_SUCCESS);
+	write(STDERR_FILENO, "\n", 1);
+	tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
+	if (0 < g_ms.hist.input_len)
+		ft_add_history(&g_ms.hist, g_ms.hist.input, g_ms.hist.input_len);
+	g_ms.hist.current = NULL;
+	return (GNL_EOF);
 }
 
 int
@@ -73,8 +36,8 @@ int
 	return (GNL_SUCCESS);
 }
 
-int
-	ft_input_char(const char *buf, size_t *allocated)
+static int
+	check_allocated_and_realloc(size_t *allocated)
 {
 	if (SIZE_MAX == g_ms.hist.input_len
 		|| *allocated < g_ms.hist.input_len + 1)
@@ -92,6 +55,17 @@ int
 		}
 		*allocated += BUFFER_SIZE;
 	}
+	return (GNL_SUCCESS);
+}
+
+int
+	ft_input_char(const char *buf, size_t *allocated)
+{
+	int	ret;
+
+	ret = check_allocated_and_realloc(allocated);
+	if (ret != GNL_SUCCESS)
+		return (ret);
 	write(STDERR_FILENO, buf, 1);
 	g_ms.hist.input[g_ms.hist.input_len] = *buf;
 	g_ms.hist.input_len++;

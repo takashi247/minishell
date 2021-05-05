@@ -75,7 +75,8 @@ char		*g_pwd;
 t_list		*g_env;
 
 /* history/utils.c */
-int		ft_add_history(t_history_list *hlist, const char *line, const size_t len);
+int		ft_add_history(
+			t_history_list *hlist, const char *line, const size_t len);
 int		ft_next_history(t_history_list *hlist);
 int		ft_prev_history(t_history_list *hlist);
 void	ft_delone_history(t_history *node);

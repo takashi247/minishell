@@ -5,22 +5,15 @@ static int
 {
 	ft_get_win_size();
 	ft_update_current_position();
-	if (*buf == '\n' || *buf == '\r')
-	{
-		write(STDERR_FILENO, "\n", 1);
-		tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
-		if (0 < g_ms.hist.input_len)
-			ft_add_history(&g_ms.hist, g_ms.hist.input, g_ms.hist.input_len);
-		g_ms.hist.current = NULL;
-		return (GNL_EOF);
-	}
-	else if (*buf == C_EOF && !g_ms.hist.input_len)
+	if (*buf == C_EOF && !g_ms.hist.input_len)
 	{
 		g_ms.hist.input_len = ft_strlen("exit");
 		ft_free(&g_ms.hist.input);
 		g_ms.hist.input = ft_strdup("exit");
 		return (GNL_EOF);
 	}
+	else if (*buf == '\n' || *buf == '\r')
+		return (ft_enter());
 	else if (*buf == C_DEL && 0 < g_ms.hist.input_len)
 		return (ft_backspace());
 	else if (!ft_strcmp(buf, K_UP))
