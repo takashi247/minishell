@@ -14,7 +14,7 @@ gcc -g -Wall -Wextra -Werror -I./includes -I./libft \
 	srcs/utils/command_errors.c srcs/utils/utils_tnishina.c srcs/minishell.c\
 	srcs/make_command.c srcs/make_token.c srcs/get_next_line.c srcs/expand_env.c \
     srcs/utils/tlist_utils.c srcs/utils/split_utils.c srcs/set_redirection.c\
-    srcs/handle_signal.c srcs/add_space.c srcs/extract_redirect.c srcs/remove_escape.c\
+    srcs/handle_signal.c srcs/add_space.c srcs/extract_redirect.c\
     -Llibft -lft -o multipipe.out #-D LEAKS
 
 YELLOW=$(printf '\033[33m')

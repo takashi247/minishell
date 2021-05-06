@@ -14,7 +14,7 @@ static int
 t_bool
 	ft_is_delimiter(char c)
 {
-	if (c == ' ' || c == '|' || c == ';' || c == '<' || c == '>' || !c)
+	if (c == ' ' || c == '|' || c == ';' || c == '<' || c == '>' || !c || c == '\t')
 		return (TRUE);
 	else
 		return (FALSE);
@@ -24,7 +24,7 @@ t_bool
 	ft_is_delimiter_or_quote(char *l, int i, int *fl)
 {
 	if ((!fl[0] && !fl[1] && !fl[4]
-		&& (l[i] == '\0' || (l[i] == ' ' || l[i] == '|' || l[i] == ';')
+		&& (l[i] == '\0' || (l[i] == ' ' || l[i] == '|' || l[i] == ';' || l[i] == '\t')
 		|| (!fl[3] && l[i] == '<') || (!fl[3] && i && l[i] == '>')
 		|| (!fl[3] && l[i] == '>' && l[i + 1] != '>')
 		|| (fl[2] && l[i] == '>')))
@@ -38,6 +38,10 @@ t_bool
 			fl[0] = 1;
 		else if (!fl[4] && l[i] == '\"' && !fl[0] && !fl[1])
 			fl[1] = 1;
+		else if (!fl[4] && l[i] == '\'' && fl[0] && !fl[1] && !ft_is_delimiter(l[i + 1]))
+			fl[0] = 0;
+		else if (!fl[4] && l[i] == '\"' && !fl[0] && fl[1] && !ft_is_delimiter(l[i + 1]))
+			fl[1] = 0;
 		else if (l[i] == '>' && l[i + 1] == '>')
 			fl[2] = 1;
 		else if (!i && ft_isdigit(l[i]))
@@ -87,7 +91,7 @@ int
 	{
 		i = 0;
 		ft_bzero(fl, sizeof(fl));
-		while (*l == ' ')
+		while (*l == ' ' || *l == '\t')
 			l++;
 		while (!(f(l, i, fl)))
 			i++;

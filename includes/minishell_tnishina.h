@@ -19,12 +19,20 @@
 
 # define PROMPT "minishell$ "
 # define EXIT_PROMPT "exit\n"
+# define STATUS_CANNOT_EXECUTE 126
+# define STATUS_COMMAND_NOT_FOUND 127
 # define STATUS_SYNTAX_ERR 258
 # define REDIRECT_IN "<"
 # define REDIRECT_OUT ">"
 # define APPEND_REDIRECT_OUT ">>"
 # define FD_MAX 255
 # define NEWLINE "newline"
+
+/* redirection parameters */
+
+# define NO_FD_SETTING -1
+# define TOKEN_ERROR -2
+# define OVER_INT_RANGE -3
 
 /*
 ** basic GNL parameters
@@ -44,6 +52,8 @@
 # define SYNTAX_ERROR_MSG "syntax error near unexpected token"
 # define FD_OOR_MSG "file descriptor out of range"
 # define FD_ERROR_MSG "Bad file descriptor"
+# define IS_DIR_ERROR_MSG "is a directory"
+# define COMMAND_NOT_FOUND_ERR_MSG "command not found"
 
 /*
 ** macro

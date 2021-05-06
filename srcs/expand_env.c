@@ -55,7 +55,25 @@ static t_bool
 	return (TRUE);
 }
 
+static char
+	*enclose_with_s_quote(char *s)
+{
+	char	*tmp;
+	char	*enclosed;
 
+	if (!s)
+		return (NULL);
+	tmp = ft_strjoin("\'", s);
+	enclosed = ft_strjoin(tmp, "\'");
+	if (!tmp || !enclosed)
+	{
+		ft_free(&tmp);
+		g_status = 1;
+		return (NULL);
+	}
+	ft_free(&tmp);
+	return (enclosed);
+}
 
 static int
 	replace_env_in_quote(char **content, int *env_pos)
@@ -77,7 +95,7 @@ static int
 	if (!ft_strcmp(new[1], "\?"))
 		tmp[1] = ft_itoa(g_status);
 	else if (ft_getenv(new[1]))
-		tmp[1] = ft_strdup(ft_getenv(new[1]));
+		tmp[1] = enclose_with_s_quote(ft_getenv(new[1]));
 	else
 		tmp[1] = ft_strdup("");
 	tmp[2] = ft_strjoin(new[0], tmp[1]);
@@ -96,7 +114,7 @@ static t_bool
 	is_env_name_end(char c)
 {
 	if ((33 <= c && c <= 39) || (42 <= c && c <= 47) || c == 58 || c == 61 ||
-		c == 64 || (91 <= c && c <= 96) || c == 123 ||
+		c == 64 || (91 <= c && c <= 94) || c == 96 || c == 123 ||
 		(125 <= c && c <= 126) || c == ' ' || !c)
 		return (TRUE);
 	else
@@ -149,6 +167,7 @@ static int
 		ft_free(&env);
 		return (FAILED);
 	}
+	ft_free(&env);
 	if (tokens)
 	{
 		if (ft_lstsize(tokens) >= 2)
@@ -159,28 +178,40 @@ static int
 				ft_free(&new[0]);
 				ft_free(&new[1]);
 				ft_free(&new[2]);
-				ft_free(&env);
 				ft_free(&tmp[0]);
+				ft_lstclear(&tokens, free);
 				return (FAILED);
 			}
-			FREE((*args)->content);
-			(*args)->content = tmp[0];
-			FREE(ft_lstlast(tokens)->content);
-			ft_lstlast(tokens)->content = tmp[1];
+			ft_free((char**)&((*args)->content));
+			(*args)->content = enclose_with_s_quote(tmp[0]);
+			ft_free((char**)&(ft_lstlast(tokens)->content));
+			ft_lstlast(tokens)->content = enclose_with_s_quote(tmp[1]);
+			if (!((*args)->content) || !(ft_lstlast(tokens)->content))
+			{
+				ft_free(&new[0]);
+				ft_free(&new[1]);
+				ft_free(&new[2]);
+				ft_free(&tmp[0]);
+				ft_lstclear(&tokens, free);
+				return (FAILED);
+			}
 			ft_lstlast(tokens)->next = (*args)->next;
 			(*args)->next = tokens->next;
 			ft_lstdelone(tokens, free);
 		}
 		else
 		{
-			if (!(tmp[0] = ft_strjoin(new[0], (char*)tokens->content)) ||
-			!(tmp[1] = ft_strjoin(tmp[0], new[2])))
+			ft_free(&new[1]);
+			new[1] = enclose_with_s_quote((char *)tokens->content);
+			tmp[0] = ft_strjoin(new[0], new[1]);
+			tmp[1] = ft_strjoin(tmp[0], new[2]);
+			if (!new[1] || !tmp[0] || !tmp[1])
 			{
 				ft_free(&new[0]);
 				ft_free(&new[1]);
 				ft_free(&new[2]);
-				ft_free(&env);
 				ft_free(&tmp[0]);
+				ft_lstclear(&tokens, free);
 				return (FAILED);
 			}
 			ft_free(&tmp[0]);
@@ -198,7 +229,6 @@ static int
 			ft_free(&new[0]);
 			ft_free(&new[1]);
 			ft_free(&new[2]);
-			ft_free(&env);
 			return (FAILED);
 		}
 		if (ft_strlen((char *)(*args)->content))
@@ -207,7 +237,6 @@ static int
 			res = TOKEN_DELETED;
 	}
 	free_all_chars(NULL, new);
-	ft_free(&env);
 	return (res);
 }
 
@@ -284,21 +313,23 @@ static int
 
 	i = 0;
 	ft_memset(q_flag, 0, sizeof(q_flag));
+	b_flag = 0;
 	while (((char*)(*args)->content)[i])
 	{
 		flag = 1;
-		b_flag = 0;
-		while (!b_flag && ft_is_quote((char *)(*args)->content, i))
-		{
-			if (!check_quotation((char**)&((*args)->content), &i, q_flag))
-				return (FAILED);
-		}
-		if (((char *)(*args)->content)[i] == '\\' && !q_flag[0] && (!q_flag[1]
+		if (!b_flag && ((char *)(*args)->content)[i] == '\\' && !q_flag[0] && (!q_flag[1]
 			|| ft_is_escapable_in_dquote(((char *)(*args)->content)[i + 1])))
 		{
 			b_flag = 1;
 			if (!ft_remove_char((char **)&((*args)->content), i))
 				return (FAILED);
+			continue ;
+		}
+		if (!b_flag && ft_is_quote((char *)(*args)->content, i))
+		{
+			if (!check_quotation((char**)&((*args)->content), &i, q_flag))
+				return (FAILED);
+			continue ;
 		}
 		if (!(((char*)(*args)->content)[i]))
 			break;
@@ -332,6 +363,7 @@ static int
 			}
 		}
 		i += flag;
+		b_flag = 0;
 	}
 	return (COMPLETED);
 }
