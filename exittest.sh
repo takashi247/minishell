@@ -1,15 +1,27 @@
 #!/bin/bash
 
-cd libft
-make bonus
-cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft -I./test \
-    test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c \
-    srcs/echo.c srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c \
-    srcs/export.c srcs/export_print.c srcs/export_setenv.c \
-    srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c srcs/env_sort.c srcs/env_copy.c \
-    srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c srcs/utils/command_errors.c \
-    -Llibft -lft -D EXITTEST -o builtin.out #-D LEAKS
+# USAGE ##################
+#
+# all test
+# ./exittest.sh
+#
+# all test with leaks
+# ./exittest.sh leaks
+#
+# make only
+# ./exittest.sh make
+#
+##########################
+
+if [ "$1" = "leaks" ]; then
+    make bltest # LEAK TEST
+else
+    make btest
+fi
+
+if [ "$1" = "make" ]; then
+    exit
+fi
 
 YELLOW=$(printf '\033[33m')
 RESET=$(printf '\033[0m')

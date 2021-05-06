@@ -13,13 +13,13 @@
 #
 ##########################
 
-if [ $1 = "leaks" ]; then
+if [ "$1" = "leaks" ]; then
     make cdltest # LEAK TEST
 else
     make cdtest
 fi
 
-if [ $1 = "make" ]; then
+if [ "$1" = "make" ]; then
     exit
 fi
 
