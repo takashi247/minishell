@@ -19,7 +19,6 @@
 
 # define PROMPT "minishell$ "
 # define EXIT_PROMPT "exit\n"
-# define STATUS_INVALID_COMMAND 2
 # define STATUS_CANNOT_EXECUTE 126
 # define STATUS_COMMAND_NOT_FOUND 127
 # define STATUS_SYNTAX_ERR 258
