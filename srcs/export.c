@@ -29,12 +29,12 @@ static t_bool
 }
 
 static t_bool
-	is_plus_mode(char *name)
+	is_plus_mode(const char *arg, char *name)
 {
 	size_t	len;
 
 	len = ft_strlen(name);
-	if (len && name[len - 1] == '+')
+	if (len && name[len - 1] == '+' && arg[len] == '=')
 	{
 		name[len - 1] = '\0';
 		if (ft_getenv(name))
@@ -54,7 +54,7 @@ static int
 		name = ft_extract_envname_from_str(args[1]);
 		if (!name)
 			return (stop_with_puterror(errno));
-		plus_mode = is_plus_mode(name);
+		plus_mode = is_plus_mode(args[1], name);
 		if (validate_name(name) == FALSE)
 		{
 			g_status = STATUS_GENERAL_ERR;
