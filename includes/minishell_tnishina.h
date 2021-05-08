@@ -59,6 +59,8 @@
 # define IS_DIR_ERROR_MSG "is a directory"
 # define COMMAND_NOT_FOUND_ERR_MSG "command not found"
 # define AMBIGUOUS_REDIRECT_ERR_MSG "ambiguous redirect"
+# define IS_NOT_DIR_ERR_MSG "Not a directory"
+# define PERMISSION_ERR_MSG "Permission denied"
 
 /*
 ** macro

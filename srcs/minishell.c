@@ -83,6 +83,21 @@ void
 	}
 }
 
+static char
+	*get_command_dir(char *command)
+{
+	int		len;
+	char	*command_dir;
+
+	if (!command)
+		return (NULL);
+	len = ft_strlen(command);
+	while (len && command[--len] != '/')
+		continue ;
+	command_dir = ft_substr(command, 0, len);
+	return (command_dir);
+}
+
 void
 	do_command(t_command *c, char **environ)
 {
@@ -96,6 +111,7 @@ void
 	char		*err_msg;
 	char		*err_arg;
 	int			err_status;
+	char		*command_dir;
 
 	if (!c || !environ)
 		exit(STATUS_GENERAL_ERR);
@@ -109,24 +125,47 @@ void
 	err_arg = NULL;
 	err_status = NO_ERROR;
 	path_env = ft_getenv("PATH");
-	if (argv[0][0] == '/' || argv[0][0] == '.' || !path_env || !*path_env)
+	if (command[0] == '/' || command[0] == '.' || !path_env || !*path_env)
 	{
-		if (stat(argv[0], &buf) != 0)
+		command_dir = get_command_dir(command);
+		if (!command_dir)
+			exit(STATUS_GENERAL_ERR);
+		if (*command_dir)
 		{
-			ft_put_cmderror(argv[0], strerror(errno));
+			if (stat(command_dir, &buf) != 0)
+			{
+				ft_put_cmderror(command, strerror(errno));
+				g_status = STATUS_COMMAND_NOT_FOUND;
+				exit(g_status);
+			}
+			else if (!(buf.st_mode & S_IFDIR))
+			{
+				ft_put_cmderror(command, IS_NOT_DIR_ERR_MSG);
+				g_status = STATUS_CANNOT_EXECUTE;
+				exit(g_status);
+			}
+		}
+		if (stat(command, &buf) != 0)
+		{
+			ft_put_cmderror(command, strerror(errno));
 			g_status = STATUS_COMMAND_NOT_FOUND;
 			exit(g_status);
 		}
 		else if (buf.st_mode & S_IFDIR)
 		{
-			ft_put_cmderror(argv[0], IS_DIR_ERROR_MSG);
+			ft_put_cmderror(command, IS_DIR_ERROR_MSG);
 			g_status = STATUS_CANNOT_EXECUTE;
 			exit(g_status);
 		}
-		if (execve(argv[0], argv, environ) < 0)
+		else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
 		{
-			ft_put_cmderror(argv[0], strerror(errno));
+			ft_put_cmderror(command, PERMISSION_ERR_MSG);
 			g_status = STATUS_CANNOT_EXECUTE;
+			exit(g_status);
+		}
+		else
+		{
+			execve(argv[0], argv, environ);
 			exit(g_status);
 		}
 	}
@@ -146,6 +185,24 @@ void
 			if (!tmp || !argv[0])
 				exit(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
+			command_dir = get_command_dir(command);
+			if (!command_dir)
+				exit(STATUS_GENERAL_ERR);
+			if (*command_dir)
+			{
+				if (stat(command_dir, &buf) != 0)
+				{
+					err_arg = ft_strdup(argv[0]);
+					err_msg = ft_strdup(strerror(errno));
+					err_status = STATUS_COMMAND_NOT_FOUND;
+				}
+				else if (!(buf.st_mode & S_IFDIR))
+				{
+					err_arg = ft_strdup(argv[0]);
+					err_msg = ft_strdup(IS_NOT_DIR_ERR_MSG);
+					err_status = STATUS_CANNOT_EXECUTE;
+				}
+			}
 			if (stat(argv[0], &buf) == 0)
 			{
 				if (buf.st_mode & S_IFDIR)
@@ -154,19 +211,28 @@ void
 					err_msg = ft_strdup(IS_DIR_ERROR_MSG);
 					err_status = STATUS_COMMAND_NOT_FOUND;
 				}
-				if (execve(argv[0], argv, environ) < 0)
+				else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
 				{
 					err_arg = ft_strdup(argv[0]);
-					err_msg = ft_strdup(strerror(errno));
+					err_msg = ft_strdup(PERMISSION_ERR_MSG);
 					err_status = STATUS_CANNOT_EXECUTE;
 				}
+				else
+					execve(argv[0], argv, environ);
 			}
+			// else
+			// {
+			// 	err_arg = ft_strdup();
+			// 	err_msg = ft_strdup(COMMAND_NOT_FOUND_ERR_MSG);
+			// 	err_status = STATUS_COMMAND_NOT_FOUND;
+			// }
 			paths++;
 		}
 		ft_do_command_err(command, err_arg, err_msg, err_status);
 		ft_free(&err_msg);
 		ft_free(&err_arg);
 		ft_free(&command);
+		ft_free(&command_dir);
 		ft_free(&path_env);
 		ft_free_split(&head);
 		ft_free_split(&argv);
