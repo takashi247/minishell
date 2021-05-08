@@ -143,7 +143,10 @@ t_bool
 	{
 		fd_from = get_fd((char *)(rd->content));
 		if (fd_from == OVER_INT_RANGE || FD_MAX < fd_from)
+		{
+			g_status = STATUS_GENERAL_ERR;
 			ft_put_fderror(fd_from);
+		}
 		redirect_op = get_op((char *)(rd->content));
 		path = ft_strdup((char *)(rd->next->content));
 		if (fd_from <= TOKEN_ERROR || FD_MAX < fd_from || !redirect_op || !path)

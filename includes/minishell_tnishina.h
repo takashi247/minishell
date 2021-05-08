@@ -28,6 +28,10 @@
 # define FD_MAX 255
 # define NEWLINE "newline"
 
+/* do_command parameters */
+
+# define NO_ERROR -1
+
 /* redirection parameters */
 
 # define NO_FD_SETTING -1
@@ -54,6 +58,7 @@
 # define FD_ERROR_MSG "Bad file descriptor"
 # define IS_DIR_ERROR_MSG "is a directory"
 # define COMMAND_NOT_FOUND_ERR_MSG "command not found"
+# define AMBIGUOUS_REDIRECT_ERR_MSG "ambiguous redirect"
 
 /*
 ** macro
@@ -66,6 +71,7 @@ typedef enum e_status
 	FAILED,
 	ENV_DELETED,
 	TOKEN_DELETED,
+	REDIRECT_DELETED,
 	COMPLETED
 }	t_status;
 
