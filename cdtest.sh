@@ -681,3 +681,59 @@ printf "PWD: ${PWD}\n"
 printf "OLDPWD: ${OLDPWD}\n"
 cd $WORKDIR
 echo
+
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] cd //"
+./builtin.out cd //
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd //"
+cd //
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] cd //Users//"
+./builtin.out cd //Users//
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd //Users//"
+cd //Users//
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] cd //Users/../bin"
+./builtin.out cd //Users/../bin
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd //Users/../bin"
+cd //Users/../bin
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo
+
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${YELLOW}%s${RESET}\n" "[mini] cd ///Users/../bin"
+./builtin.out cd ///Users/../bin
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd ///Users/../bin"
+cd ///Users/../bin
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+echo

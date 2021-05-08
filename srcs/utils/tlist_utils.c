@@ -18,6 +18,8 @@ void
 	ft_lstdelone(current, del);
 	if (prev)
 		prev->next = NULL;
+	else
+		*lst = NULL;
 }
 
 int

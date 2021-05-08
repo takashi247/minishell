@@ -76,6 +76,24 @@ static int
 	return (UTIL_SUCCESS);
 }
 
+static char
+	*add_slash_to_front(const char *input_path, char **full_path)
+{
+	char	*tmp;
+
+	if (2 <= ft_strlen(input_path)
+		&& !ft_strncmp(input_path, "//", 2)
+		&& input_path[2] != '/')
+	{
+		tmp = ft_join_path("", *full_path);
+		ft_free(full_path);
+		if (!tmp)
+			return (NULL);
+		*full_path = tmp;
+	}
+	return (*full_path);
+}
+
 char
 	*ft_make_full_path(const char *input_path)
 {
@@ -85,9 +103,8 @@ char
 	size_t	i;
 
 	input_split = ft_split(input_path, '/');
-	if (!input_split)
-		return (NULL);
-	if (make_path_list(&path_list, input_path, input_split, &i) == UTIL_ERROR)
+	if (!input_split || make_path_list(&path_list, input_path, input_split, &i)
+		== UTIL_ERROR)
 		return (NULL);
 	while (input_split[i])
 	{
@@ -103,5 +120,5 @@ char
 	ft_free_split(&input_split);
 	full_path = generate_path(path_list);
 	ft_lstclear(&path_list, free);
-	return (full_path);
+	return (add_slash_to_front(input_path, &full_path));
 }
