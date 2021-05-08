@@ -2,11 +2,11 @@
 #include "minishell_sikeda.h"
 #include "libft.h"
 
-int
+void
 	exit_with_error(void)
 {
 	ft_put_error(strerror(errno));
-	exit(g_status);
+	ft_exit_n_free_g_vars(g_status);
 }
 
 static char
@@ -23,7 +23,7 @@ static char
 		return (NULL);
 	path_env = ft_strdup(s);
 	if (!path_env)
-		exit(STATUS_GENERAL_ERR);
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	tmp = NULL;
 	pwd = ".";
 	i = 0;
@@ -34,7 +34,7 @@ static char
 			tmp = path_env;
 			path_env = ft_strjoin(pwd, path_env);
 			if (!path_env)
-				exit(STATUS_GENERAL_ERR);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
 			i += ft_strlen(pwd);
 		}
@@ -47,7 +47,7 @@ static char
 			tmp = ft_strjoin(front, pwd);
 			path_env = ft_strjoin(tmp, back);
 			if (!front || !back || !tmp || !path_env)
-				exit(1);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&front);
 			ft_free(&back);
 			ft_free(&tmp);
@@ -58,7 +58,7 @@ static char
 			tmp = path_env;
 			path_env = ft_strjoin(path_env, pwd);
 			if (!path_env)
-				exit(STATUS_GENERAL_ERR);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
 			i += ft_strlen(pwd);
 		}
@@ -114,13 +114,13 @@ void
 	char		*command_dir;
 
 	if (!c || !environ)
-		exit(STATUS_GENERAL_ERR);
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	argv = ft_convert_list(c->args);
 	if (!argv)
-		exit(STATUS_GENERAL_ERR);
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	command = ft_strdup(argv[0]);
 	if (!command)
-		exit(STATUS_GENERAL_ERR);
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	err_msg = NULL;
 	err_arg = NULL;
 	err_status = NO_ERROR;
@@ -129,44 +129,45 @@ void
 	{
 		command_dir = get_command_dir(command);
 		if (!command_dir)
-			exit(STATUS_GENERAL_ERR);
+			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 		if (*command_dir)
 		{
 			if (stat(command_dir, &buf) != 0)
 			{
 				ft_put_cmderror(command, strerror(errno));
 				g_status = STATUS_COMMAND_NOT_FOUND;
-				exit(g_status);
+				ft_exit_n_free_g_vars(g_status);
 			}
 			else if (!(buf.st_mode & S_IFDIR))
 			{
 				ft_put_cmderror(command, IS_NOT_DIR_ERR_MSG);
 				g_status = STATUS_CANNOT_EXECUTE;
-				exit(g_status);
+				ft_exit_n_free_g_vars(g_status);
 			}
 		}
+		ft_free(&command_dir);
 		if (stat(command, &buf) != 0)
 		{
 			ft_put_cmderror(command, strerror(errno));
 			g_status = STATUS_COMMAND_NOT_FOUND;
-			exit(g_status);
+			ft_exit_n_free_g_vars(g_status);
 		}
 		else if (buf.st_mode & S_IFDIR)
 		{
 			ft_put_cmderror(command, IS_DIR_ERROR_MSG);
 			g_status = STATUS_CANNOT_EXECUTE;
-			exit(g_status);
+			ft_exit_n_free_g_vars(g_status);
 		}
 		else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
 		{
 			ft_put_cmderror(command, PERMISSION_ERR_MSG);
 			g_status = STATUS_CANNOT_EXECUTE;
-			exit(g_status);
+			ft_exit_n_free_g_vars(g_status);
 		}
 		else
 		{
 			execve(argv[0], argv, environ);
-			exit(g_status);
+			ft_exit_n_free_g_vars(g_status);
 		}
 	}
 	else
@@ -174,7 +175,7 @@ void
 		path_env = get_pathenv(path_env);
 		paths = ft_split(path_env, ':');
 		if (!path_env || !paths)
-			exit(STATUS_GENERAL_ERR);
+			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 		head = paths;
 		while (*paths)
 		{
@@ -183,11 +184,11 @@ void
 			if (tmp)
 				argv[0] = ft_strjoin(tmp, command);
 			if (!tmp || !argv[0])
-				exit(STATUS_GENERAL_ERR);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
 			command_dir = get_command_dir(command);
 			if (!command_dir)
-				exit(STATUS_GENERAL_ERR);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			if (*command_dir)
 			{
 				if (stat(command_dir, &buf) != 0)
@@ -203,6 +204,7 @@ void
 					err_status = STATUS_CANNOT_EXECUTE;
 				}
 			}
+			ft_free(&command_dir);
 			if (stat(argv[0], &buf) == 0)
 			{
 				if (buf.st_mode & S_IFDIR)
@@ -220,25 +222,16 @@ void
 				else
 					execve(argv[0], argv, environ);
 			}
-			// else
-			// {
-			// 	err_arg = ft_strdup();
-			// 	err_msg = ft_strdup(COMMAND_NOT_FOUND_ERR_MSG);
-			// 	err_status = STATUS_COMMAND_NOT_FOUND;
-			// }
 			paths++;
 		}
 		ft_do_command_err(command, err_arg, err_msg, err_status);
 		ft_free(&err_msg);
 		ft_free(&err_arg);
 		ft_free(&command);
-		ft_free(&command_dir);
 		ft_free(&path_env);
 		ft_free_split(&head);
 		ft_free_split(&argv);
-		ft_free(&g_pwd);
-		ft_lstclear(&g_env, free);
-		exit(g_status); // still reachableのリークが残っているため要修正
+		ft_exit_n_free_g_vars(g_status);
 	}
 }
 
@@ -328,7 +321,7 @@ static pid_t
 		if (is_builtin(c))
 		{
 			ft_execute_builtin(c);
-			exit(g_status); // still reachableのリークが残っているため要修正
+			ft_exit_n_free_g_vars(g_status);
 		}
 		else if (ft_set_redirection(c->redirects))
 			do_command(c, environ);
@@ -466,10 +459,11 @@ int
 		ft_putstr_fd(PROMPT, STDERR_FILENO);
 		ft_sig_prior();
 		res = get_next_line(STDIN_FILENO, &line);
+		get_next_line(STDIN_FILENO, NULL);
 		if (res == 0 && ft_strlen(line) == 0)
 		{
 			ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
-			exit(0);
+			ft_exit_n_free_g_vars(0);
 		}
 		ft_sig_post();
 		if (is_end_with_escape(line))
@@ -487,7 +481,7 @@ int
 				ft_free(&line);
 				ft_free(&trimmed);
 				ft_lstclear(&tokens, free);
-				return (1);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			}
 			res = KEEP_RUNNING;
 			head = commands;
@@ -527,14 +521,11 @@ int
 		}
 		ft_free(&line);
 		ft_free(&trimmed);
-		get_next_line(STDIN_FILENO, NULL);
 		ft_clear_commands(&head);
 	}
 	ft_free(&line);
 	ft_free(&trimmed);
 	get_next_line(STDIN_FILENO, NULL);
 	ft_clear_commands(&head);
-	ft_free(&g_pwd);
-	ft_lstclear(&g_env, free);
-	exit(g_status);
+	ft_exit_n_free_g_vars(g_status);
 }
