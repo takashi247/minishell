@@ -151,19 +151,21 @@ void
 				if (buf.st_mode & S_IFDIR)
 				{
 					err_arg = ft_strdup(argv[0]);
-					err_msg = strdup(IS_DIR_ERROR_MSG);
+					err_msg = ft_strdup(IS_DIR_ERROR_MSG);
 					err_status = STATUS_COMMAND_NOT_FOUND;
 				}
 				if (execve(argv[0], argv, environ) < 0)
 				{
 					err_arg = ft_strdup(argv[0]);
-					err_msg = strdup(strerror(errno));
+					err_msg = ft_strdup(strerror(errno));
 					err_status = STATUS_CANNOT_EXECUTE;
 				}
 			}
 			paths++;
 		}
 		ft_do_command_err(command, err_arg, err_msg, err_status);
+		ft_free(&err_msg);
+		ft_free(&err_arg);
 		ft_free(&command);
 		ft_free(&path_env);
 		ft_free_split(&head);
@@ -453,7 +455,7 @@ int
 			}
 			if (res == EXIT)
 			{
-				ft_putendl_fd("exit", STDERR_FILENO);
+				ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 				break;
 			}
 		}
