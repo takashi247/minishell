@@ -86,11 +86,11 @@ int
 		args++;
 	if (validate_args(*args) == FALSE)
 		return (KEEP_RUNNING);
-	if (*args && **args == '\0')
+	path = ft_get_home_path(*args);
+	if (!path)
+		return (KEEP_RUNNING);
+	if (path && *path == '\0')
 		path = g_pwd;
-	else
-		path = *args;
-	path = ft_get_home_path(path);
 	if (exec_cd(path, *args) == TRUE)
 	{
 		if (update_path_env(path) == FALSE)

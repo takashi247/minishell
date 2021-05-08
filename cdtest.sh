@@ -560,6 +560,27 @@ cd $WORKDIR
 export HOME=$HOMEDIR
 echo
 
+# unset HOME; export HOME=; cd;
+HOMEDIR=$HOME
+printf "${CYAN}%s${RESET}\n" "pwd:
+${WORKDIR}"
+printf "${CYAN}%s${RESET}\n" "unset HOME"
+unset HOME
+printf "${CYAN}%s${RESET}\n" "export HOME="
+export HOME=
+printf "${YELLOW}%s${RESET}\n" "[mini] cd"
+./builtin.out cd
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] cd"
+cd
+echo $?
+pwd
+printf "PWD: ${PWD}\n"
+printf "OLDPWD: ${OLDPWD}\n"
+cd $WORKDIR
+export HOME=$HOMEDIR
+echo
+
 # unset HOME; export HOME=..; cd;
 HOMEDIR=$HOME
 printf "${CYAN}%s${RESET}\n" "pwd:

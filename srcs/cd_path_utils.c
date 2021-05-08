@@ -29,6 +29,8 @@ char
 			ft_put_cmderror("cd", "HOME not set");
 			return (NULL);
 		}
+		if (*path == '\0')
+			return ("");
 		return (path);
 	}
 	return ((char *)args);
