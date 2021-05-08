@@ -1,15 +1,27 @@
 #!/bin/bash
 
-cd libft
-make bonus
-cd ..
-gcc -g -Wall -Wextra -Werror -I./includes -I./libft -I./test \
-    test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c \
-    srcs/echo.c srcs/cd.c srcs/pwd.c srcs/exit.c srcs/env.c srcs/unset.c \
-    srcs/export.c srcs/export_print.c srcs/export_setenv.c \
-    srcs/init_env.c srcs/env_utils.c srcs/env_utils2.c srcs/env_sort.c srcs/env_copy.c \
-    srcs/utils/utils.c srcs/utils/minishell_errors.c srcs/utils/command_utils.c srcs/utils/command_errors.c \
-    -Llibft -lft -D EXPORTTEST -o builtin.out #-D LEAKS
+# USAGE ##################
+#
+# all test
+# ./exporttest.sh
+#
+# all test with leaks
+# ./exporttest.sh leaks
+#
+# make only
+# ./exporttest.sh make
+#
+##########################
+
+if [ "$1" = "leaks" ]; then
+    make bltest # LEAK TEST
+else
+    make btest
+fi
+
+if [ "$1" = "make" ]; then
+    exit
+fi
 
 YELLOW=$(printf '\033[33m')
 CYAN=$(printf '\033[36m')
@@ -276,11 +288,6 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST= 0123"
 echo "export EXPORTTEST= 0123" | bash
 echo $?
-echo "export EXPORTTEST= 0123 2> /dev/null ; export 1> bash_export" | bash
-echo "===diff check start==="
-diff mini_export bash_export
-echo "===diff check end==="
-rm mini_export bash_export
 echo
 
 # $mark
@@ -290,6 +297,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST$=0123"
 echo "export EXPORTTEST$=0123" | bash
 echo $?
+rm mini_export bash_export
 echo
 
 # 先頭に数字
@@ -299,6 +307,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export 0EXPORTTEST=0123"
 echo "export 0EXPORTTEST=0123" | bash
 echo $?
+rm mini_export bash_export
 echo
 
 # 途中に数字
@@ -376,11 +385,15 @@ echo
 
 # 既存の環境変数をnameのみで上書きしようとする -> 何もしない
 printf "${YELLOW}%s${RESET}\n" "[mini] export HOME"
-./builtin.out export HOME
+./builtin.out export HOME > mini_export
 echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export HOME"
-echo "export HOME" | bash
+echo "export HOME ; export > bash_export" | bash
 echo $?
+echo "===diff check start==="
+diff mini_export bash_export
+echo "===diff check end==="
+rm mini_export bash_export
 echo
 
 # 既存の環境変数をnameのみで上書きしようとする -> 何もしない & 正常ケース
@@ -390,11 +403,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export HOME EXPORTTEST=0123"
 echo "export HOME EXPORTTEST=0123" | bash
 echo $?
-echo "export HOME EXPORTTEST=0123 ; export > bash_export" | bash
-echo "===diff check start==="
-diff mini_export bash_export
-echo "===diff check end==="
-rm mini_export bash_export
+echo "export HOME EXPORTTEST=0123" | bash
 echo
 
 # 複数ダブルクォート
@@ -432,7 +441,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST=012 EXPORTTEST+=34"
 echo "export EXPORTTEST=012 EXPORTTEST+=34" | bash
 echo $?
-echo "export EXPORTTEST=012 ; export > bash_export; EXPORTTEST+=34 ; export >> bash_export" | bash
+echo "export EXPORTTEST=012 ; EXPORTTEST+=34 ; export > bash_export" | bash
 echo "===diff check start==="
 diff mini_export bash_export
 echo "===diff check end==="
@@ -446,7 +455,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc"
 echo "export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc" | bash
 echo $?
-echo "export EXPORTTEST+=012 ; export > bash_export; EXPORTTEST+=34 ; export >> bash_export ; EXPORTTEST+=abc ; export >> bash_export" | bash
+echo "export EXPORTTEST+=012 ; EXPORTTEST+=34 ; EXPORTTEST+=abc ; export > bash_export" | bash
 echo "===diff check start==="
 diff mini_export bash_export
 echo "===diff check end==="
@@ -494,6 +503,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
+rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -507,6 +517,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
+rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -520,6 +531,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
+rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -533,6 +545,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
+rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -546,6 +559,7 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
+rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo
 
@@ -559,5 +573,6 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
+rm mini_export bash_export
 export SHLVL=$MYSHLVL
 echo

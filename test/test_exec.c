@@ -1,6 +1,22 @@
 #include "test_builtin.h"
 
 int
+	test_export(char **args)
+{
+	const char	*export_test[] = {"export", NULL};
+	int			ret;
+	t_bool		need_export;
+
+	need_export = FALSE;
+	if (args[1] && ft_strcmp(args[1], "--"))
+		need_export = TRUE;
+	ret = ft_export(args++);
+	if (g_status == EXIT_SUCCESS && need_export == TRUE)
+		ft_export((char **)export_test);
+	return (ret);
+}
+
+int
 	test_commands(char **args)
 {
 	int	ret;
@@ -21,7 +37,7 @@ int
 	else if (!ft_strcmp(args[1], "env"))
 		ret = ft_env(++args);
 	else if (!ft_strcmp(args[1], "export"))
-		ret = ft_export(++args);
+		ret = test_export(++args);
 	else if (!ft_strcmp(args[1], "unset"))
 		ret = ft_unset(++args);
 	else if (!ft_strcmp(args[1], "exit"))
