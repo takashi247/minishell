@@ -23,11 +23,9 @@ static char
 		return (NULL);
 	path_env = ft_strdup(s);
 	if (!path_env)
-		exit(1);
+		exit(STATUS_GENERAL_ERR);
 	tmp = NULL;
-	pwd = getcwd(NULL, 0);
-	if (!pwd)
-		return (path_env);
+	pwd = ".";
 	i = 0;
 	while (path_env[i])
 	{
@@ -36,7 +34,7 @@ static char
 			tmp = path_env;
 			path_env = ft_strjoin(pwd, path_env);
 			if (!path_env)
-				exit(1);
+				exit(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
 			i += ft_strlen(pwd);
 		}
@@ -60,15 +58,29 @@ static char
 			tmp = path_env;
 			path_env = ft_strjoin(path_env, pwd);
 			if (!path_env)
-				exit(1);
+				exit(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
 			i += ft_strlen(pwd);
 		}
 		else
 			i++;
 	}
-	ft_free(&pwd);
 	return (path_env);
+}
+
+void
+	ft_do_command_err(char *c, char *err_arg, char *err_msg, int err_status)
+{
+	if (err_status == NO_ERROR)
+	{
+		ft_put_cmderror(c, COMMAND_NOT_FOUND_ERR_MSG);
+		g_status = STATUS_COMMAND_NOT_FOUND;
+	}
+	else
+	{
+		ft_put_cmderror(err_arg, err_msg);
+		g_status = err_status;
+	}
 }
 
 void
@@ -81,17 +93,23 @@ void
 	char		*path_env;
 	char		**head;
 	struct stat	buf;
+	char		*err_msg;
+	char		*err_arg;
+	int			err_status;
 
 	if (!c || !environ)
-		exit(1);
+		exit(STATUS_GENERAL_ERR);
 	argv = ft_convert_list(c->args);
 	if (!argv)
-		exit(1);
+		exit(STATUS_GENERAL_ERR);
 	command = ft_strdup(argv[0]);
 	if (!command)
-		exit(1);
+		exit(STATUS_GENERAL_ERR);
+	err_msg = NULL;
+	err_arg = NULL;
+	err_status = NO_ERROR;
 	path_env = ft_getenv("PATH");
-	if (argv[0][0] == '/' || !path_env)
+	if (argv[0][0] == '/' || argv[0][0] == '.' || !path_env || !*path_env)
 	{
 		if (stat(argv[0], &buf) != 0)
 		{
@@ -126,34 +144,33 @@ void
 			if (tmp)
 				argv[0] = ft_strjoin(tmp, command);
 			if (!tmp || !argv[0])
-				exit(1);
+				exit(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
 			if (stat(argv[0], &buf) == 0)
 			{
 				if (buf.st_mode & S_IFDIR)
 				{
-					ft_put_cmderror(argv[0], IS_DIR_ERROR_MSG);
-					g_status = STATUS_COMMAND_NOT_FOUND;
-					exit(g_status);
+					err_arg = ft_strdup(argv[0]);
+					err_msg = strdup(IS_DIR_ERROR_MSG);
+					err_status = STATUS_COMMAND_NOT_FOUND;
 				}
 				if (execve(argv[0], argv, environ) < 0)
 				{
-					ft_put_cmderror(argv[0], strerror(errno));
-					g_status = STATUS_CANNOT_EXECUTE;
-					exit(g_status);
+					err_arg = ft_strdup(argv[0]);
+					err_msg = strdup(strerror(errno));
+					err_status = STATUS_CANNOT_EXECUTE;
 				}
 			}
-			else
-				paths++;
+			paths++;
 		}
-		ft_put_cmderror(command, COMMAND_NOT_FOUND_ERR_MSG);
+		ft_do_command_err(command, err_arg, err_msg, err_status);
 		ft_free(&command);
 		ft_free(&path_env);
 		ft_free_split(&head);
 		ft_free_split(&argv);
 		ft_free(&g_pwd);
 		ft_lstclear(&g_env, free);
-		exit(1); // still reachableのリークが残っているため要修正
+		exit(g_status); // still reachableのリークが残っているため要修正
 	}
 }
 
@@ -243,7 +260,7 @@ static pid_t
 		if (is_builtin(c))
 		{
 			ft_execute_builtin(c);
-			exit(0); // still reachableのリークが残っているため要修正
+			exit(g_status); // still reachableのリークが残っているため要修正
 		}
 		else if (ft_set_redirection(c->redirects))
 			do_command(c, environ);
@@ -266,19 +283,37 @@ t_command
 {
 	t_bool	haspipe;
 	int		lastpipe[2];
+	int		res;
 
 	haspipe = FALSE;
 	ft_memset(lastpipe, -1, sizeof(int) * 2);
 	while (c)
 	{
-		if (ft_expand_env_var(c) != COMPLETED)
-			return (NULL);
-		c->pid = start_command(c, is_pipe(c), haspipe, lastpipe, environ);
-		haspipe = is_pipe(c);
-		if (haspipe)
+		res = ft_expand_env_var(c);
+		if (res == COMPLETED)
+		{
+			if (c->args || c->redirects)
+			{
+				c->pid = start_command(c, is_pipe(c), haspipe, lastpipe, environ);
+				haspipe = is_pipe(c);
+				if (haspipe)
+					c = c->next;
+				else
+					break ;
+			}
+			else
+			{
+				c = c->next;
+				break;
+			}
+		}
+		else if (res == REDIRECT_DELETED)
+		{
 			c = c->next;
+			break;
+		}
 		else
-			break ;
+			return (NULL);
 	}
 	return (c);
 }
@@ -348,6 +383,8 @@ int
 	t_command	*head;
 	t_command	*commands;
 	int			res;
+	int			expand_res;
+	int			term_status;
 
 	if (ft_init_env() == STOP)
 		return (EXIT_FAILURE);
@@ -388,26 +425,37 @@ int
 			head = commands;
 			while (commands)
 			{
-				if (ft_expand_env_var(commands) != COMPLETED)
-					break;
-				if (commands->args)
+				expand_res = ft_expand_env_var(commands);
+				if (expand_res == FAILED)
+					break ;
+				else if (expand_res == COMPLETED)
 				{
-					if (is_builtin(commands) && !is_pipe(commands))
+					if (commands->args || commands->redirects)
 					{
-						res = ft_execute_builtin(commands);
-						if (res != KEEP_RUNNING)
-							break;
-						commands = commands->next;
-						continue ;
+						if (is_builtin(commands) && !is_pipe(commands))
+						{
+							res = ft_execute_builtin(commands);
+							if (res != KEEP_RUNNING)
+								break ;
+							commands = commands->next;
+							continue ;
+						}
+						commands = ft_execute_pipeline(commands, environ);
+						if (!commands || waitpid(commands->pid, &term_status, 0) < 0)
+							exit_with_error();
+						if (WIFEXITED(term_status))
+							g_status = WEXITSTATUS(term_status);
+						else if (!commands)
+							break ;
 					}
-					commands = ft_execute_pipeline(commands, environ);
-					if (!commands || waitpid(commands->pid, &g_status, 0) < 0)
-						exit_with_error();
 				}
 				commands = commands->next;
 			}
 			if (res == EXIT)
+			{
+				ft_putendl_fd("exit", STDERR_FILENO);
 				break;
+			}
 		}
 		ft_free(&line);
 		ft_free(&trimmed);

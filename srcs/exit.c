@@ -32,7 +32,6 @@ static int
 int
 	ft_exit(char **args)
 {
-	ft_putendl_fd("exit", STDERR_FILENO);
 	if (args[1])
 	{
 		if (!ft_strcmp(args[1], "--"))

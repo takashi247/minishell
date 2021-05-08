@@ -55,28 +55,8 @@ static t_bool
 	return (TRUE);
 }
 
-static char
-	*enclose_with_s_quote(char *s)
-{
-	char	*tmp;
-	char	*enclosed;
-
-	if (!s)
-		return (NULL);
-	tmp = ft_strjoin("\'", s);
-	enclosed = ft_strjoin(tmp, "\'");
-	if (!tmp || !enclosed)
-	{
-		ft_free(&tmp);
-		g_status = 1;
-		return (NULL);
-	}
-	ft_free(&tmp);
-	return (enclosed);
-}
-
 static int
-	replace_env_in_quote(char **content, int *env_pos)
+	replace_env_in_quote(char **content, int *env_pos, int *i)
 {
 	char	*tmp[3];
 	char	*new[3];
@@ -95,7 +75,7 @@ static int
 	if (!ft_strcmp(new[1], "\?"))
 		tmp[1] = ft_itoa(g_status);
 	else if (ft_getenv(new[1]))
-		tmp[1] = enclose_with_s_quote(ft_getenv(new[1]));
+		tmp[1] = ft_strdup(ft_getenv(new[1]));
 	else
 		tmp[1] = ft_strdup("");
 	tmp[2] = ft_strjoin(new[0], tmp[1]);
@@ -105,6 +85,7 @@ static int
 		free_all_chars(tmp, new);
 		return (FAILED);
 	}
+	*i += ft_strlen(tmp[1]);
 	res = !(*content) ? ENV_DELETED : COMPLETED;
 	free_all_chars(tmp, new);
 	return (res);
@@ -131,7 +112,7 @@ static t_bool
 }
 
 static int
-	replace_env_token(t_list **args, int *env_pos)
+	replace_env_token(t_list **args, int *env_pos, int *i)
 {
 	t_list	*tokens;
 	char	*tmp[2];
@@ -172,8 +153,9 @@ static int
 	{
 		if (ft_lstsize(tokens) >= 2)
 		{
-			if (!(tmp[0] = ft_strjoin(new[0], (char*)tokens->content)) ||
-			!(tmp[1] = ft_strjoin((char*)ft_lstlast(tokens)->content, new[2])))
+			tmp[0] = ft_strjoin(new[0], (char *)tokens->content);
+			tmp[1] = ft_strjoin((char *)ft_lstlast(tokens)->content, new[2]);
+			if (!tmp[0] ||	!tmp[1])
 			{
 				ft_free(&new[0]);
 				ft_free(&new[1]);
@@ -183,29 +165,21 @@ static int
 				return (FAILED);
 			}
 			ft_free((char**)&((*args)->content));
-			(*args)->content = enclose_with_s_quote(tmp[0]);
+			(*args)->content = tmp[0];
 			ft_free((char**)&(ft_lstlast(tokens)->content));
-			ft_lstlast(tokens)->content = enclose_with_s_quote(tmp[1]);
-			if (!((*args)->content) || !(ft_lstlast(tokens)->content))
-			{
-				ft_free(&new[0]);
-				ft_free(&new[1]);
-				ft_free(&new[2]);
-				ft_free(&tmp[0]);
-				ft_lstclear(&tokens, free);
-				return (FAILED);
-			}
+			ft_lstlast(tokens)->content = tmp[1];
 			ft_lstlast(tokens)->next = (*args)->next;
 			(*args)->next = tokens->next;
+			(*args) = ft_lstlast(tokens);
+			*i = ft_strlen((char *)(*args)->content);
 			ft_lstdelone(tokens, free);
 		}
 		else
 		{
-			ft_free(&new[1]);
-			new[1] = enclose_with_s_quote((char *)tokens->content);
-			tmp[0] = ft_strjoin(new[0], new[1]);
+			*i += ft_strlen((char *)tokens->content);
+			tmp[0] = ft_strjoin(new[0], (char *)tokens->content);
 			tmp[1] = ft_strjoin(tmp[0], new[2]);
-			if (!new[1] || !tmp[0] || !tmp[1])
+			if (!tmp[0] || !tmp[1])
 			{
 				ft_free(&new[0]);
 				ft_free(&new[1]);
@@ -345,9 +319,9 @@ static int
 			if (j - env_pos[0] == 1 && ((char*)(*args)->content)[j] == '?')
 				j++;
 			env_pos[1] = j;
-			if (q_flag[1])
+			if (q_flag[1] || env_pos[0] != 0)
 			{
-				res = replace_env_in_quote(((char**)&((*args)->content)), env_pos);
+				res = replace_env_in_quote(((char**)&((*args)->content)), env_pos, &i);
 				if (res == FAILED)
 					return (FAILED);
 				else if (res == ENV_DELETED)
@@ -355,7 +329,7 @@ static int
 			}
 			else
 			{
-				res = replace_env_token(args, env_pos);
+				res = replace_env_token(args, env_pos, &i);
 				if (res == FAILED)
 					return (FAILED);
 				else if (res == TOKEN_DELETED)
@@ -373,6 +347,7 @@ static int
 {
 	t_list	*current;
 	t_list	*prev;
+	char	*pre_expand;
 	int		res;
 
 	if (!(*head))
@@ -381,6 +356,7 @@ static int
 	prev = NULL;
 	while (current)
 	{
+		pre_expand = ft_strdup((char *)current->content);
 		res = find_n_replace_env(&current);
 		if (res == COMPLETED)
 		{
@@ -388,12 +364,26 @@ static int
 			current = current->next;
 		}
 		else if (res == FAILED)
+		{
+			ft_free(&pre_expand);
 			break;
+		}
 		else
 		{
-			if (!delete_env(&current, head, prev, res))
+			if (prev && ft_is_redirect((char *)prev->content))
+			{
+				ft_put_cmderror(pre_expand, AMBIGUOUS_REDIRECT_ERR_MSG);
+				g_status = STATUS_GENERAL_ERR;
+				ft_free(&pre_expand);
+				return (REDIRECT_DELETED);
+			}
+			else if (!delete_env(&current, head, prev, res))
+			{
+				ft_free(&pre_expand);
 				return (FAILED);
+			}
 		}
+		ft_free(&pre_expand);
 	}
 	return (res);
 }
@@ -401,13 +391,20 @@ static int
 int
 	ft_expand_env_var(t_command *c)
 {
+	int	exp_args_res;
+	int	exp_redirect_res;
+
 	if (!c || c->expanded)
 		return (COMPLETED);
 	else
 	{
-		if (expand_list(&(c->args)) == FAILED
-		|| expand_list(&(c->redirects)) == FAILED)
+		exp_args_res = expand_list(&(c->args));
+		exp_redirect_res = expand_list(&(c->redirects));
+		if (exp_args_res == FAILED
+		|| exp_redirect_res == FAILED)
 			return (FAILED);
+		else if (exp_redirect_res == REDIRECT_DELETED)
+			return (REDIRECT_DELETED);
 		c->expanded = TRUE;
 		return (COMPLETED);
 	}
