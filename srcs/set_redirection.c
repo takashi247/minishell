@@ -16,9 +16,12 @@ void
 	dup2(std_fds[0], STDIN_FILENO);
 	dup2(std_fds[1], STDOUT_FILENO);
 	dup2(std_fds[2], STDERR_FILENO);
-	close(std_fds[0]);
-	close(std_fds[1]);
-	close(std_fds[2]);
+	if (std_fds[0] != STDIN_FILENO)
+		close(std_fds[0]);
+	if (std_fds[1] != STDOUT_FILENO)
+		close(std_fds[1]);
+	if (std_fds[2] != STDERR_FILENO)
+		close(std_fds[2]);
 }
 
 static int
@@ -75,7 +78,8 @@ static t_bool
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
 	dup2(fd_to, fd_from);
-	close(fd_to);
+	if (fd_to != fd_from)
+		close(fd_to);
 	return (TRUE);
 }
 
@@ -94,7 +98,8 @@ static t_bool
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
 	dup2(fd_to, fd_from);
-	close(fd_to);
+	if (fd_to != fd_from)
+		close(fd_to);
 	return (TRUE);
 }
 
@@ -113,7 +118,8 @@ static t_bool
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDIN_FILENO;
 	dup2(fd_to, fd_from);
-	close(fd_to);
+	if (fd_to != fd_from)
+		close(fd_to);
 	return (TRUE);
 }
 
