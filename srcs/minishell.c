@@ -2,11 +2,11 @@
 #include "minishell_sikeda.h"
 #include "libft.h"
 
-int
+void
 	exit_with_error(void)
 {
 	ft_put_error(strerror(errno));
-	exit(g_status);
+	ft_exit_n_free_g_vars(g_status);
 }
 
 static char
@@ -23,7 +23,7 @@ static char
 		return (NULL);
 	path_env = ft_strdup(s);
 	if (!path_env)
-		exit(STATUS_GENERAL_ERR);
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	tmp = NULL;
 	pwd = ".";
 	i = 0;
@@ -34,7 +34,7 @@ static char
 			tmp = path_env;
 			path_env = ft_strjoin(pwd, path_env);
 			if (!path_env)
-				exit(STATUS_GENERAL_ERR);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
 			i += ft_strlen(pwd);
 		}
@@ -47,7 +47,7 @@ static char
 			tmp = ft_strjoin(front, pwd);
 			path_env = ft_strjoin(tmp, back);
 			if (!front || !back || !tmp || !path_env)
-				exit(1);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&front);
 			ft_free(&back);
 			ft_free(&tmp);
@@ -58,7 +58,7 @@ static char
 			tmp = path_env;
 			path_env = ft_strjoin(path_env, pwd);
 			if (!path_env)
-				exit(STATUS_GENERAL_ERR);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
 			i += ft_strlen(pwd);
 		}
@@ -83,6 +83,21 @@ void
 	}
 }
 
+static char
+	*get_command_dir(char *command)
+{
+	int		len;
+	char	*command_dir;
+
+	if (!command)
+		return (NULL);
+	len = ft_strlen(command);
+	while (len && command[--len] != '/')
+		continue ;
+	command_dir = ft_substr(command, 0, len);
+	return (command_dir);
+}
+
 void
 	do_command(t_command *c, char **environ)
 {
@@ -96,38 +111,63 @@ void
 	char		*err_msg;
 	char		*err_arg;
 	int			err_status;
+	char		*command_dir;
 
 	if (!c || !environ)
-		exit(STATUS_GENERAL_ERR);
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	argv = ft_convert_list(c->args);
 	if (!argv)
-		exit(STATUS_GENERAL_ERR);
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	command = ft_strdup(argv[0]);
 	if (!command)
-		exit(STATUS_GENERAL_ERR);
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	err_msg = NULL;
 	err_arg = NULL;
 	err_status = NO_ERROR;
 	path_env = ft_getenv("PATH");
-	if (argv[0][0] == '/' || argv[0][0] == '.' || !path_env || !*path_env)
+	if (command[0] == '/' || command[0] == '.' || !path_env || !*path_env)
 	{
-		if (stat(argv[0], &buf) != 0)
+		command_dir = get_command_dir(command);
+		if (!command_dir)
+			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+		if (*command_dir)
 		{
-			ft_put_cmderror(argv[0], strerror(errno));
+			if (stat(command_dir, &buf) != 0)
+			{
+				ft_put_cmderror(command, strerror(errno));
+				g_status = STATUS_COMMAND_NOT_FOUND;
+				ft_exit_n_free_g_vars(g_status);
+			}
+			else if (!(buf.st_mode & S_IFDIR))
+			{
+				ft_put_cmderror(command, IS_NOT_DIR_ERR_MSG);
+				g_status = STATUS_CANNOT_EXECUTE;
+				ft_exit_n_free_g_vars(g_status);
+			}
+		}
+		ft_free(&command_dir);
+		if (stat(command, &buf) != 0)
+		{
+			ft_put_cmderror(command, strerror(errno));
 			g_status = STATUS_COMMAND_NOT_FOUND;
-			exit(g_status);
+			ft_exit_n_free_g_vars(g_status);
 		}
 		else if (buf.st_mode & S_IFDIR)
 		{
-			ft_put_cmderror(argv[0], IS_DIR_ERROR_MSG);
+			ft_put_cmderror(command, IS_DIR_ERROR_MSG);
 			g_status = STATUS_CANNOT_EXECUTE;
-			exit(g_status);
+			ft_exit_n_free_g_vars(g_status);
 		}
-		if (execve(argv[0], argv, environ) < 0)
+		else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
 		{
-			ft_put_cmderror(argv[0], strerror(errno));
+			ft_put_cmderror(command, PERMISSION_ERR_MSG);
 			g_status = STATUS_CANNOT_EXECUTE;
-			exit(g_status);
+			ft_exit_n_free_g_vars(g_status);
+		}
+		else
+		{
+			execve(argv[0], argv, environ);
+			ft_exit_n_free_g_vars(g_status);
 		}
 	}
 	else
@@ -135,7 +175,7 @@ void
 		path_env = get_pathenv(path_env);
 		paths = ft_split(path_env, ':');
 		if (!path_env || !paths)
-			exit(STATUS_GENERAL_ERR);
+			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 		head = paths;
 		while (*paths)
 		{
@@ -144,8 +184,27 @@ void
 			if (tmp)
 				argv[0] = ft_strjoin(tmp, command);
 			if (!tmp || !argv[0])
-				exit(STATUS_GENERAL_ERR);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
+			command_dir = get_command_dir(command);
+			if (!command_dir)
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+			if (*command_dir)
+			{
+				if (stat(command_dir, &buf) != 0)
+				{
+					err_arg = ft_strdup(argv[0]);
+					err_msg = ft_strdup(strerror(errno));
+					err_status = STATUS_COMMAND_NOT_FOUND;
+				}
+				else if (!(buf.st_mode & S_IFDIR))
+				{
+					err_arg = ft_strdup(argv[0]);
+					err_msg = ft_strdup(IS_NOT_DIR_ERR_MSG);
+					err_status = STATUS_CANNOT_EXECUTE;
+				}
+			}
+			ft_free(&command_dir);
 			if (stat(argv[0], &buf) == 0)
 			{
 				if (buf.st_mode & S_IFDIR)
@@ -154,12 +213,14 @@ void
 					err_msg = ft_strdup(IS_DIR_ERROR_MSG);
 					err_status = STATUS_COMMAND_NOT_FOUND;
 				}
-				if (execve(argv[0], argv, environ) < 0)
+				else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
 				{
 					err_arg = ft_strdup(argv[0]);
-					err_msg = ft_strdup(strerror(errno));
+					err_msg = ft_strdup(PERMISSION_ERR_MSG);
 					err_status = STATUS_CANNOT_EXECUTE;
 				}
+				else
+					execve(argv[0], argv, environ);
 			}
 			paths++;
 		}
@@ -170,9 +231,7 @@ void
 		ft_free(&path_env);
 		ft_free_split(&head);
 		ft_free_split(&argv);
-		ft_free(&g_pwd);
-		ft_lstclear(&g_env, free);
-		exit(g_status); // still reachableのリークが残っているため要修正
+		ft_exit_n_free_g_vars(g_status);
 	}
 }
 
@@ -262,7 +321,7 @@ static pid_t
 		if (is_builtin(c))
 		{
 			ft_execute_builtin(c);
-			exit(g_status); // still reachableのリークが残っているため要修正
+			ft_exit_n_free_g_vars(g_status);
 		}
 		else if (ft_set_redirection(c->redirects))
 			do_command(c, environ);
@@ -400,10 +459,11 @@ int
 		ft_putstr_fd(PROMPT, STDERR_FILENO);
 		ft_sig_prior();
 		res = get_next_line(STDIN_FILENO, &line);
+		get_next_line(STDIN_FILENO, NULL);
 		if (res == 0 && ft_strlen(line) == 0)
 		{
 			ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
-			exit(0);
+			ft_exit_n_free_g_vars(0);
 		}
 		ft_sig_post();
 		if (is_end_with_escape(line))
@@ -421,7 +481,7 @@ int
 				ft_free(&line);
 				ft_free(&trimmed);
 				ft_lstclear(&tokens, free);
-				return (1);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			}
 			res = KEEP_RUNNING;
 			head = commands;
@@ -461,14 +521,11 @@ int
 		}
 		ft_free(&line);
 		ft_free(&trimmed);
-		get_next_line(STDIN_FILENO, NULL);
 		ft_clear_commands(&head);
 	}
 	ft_free(&line);
 	ft_free(&trimmed);
 	get_next_line(STDIN_FILENO, NULL);
 	ft_clear_commands(&head);
-	ft_free(&g_pwd);
-	ft_lstclear(&g_env, free);
-	exit(g_status);
+	ft_exit_n_free_g_vars(g_status);
 }

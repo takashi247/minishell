@@ -70,3 +70,11 @@ int
 	}
 	return (0);
 }
+
+void
+	ft_exit_n_free_g_vars(int exit_status)
+{
+	ft_free(&g_pwd);
+	ft_lstclear(&g_env, free);
+	exit(exit_status);
+}
