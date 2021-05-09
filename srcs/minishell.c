@@ -221,8 +221,8 @@ int
 		else if (!ft_strcmp(argv[0], "exit"))
 			res = ft_exit(argv);
 		ft_clear_argv(&argv);
-		ft_restore_fds(std_fds);
 	}
+	ft_restore_fds(std_fds);
 	return (res);
 }
 
