@@ -1,4 +1,27 @@
 #include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
+
+static int
+	exit_with_too_many_args(char **trimmed_arg)
+{
+	ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
+	ft_put_cmderror("exit", "too many arguments");
+	g_status = STATUS_GENERAL_ERR;
+	if (*trimmed_arg)
+		ft_free(trimmed_arg);
+	return (STOP);
+}
+
+static int
+	exit_with_non_numeric(char *arg, char **trimmed_arg)
+{
+	ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
+	ft_put_cmderror_with_arg("exit", "numeric argument required", arg);
+	g_status = STATUS_OUT_OF_RANGE_ERR;
+	if (*trimmed_arg)
+		ft_free(trimmed_arg);
+	return (EXIT_NON_NUMERIC);
+}
 
 static int
 	exit_with_args(char **args)
@@ -12,18 +35,10 @@ static int
 	{
 		g_status = (uint8_t)ft_atoi(trimmed_arg);
 		if (args[2])
-		{
-			ft_put_cmderror("exit", "too many arguments");
-			g_status = STATUS_GENERAL_ERR;
-			ft_free(&trimmed_arg);
-			return (STOP);
-		}
+			return (exit_with_too_many_args(&trimmed_arg));
 	}
 	else
-	{
-		ft_put_cmderror_with_arg("exit", "numeric argument required", args[1]);
-		g_status = STATUS_OUT_OF_RANGE_ERR;
-	}
+		return (exit_with_non_numeric(args[1], &trimmed_arg));
 	if (trimmed_arg)
 		ft_free(&trimmed_arg);
 	return (EXIT);

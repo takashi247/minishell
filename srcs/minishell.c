@@ -513,9 +513,10 @@ int
 				}
 				commands = commands->next;
 			}
-			if (res == EXIT)
+			if (res == EXIT || res == EXIT_NON_NUMERIC)
 			{
-				ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
+				if (res == EXIT)
+					ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 				break;
 			}
 		}
@@ -525,7 +526,6 @@ int
 	}
 	ft_free(&line);
 	ft_free(&trimmed);
-	get_next_line(STDIN_FILENO, NULL);
 	ft_clear_commands(&head);
 	ft_exit_n_free_g_vars(g_status);
 }
