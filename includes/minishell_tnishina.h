@@ -59,6 +59,8 @@
 # define IS_DIR_ERROR_MSG "is a directory"
 # define COMMAND_NOT_FOUND_ERR_MSG "command not found"
 # define AMBIGUOUS_REDIRECT_ERR_MSG "ambiguous redirect"
+# define IS_NOT_DIR_ERR_MSG "Not a directory"
+# define PERMISSION_ERR_MSG "Permission denied"
 
 /*
 ** macro
@@ -106,6 +108,7 @@ t_bool		ft_is_quote(char *s, int i);
 char		**ft_convert_list(t_list *l);
 void		ft_clear_argv(char ***argv);
 int			ft_isover_intrange(char *s);
+void		ft_exit_n_free_g_vars(int exit_status);
 
 /* handle_signal.c */
 void		ft_sig_prior(void);
