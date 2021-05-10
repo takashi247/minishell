@@ -159,6 +159,7 @@ int		ft_pwd(char **args);
 
 /* export.c */
 int		ft_export(char **args);
+t_bool	ft_validate_name(const char *arg);
 
 /* export_print.c */
 int		ft_print_export(void);
