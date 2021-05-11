@@ -172,5 +172,7 @@ t_bool
 		ft_free(&path);
 		rd = rd->next->next;
 	}
+	if (res)
+		g_status = STATUS_SUCCESS;
 	return (res);
 }

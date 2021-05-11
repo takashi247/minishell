@@ -41,6 +41,7 @@ void
 		current = current->next;
 		delone_command(&prev);
 	}
+	*c = NULL;
 }
 
 static int
