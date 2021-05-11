@@ -2,13 +2,6 @@
 #include "minishell_sikeda.h"
 #include "libft.h"
 
-void
-	exit_with_error(void)
-{
-	ft_put_error(strerror(errno));
-	ft_exit_n_free_g_vars(g_status);
-}
-
 static char
 	*get_pathenv(char *s)
 {
@@ -167,10 +160,7 @@ void
 			ft_exit_n_free_g_vars(g_status);
 		}
 		else
-		{
 			execve(argv[0], argv, environ);
-			ft_exit_n_free_g_vars(g_status);
-		}
 	}
 	else
 	{
@@ -510,7 +500,7 @@ int
 						}
 						commands = ft_execute_pipeline(commands, environ);
 						if (!commands || waitpid(commands->pid, &term_status, 0) < 0)
-							exit_with_error();
+							ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 						if (WIFEXITED(term_status))
 							g_status = WEXITSTATUS(term_status);
 						else if (!commands)
