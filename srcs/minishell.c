@@ -440,6 +440,19 @@ static void
 	}
 }
 
+static t_bool
+	wait_pipeline(pid_t pid)
+{
+	int		term_status;
+
+	if (waitpid(pid, &term_status, 0) < 0)
+		return (FALSE);
+	if (WIFEXITED(term_status))
+		g_status = WEXITSTATUS(term_status);
+	while (wait(NULL) > 0) ;
+	return (TRUE);
+}
+
 int
 	main(void)
 {
@@ -451,7 +464,6 @@ int
 	t_command	*commands;
 	int			res;
 	int			expand_res;
-	int			term_status;
 
 	if (ft_init_env() == STOP)
 		return (EXIT_FAILURE);
@@ -509,12 +521,8 @@ int
 							continue ;
 						}
 						commands = ft_execute_pipeline(commands, environ);
-						if (!commands || waitpid(commands->pid, &term_status, 0) < 0)
+						if (!commands || !wait_pipeline(commands->pid))
 							exit_with_error();
-						if (WIFEXITED(term_status))
-							g_status = WEXITSTATUS(term_status);
-						else if (!commands)
-							break ;
 					}
 				}
 				commands = commands->next;
