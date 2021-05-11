@@ -110,6 +110,7 @@ static t_command
 	op = !tokens ? NEWLINE : (char*)tokens->content;
 	if (!(command->op = ft_strdup(op)))
 		return (NULL);
+	ft_lstclear(&tokens, free);
 	return (command);
 }
 

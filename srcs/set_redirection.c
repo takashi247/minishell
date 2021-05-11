@@ -3,25 +3,25 @@
 #include "libft.h"
 
 void
-	ft_save_fds(void)
+	ft_save_fds(int std_fds[3])
 {
-	g_stdin = dup(STDIN_FILENO);
-	g_stdout = dup(STDOUT_FILENO);
-	g_stderr = dup(STDERR_FILENO);
+	std_fds[0] = dup(STDIN_FILENO);
+	std_fds[1] = dup(STDOUT_FILENO);
+	std_fds[2] = dup(STDERR_FILENO);
 }
 
 void
-	ft_restore_fds(void)
+	ft_restore_fds(int std_fds[3])
 {
-	dup2(g_stdin, STDIN_FILENO);
-	dup2(g_stdout, STDOUT_FILENO);
-	dup2(g_stderr, STDERR_FILENO);
-	if (g_stdin != STDIN_FILENO)
-		close(g_stdin);
-	if (g_stdout != STDOUT_FILENO)
-		close(g_stdout);
-	if (g_stderr != STDERR_FILENO)
-		close(g_stderr);
+	dup2(std_fds[0], STDIN_FILENO);
+	dup2(std_fds[1], STDOUT_FILENO);
+	dup2(std_fds[2], STDERR_FILENO);
+	if (std_fds[0] != STDIN_FILENO)
+		close(std_fds[0]);
+	if (std_fds[1] != STDOUT_FILENO)
+		close(std_fds[1]);
+	if (std_fds[2] != STDERR_FILENO)
+		close(std_fds[2]);
 }
 
 static int
@@ -64,7 +64,7 @@ static char
 }
 
 static t_bool
-	append_redirect_out(int fd_from, char *path)
+	append_redirect_out(int fd_from, char *path, int std_fds[3])
 {
 	int	fd_to;
 
@@ -77,12 +77,12 @@ static t_bool
 	}
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
-	else if (fd_from == g_stdin)
-		g_stdin = dup(fd_from);
-	else if (fd_from == g_stdout)
-		g_stdout = dup(fd_from);
-	else if (fd_from == g_stderr)
-		g_stderr = dup(fd_from);
+	else if (fd_from == std_fds[0])
+		std_fds[0] = dup(fd_from);
+	else if (fd_from == std_fds[1])
+		std_fds[1] = dup(fd_from);
+	else if (fd_from == std_fds[2])
+		std_fds[2] = dup(fd_from);
 	dup2(fd_to, fd_from);
 	if (fd_to != fd_from)
 		close(fd_to);
@@ -90,7 +90,7 @@ static t_bool
 }
 
 static t_bool
-	redirect_out(int fd_from, char *path)
+	redirect_out(int fd_from, char *path, int std_fds[3])
 {
 	int	fd_to;
 
@@ -103,12 +103,12 @@ static t_bool
 	}
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
-	else if (fd_from == g_stdin)
-		g_stdin = dup(fd_from);
-	else if (fd_from == g_stdout)
-		g_stdout = dup(fd_from);
-	else if (fd_from == g_stderr)
-		g_stderr = dup(fd_from);
+	else if (fd_from == std_fds[0])
+		std_fds[0] = dup(fd_from);
+	else if (fd_from == std_fds[1])
+		std_fds[1] = dup(fd_from);
+	else if (fd_from == std_fds[2])
+		std_fds[2] = dup(fd_from);
 	dup2(fd_to, fd_from);
 	if (fd_to != fd_from)
 		close(fd_to);
@@ -116,7 +116,7 @@ static t_bool
 }
 
 static t_bool
-	redirect_in(int fd_from, char *path)
+	redirect_in(int fd_from, char *path, int std_fds[3])
 {
 	int	fd_to;
 
@@ -129,12 +129,12 @@ static t_bool
 	}
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDIN_FILENO;
-	else if (fd_from == g_stdin)
-		g_stdin = dup(fd_from);
-	else if (fd_from == g_stdout)
-		g_stdout = dup(fd_from);
-	else if (fd_from == g_stderr)
-		g_stderr = dup(fd_from);
+	else if (fd_from == std_fds[0])
+		std_fds[0] = dup(fd_from);
+	else if (fd_from == std_fds[1])
+		std_fds[1] = dup(fd_from);
+	else if (fd_from == std_fds[2])
+		std_fds[2] = dup(fd_from);
 	dup2(fd_to, fd_from);
 	if (fd_to != fd_from)
 		close(fd_to);
@@ -142,20 +142,20 @@ static t_bool
 }
 
 static t_bool
-	execute_redirection(int fd_from, char *redirect_op, char *path)
+	execute_redirection(int fd_from, char *redirect_op, char *path, int std_fds[3])
 {
 	if (!(ft_strcmp(redirect_op, APPEND_REDIRECT_OUT)))
-		return (append_redirect_out(fd_from, path));
+		return (append_redirect_out(fd_from, path, std_fds));
 	else if (!(ft_strcmp(redirect_op, REDIRECT_OUT)))
-		return (redirect_out(fd_from, path));
+		return (redirect_out(fd_from, path, std_fds));
 	else if (!(ft_strcmp(redirect_op, REDIRECT_IN)))
-		return (redirect_in(fd_from, path));
+		return (redirect_in(fd_from, path, std_fds));
 	else
 		return (FALSE);
 }
 
 t_bool
-	ft_set_redirection(t_list *rd)
+	ft_set_redirection(t_list *rd, int std_fds[3])
 {
 	int		fd_from;
 	char	*path;
@@ -178,7 +178,7 @@ t_bool
 			g_status = STATUS_GENERAL_ERR;
 			return (FALSE);
 		}
-		if (!execute_redirection(fd_from, redirect_op, path))
+		if (!execute_redirection(fd_from, redirect_op, path, std_fds))
 			res = FALSE;
 		ft_free(&redirect_op);
 		ft_free(&path);

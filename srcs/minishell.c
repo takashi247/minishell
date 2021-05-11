@@ -241,10 +241,11 @@ int
 {
 	char	**argv;
 	int		res;
+	int		std_fds[3];
 
 	res = KEEP_RUNNING;
-	ft_save_fds();
-	if (ft_set_redirection(c->redirects) == FALSE)
+	ft_save_fds(std_fds);
+	if (ft_set_redirection(c->redirects, std_fds) == FALSE)
 		return (STOP);
 	if (c->args)
 	{
@@ -270,7 +271,7 @@ int
 			res = ft_exit(argv);
 		ft_clear_argv(&argv);
 	}
-	ft_restore_fds();
+	ft_restore_fds(std_fds);
 	return (res);
 }
 
@@ -295,6 +296,7 @@ static pid_t
 {
 	pid_t	pid;
 	int		newpipe[2];
+	int		std_fds[3];
 
 	if (ispipe)
 		pipe(newpipe);
@@ -318,8 +320,14 @@ static pid_t
 			ft_execute_builtin(c);
 			ft_exit_n_free_g_vars(g_status);
 		}
-		else if (ft_set_redirection(c->redirects))
-			do_command(c, environ);
+		else
+		{
+			ft_save_fds(std_fds);
+			if (ft_set_redirection(c->redirects, std_fds))
+				do_command(c, environ);
+			else
+				ft_exit_n_free_g_vars(g_status);
+		}
 	}
 	if (haspipe)
 	{

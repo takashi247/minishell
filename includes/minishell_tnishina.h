@@ -92,12 +92,6 @@ typedef struct			s_command
 	t_bool				expanded;
 }						t_command;
 
-/* global variables to store fds for STDIN, STDOUT, STDERR */
-
-int		g_stdin;
-int		g_stdout;
-int		g_stderr;
-
 int			get_next_line(int fd, char **line);
 void		ft_free_str(char **str);
 int			ft_make_token(t_list **tokens, char *line, t_bool(*f)(char*, int, int*));
@@ -121,9 +115,9 @@ void		ft_sig_prior(void);
 void		ft_sig_post(void);
 
 /* set_redirection.c */
-t_bool		ft_set_redirection(t_list *rd);
-void		ft_save_fds(void);
-void		ft_restore_fds(void);
+t_bool		ft_set_redirection(t_list *rd, int std_fds[3]);
+void		ft_save_fds(int std_fds[3]);
+void		ft_restore_fds(int std_fds[3]);
 
 /* add_space.c */
 int			ft_add_space(char **l);
