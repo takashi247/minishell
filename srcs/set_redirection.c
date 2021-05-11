@@ -77,6 +77,12 @@ static t_bool
 	}
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
+	else if (fd_from == g_stdin)
+		g_stdin = dup(fd_from);
+	else if (fd_from == g_stdout)
+		g_stdout = dup(fd_from);
+	else if (fd_from == g_stderr)
+		g_stderr = dup(fd_from);
 	dup2(fd_to, fd_from);
 	if (fd_to != fd_from)
 		close(fd_to);
@@ -123,6 +129,12 @@ static t_bool
 	}
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDIN_FILENO;
+	else if (fd_from == g_stdin)
+		g_stdin = dup(fd_from);
+	else if (fd_from == g_stdout)
+		g_stdout = dup(fd_from);
+	else if (fd_from == g_stderr)
+		g_stderr = dup(fd_from);
 	dup2(fd_to, fd_from);
 	if (fd_to != fd_from)
 		close(fd_to);
