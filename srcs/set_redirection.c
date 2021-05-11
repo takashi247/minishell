@@ -15,12 +15,9 @@ void
 void
 	ft_restore_fds(int std_fds[3])
 {
-	int	res[3];
-
-	res[0] = dup2(std_fds[0], STDIN_FILENO);
-	res[1] = dup2(std_fds[1], STDOUT_FILENO);
-	res[2] = dup2(std_fds[2], STDERR_FILENO);
-	if (res[0] < 0 || res[1] < 0 || res[1] < 0)
+	if (dup2(std_fds[0], STDIN_FILENO) < 0
+		|| dup2(std_fds[1], STDOUT_FILENO) < 0
+		|| dup2(std_fds[2], STDERR_FILENO) < 0)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (std_fds[0] != STDIN_FILENO)
 		close(std_fds[0]);
