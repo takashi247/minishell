@@ -12,6 +12,7 @@
 # include "libft.h"
 # include "minishell_sikeda.h"
 # include <sys/stat.h>
+# include <signal.h>
 
 /*
 ** basic parameters for minishell
@@ -91,6 +92,13 @@ typedef struct			s_command
 	struct s_command	*next;
 	t_bool				expanded;
 }						t_command;
+
+
+/* global variables */
+
+pid_t	g_latest_pid;
+
+/* function declarations */
 
 int			get_next_line(int fd, char **line);
 void		ft_free_str(char **str);

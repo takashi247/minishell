@@ -445,6 +445,7 @@ static t_bool
 {
 	int		term_status;
 
+	g_latest_pid = pid;
 	if (waitpid(pid, &term_status, 0) < 0)
 		return (FALSE);
 	if (WIFEXITED(term_status))
