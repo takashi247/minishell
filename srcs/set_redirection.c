@@ -3,25 +3,25 @@
 #include "libft.h"
 
 void
-	ft_save_fds(int std_fds[3])
+	ft_save_fds(void)
 {
-	std_fds[0] = dup(STDIN_FILENO);
-	std_fds[1] = dup(STDOUT_FILENO);
-	std_fds[2] = dup(STDERR_FILENO);
+	g_stdin = dup(STDIN_FILENO);
+	g_stdout = dup(STDOUT_FILENO);
+	g_stderr = dup(STDERR_FILENO);
 }
 
 void
-	ft_restore_fds(int std_fds[3])
+	ft_restore_fds(void)
 {
-	dup2(std_fds[0], STDIN_FILENO);
-	dup2(std_fds[1], STDOUT_FILENO);
-	dup2(std_fds[2], STDERR_FILENO);
-	if (std_fds[0] != STDIN_FILENO)
-		close(std_fds[0]);
-	if (std_fds[1] != STDOUT_FILENO)
-		close(std_fds[1]);
-	if (std_fds[2] != STDERR_FILENO)
-		close(std_fds[2]);
+	dup2(g_stdin, STDIN_FILENO);
+	dup2(g_stdout, STDOUT_FILENO);
+	dup2(g_stderr, STDERR_FILENO);
+	if (g_stdin != STDIN_FILENO)
+		close(g_stdin);
+	if (g_stdout != STDOUT_FILENO)
+		close(g_stdout);
+	if (g_stderr != STDERR_FILENO)
+		close(g_stderr);
 }
 
 static int
@@ -97,6 +97,12 @@ static t_bool
 	}
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
+	else if (fd_from == g_stdin)
+		g_stdin = dup(fd_from);
+	else if (fd_from == g_stdout)
+		g_stdout = dup(fd_from);
+	else if (fd_from == g_stderr)
+		g_stderr = dup(fd_from);
 	dup2(fd_to, fd_from);
 	if (fd_to != fd_from)
 		close(fd_to);

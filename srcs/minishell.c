@@ -241,10 +241,9 @@ int
 {
 	char	**argv;
 	int		res;
-	int		std_fds[3];
 
 	res = KEEP_RUNNING;
-	ft_save_fds(std_fds);
+	ft_save_fds();
 	if (ft_set_redirection(c->redirects) == FALSE)
 		return (STOP);
 	if (c->args)
@@ -271,7 +270,7 @@ int
 			res = ft_exit(argv);
 		ft_clear_argv(&argv);
 	}
-	ft_restore_fds(std_fds);
+	ft_restore_fds();
 	return (res);
 }
 
