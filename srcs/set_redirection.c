@@ -8,14 +8,20 @@ void
 	std_fds[0] = dup(STDIN_FILENO);
 	std_fds[1] = dup(STDOUT_FILENO);
 	std_fds[2] = dup(STDERR_FILENO);
+	if (std_fds[0] < 0 || std_fds[1] < 0 || std_fds[2] < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 }
 
 void
 	ft_restore_fds(int std_fds[3])
 {
-	dup2(std_fds[0], STDIN_FILENO);
-	dup2(std_fds[1], STDOUT_FILENO);
-	dup2(std_fds[2], STDERR_FILENO);
+	int	res[3];
+
+	res[0] = dup2(std_fds[0], STDIN_FILENO);
+	res[1] = dup2(std_fds[1], STDOUT_FILENO);
+	res[2] = dup2(std_fds[2], STDERR_FILENO);
+	if (res[0] < 0 || res[1] < 0 || res[1] < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (std_fds[0] != STDIN_FILENO)
 		close(std_fds[0]);
 	if (std_fds[1] != STDOUT_FILENO)
@@ -83,7 +89,10 @@ static t_bool
 		std_fds[1] = dup(fd_from);
 	else if (fd_from == std_fds[2])
 		std_fds[2] = dup(fd_from);
-	dup2(fd_to, fd_from);
+	if (std_fds[0] < 0 || std_fds[1] < 0 || std_fds[2] < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	if (dup2(fd_to, fd_from) < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (fd_to != fd_from)
 		close(fd_to);
 	return (TRUE);
@@ -109,7 +118,10 @@ static t_bool
 		std_fds[1] = dup(fd_from);
 	else if (fd_from == std_fds[2])
 		std_fds[2] = dup(fd_from);
-	dup2(fd_to, fd_from);
+	if (std_fds[0] < 0 || std_fds[1] < 0 || std_fds[2] < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	if (dup2(fd_to, fd_from) < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (fd_to != fd_from)
 		close(fd_to);
 	return (TRUE);
@@ -135,7 +147,10 @@ static t_bool
 		std_fds[1] = dup(fd_from);
 	else if (fd_from == std_fds[2])
 		std_fds[2] = dup(fd_from);
-	dup2(fd_to, fd_from);
+	if (std_fds[0] < 0 || std_fds[1] < 0 || std_fds[2] < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	if (dup2(fd_to, fd_from) < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (fd_to != fd_from)
 		close(fd_to);
 	return (TRUE);

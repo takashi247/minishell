@@ -306,13 +306,15 @@ static pid_t
 		if (haspipe)
 		{
 			close(lastpipe[1]);
-			dup2(lastpipe[0], STDIN_FILENO);
+			if (dup2(lastpipe[0], STDIN_FILENO) < 0)
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			close(lastpipe[0]);
 		}
 		if (ispipe)
 		{
 			close(newpipe[0]);
-			dup2(newpipe[1], STDOUT_FILENO);
+			if (dup2(newpipe[1], STDOUT_FILENO) < 0)
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			close(newpipe[1]);
 		}
 		if (is_builtin(c))
