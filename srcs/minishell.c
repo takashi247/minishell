@@ -349,19 +349,12 @@ t_command
 		if (res == COMPLETED)
 		{
 			if (c->args || c->redirects)
-			{
 				c->pid = start_command(c, is_pipe(c), haspipe, lastpipe, environ);
-				haspipe = is_pipe(c);
-				if (haspipe)
-					c = c->next;
-				else
-					break ;
-			}
-			else
-			{
+			haspipe = is_pipe(c);
+			if (haspipe)
 				c = c->next;
-				break;
-			}
+			else
+				break ;
 		}
 		else if (res == REDIRECT_DELETED)
 		{
