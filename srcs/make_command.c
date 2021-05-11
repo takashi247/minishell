@@ -110,7 +110,6 @@ static t_command
 	op = !tokens ? NEWLINE : (char*)tokens->content;
 	if (!(command->op = ft_strdup(op)))
 		return (NULL);
-	ft_lstclear(&tokens, free);
 	return (command);
 }
 
@@ -142,7 +141,7 @@ t_bool
 static t_bool
 	is_valid_command(t_command *c)
 {
-	t_list	*head;
+	t_list	*current;
 
 	if ((!(ft_strcmp(c->op, "|")) && !(c->args)) ||
 		(!(ft_strcmp(c->op, ";")) && !(c->args)))
@@ -150,25 +149,24 @@ static t_bool
 		ft_put_syntaxerror_with_token(c->op);
 		return (FALSE);
 	}
-	head = c->args;
-	while (c->args)
+	current = c->args;
+	while (current)
 	{
-		if (ft_is_redirect((char *)(c->args->content)))
+		if (ft_is_redirect((char *)(current->content)))
 		{
-			if (!(c->args->next))
+			if (!(current->next))
 			{
 				ft_put_syntaxerror_with_token(c->op);
 				return (FALSE);
 			}
-			else if (ft_is_redirect((char *)(c->args->next->content)))
+			else if (ft_is_redirect((char *)(current->next->content)))
 			{
-				ft_put_syntaxerror_with_token((char *)(c->args->next->content));
+				ft_put_syntaxerror_with_token((char *)(current->next->content));
 				return (FALSE);
 			}
 		}
-		c->args = c->args->next;
+		current = current->next;
 	}
-	c->args = head;
 	return (TRUE);
 }
 
