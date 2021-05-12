@@ -1,0 +1,26 @@
+echo "\\"
+echo '\'
+echo \
+echo \\
+echo \\\
+echo \\\\
+echo \\\\\
+echo \\\\\\
+env | grep "TERM"
+whoami | grep $USER
+cat Makefile | grep "FLAGS"
+/PWD
+.
+/
+exit "1"23
+exit 0 0 ; echo if you see this message then your minishell have some troubles
+echo '$USER'"123$USER123""text" > file ; cat file
+echo "-n -n -n"-n bonjour\
+cd / ; bin/no_commands
+nodir/no_command
+/nodir/no_command
+no_command
+export TEST="cho test"; e$TEST
+export TEST="cho test"; export TEST2=$TEST; echo $TEST2
+export TEST="cho test"; export 123=$TEST
+exprot TEST="cho test"; export TEST2=e$TEST $TEST
