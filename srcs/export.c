@@ -8,8 +8,8 @@ static int
 	return (STOP);
 }
 
-static t_bool
-	validate_name(const char *arg)
+t_bool
+	ft_validate_name(const char *arg)
 {
 	t_bool	ret;
 
@@ -55,7 +55,7 @@ static int
 		if (!name)
 			return (stop_with_puterror(errno));
 		plus_mode = is_plus_mode(args[1], name);
-		if (validate_name(name) == FALSE)
+		if (ft_validate_name(name) == FALSE)
 		{
 			g_status = STATUS_GENERAL_ERR;
 			ft_put_cmderror_with_quoted_arg(

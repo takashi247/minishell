@@ -120,11 +120,11 @@ void
 	err_arg = NULL;
 	err_status = NO_ERROR;
 	path_env = ft_getenv("PATH");
-	if (command[0] == '/' || command[0] == '.' || !path_env || !*path_env)
+	command_dir = get_command_dir(command);
+	if (!command_dir)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	if (command[0] == '/' || command[0] == '.' || !path_env || !*path_env || *command_dir)
 	{
-		command_dir = get_command_dir(command);
-		if (!command_dir)
-			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 		if (*command_dir)
 		{
 			if (stat(command_dir, &buf) != 0)
@@ -164,6 +164,7 @@ void
 	}
 	else
 	{
+		ft_free(&command_dir);
 		path_env = get_pathenv(path_env);
 		paths = ft_split(path_env, ':');
 		if (!path_env || !paths)
@@ -178,35 +179,20 @@ void
 			if (!tmp || !argv[0])
 				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
-			command_dir = get_command_dir(command);
-			if (!command_dir)
-				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-			if (*command_dir)
-			{
-				if (stat(command_dir, &buf) != 0)
-				{
-					err_arg = ft_strdup(argv[0]);
-					err_msg = ft_strdup(strerror(errno));
-					err_status = STATUS_COMMAND_NOT_FOUND;
-				}
-				else if (!(buf.st_mode & S_IFDIR))
-				{
-					err_arg = ft_strdup(argv[0]);
-					err_msg = ft_strdup(IS_NOT_DIR_ERR_MSG);
-					err_status = STATUS_CANNOT_EXECUTE;
-				}
-			}
-			ft_free(&command_dir);
 			if (stat(argv[0], &buf) == 0)
 			{
 				if (buf.st_mode & S_IFDIR)
 				{
+					ft_free(&err_arg);
+					ft_free(&err_msg);
 					err_arg = ft_strdup(argv[0]);
 					err_msg = ft_strdup(IS_DIR_ERROR_MSG);
 					err_status = STATUS_COMMAND_NOT_FOUND;
 				}
 				else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
 				{
+					ft_free(&err_arg);
+					ft_free(&err_msg);
 					err_arg = ft_strdup(argv[0]);
 					err_msg = ft_strdup(PERMISSION_ERR_MSG);
 					err_status = STATUS_CANNOT_EXECUTE;
@@ -511,9 +497,10 @@ int
 				}
 				commands = commands->next;
 			}
-			if (res == EXIT)
+			if (res == EXIT || res == EXIT_NON_NUMERIC)
 			{
-				ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
+				if (res == EXIT)
+					ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 				break;
 			}
 		}
@@ -523,7 +510,6 @@ int
 	}
 	ft_free(&line);
 	ft_free(&trimmed);
-	get_next_line(STDIN_FILENO, NULL);
 	ft_clear_commands(&head);
 	ft_exit_n_free_g_vars(g_status);
 }
