@@ -8,14 +8,17 @@ void
 	std_fds[0] = dup(STDIN_FILENO);
 	std_fds[1] = dup(STDOUT_FILENO);
 	std_fds[2] = dup(STDERR_FILENO);
+	if (std_fds[0] < 0 || std_fds[1] < 0 || std_fds[2] < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 }
 
 void
 	ft_restore_fds(int std_fds[3])
 {
-	dup2(std_fds[0], STDIN_FILENO);
-	dup2(std_fds[1], STDOUT_FILENO);
-	dup2(std_fds[2], STDERR_FILENO);
+	if (dup2(std_fds[0], STDIN_FILENO) < 0
+		|| dup2(std_fds[1], STDOUT_FILENO) < 0
+		|| dup2(std_fds[2], STDERR_FILENO) < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (std_fds[0] != STDIN_FILENO)
 		close(std_fds[0]);
 	if (std_fds[1] != STDOUT_FILENO)
@@ -64,7 +67,7 @@ static char
 }
 
 static t_bool
-	append_redirect_out(int fd_from, char *path)
+	append_redirect_out(int fd_from, char *path, int std_fds[3])
 {
 	int	fd_to;
 
@@ -77,14 +80,23 @@ static t_bool
 	}
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
-	dup2(fd_to, fd_from);
+	else if (fd_from == std_fds[0])
+		std_fds[0] = dup(fd_from);
+	else if (fd_from == std_fds[1])
+		std_fds[1] = dup(fd_from);
+	else if (fd_from == std_fds[2])
+		std_fds[2] = dup(fd_from);
+	if (std_fds[0] < 0 || std_fds[1] < 0 || std_fds[2] < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	if (dup2(fd_to, fd_from) < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (fd_to != fd_from)
 		close(fd_to);
 	return (TRUE);
 }
 
 static t_bool
-	redirect_out(int fd_from, char *path)
+	redirect_out(int fd_from, char *path, int std_fds[3])
 {
 	int	fd_to;
 
@@ -97,14 +109,23 @@ static t_bool
 	}
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDOUT_FILENO;
-	dup2(fd_to, fd_from);
+	else if (fd_from == std_fds[0])
+		std_fds[0] = dup(fd_from);
+	else if (fd_from == std_fds[1])
+		std_fds[1] = dup(fd_from);
+	else if (fd_from == std_fds[2])
+		std_fds[2] = dup(fd_from);
+	if (std_fds[0] < 0 || std_fds[1] < 0 || std_fds[2] < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	if (dup2(fd_to, fd_from) < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (fd_to != fd_from)
 		close(fd_to);
 	return (TRUE);
 }
 
 static t_bool
-	redirect_in(int fd_from, char *path)
+	redirect_in(int fd_from, char *path, int std_fds[3])
 {
 	int	fd_to;
 
@@ -117,27 +138,36 @@ static t_bool
 	}
 	if (fd_from == NO_FD_SETTING)
 		fd_from = STDIN_FILENO;
-	dup2(fd_to, fd_from);
+	else if (fd_from == std_fds[0])
+		std_fds[0] = dup(fd_from);
+	else if (fd_from == std_fds[1])
+		std_fds[1] = dup(fd_from);
+	else if (fd_from == std_fds[2])
+		std_fds[2] = dup(fd_from);
+	if (std_fds[0] < 0 || std_fds[1] < 0 || std_fds[2] < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	if (dup2(fd_to, fd_from) < 0)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (fd_to != fd_from)
 		close(fd_to);
 	return (TRUE);
 }
 
 static t_bool
-	execute_redirection(int fd_from, char *redirect_op, char *path)
+	execute_redirection(int fd_from, char *redirect_op, char *path, int std_fds[3])
 {
 	if (!(ft_strcmp(redirect_op, APPEND_REDIRECT_OUT)))
-		return (append_redirect_out(fd_from, path));
+		return (append_redirect_out(fd_from, path, std_fds));
 	else if (!(ft_strcmp(redirect_op, REDIRECT_OUT)))
-		return (redirect_out(fd_from, path));
+		return (redirect_out(fd_from, path, std_fds));
 	else if (!(ft_strcmp(redirect_op, REDIRECT_IN)))
-		return (redirect_in(fd_from, path));
+		return (redirect_in(fd_from, path, std_fds));
 	else
 		return (FALSE);
 }
 
 t_bool
-	ft_set_redirection(t_list *rd)
+	ft_set_redirection(t_list *rd, int std_fds[3])
 {
 	int		fd_from;
 	char	*path;
@@ -160,11 +190,13 @@ t_bool
 			g_status = STATUS_GENERAL_ERR;
 			return (FALSE);
 		}
-		if (!execute_redirection(fd_from, redirect_op, path))
+		if (!execute_redirection(fd_from, redirect_op, path, std_fds))
 			res = FALSE;
 		ft_free(&redirect_op);
 		ft_free(&path);
 		rd = rd->next->next;
 	}
+	if (res)
+		g_status = STATUS_SUCCESS;
 	return (res);
 }

@@ -2,13 +2,6 @@
 #include "minishell_sikeda.h"
 #include "libft.h"
 
-void
-	exit_with_error(void)
-{
-	ft_put_error(strerror(errno));
-	ft_exit_n_free_g_vars(g_status);
-}
-
 static char
 	*get_pathenv(char *s)
 {
@@ -167,10 +160,7 @@ void
 			ft_exit_n_free_g_vars(g_status);
 		}
 		else
-		{
 			execve(argv[0], argv, environ);
-			ft_exit_n_free_g_vars(g_status);
-		}
 	}
 	else
 	{
@@ -241,7 +231,7 @@ int
 
 	res = KEEP_RUNNING;
 	ft_save_fds(std_fds);
-	if (ft_set_redirection(c->redirects) == FALSE)
+	if (ft_set_redirection(c->redirects, std_fds) == FALSE)
 		return (STOP);
 	if (c->args)
 	{
@@ -292,6 +282,7 @@ static pid_t
 {
 	pid_t	pid;
 	int		newpipe[2];
+	int		std_fds[3];
 
 	if (ispipe)
 		pipe(newpipe);
@@ -301,13 +292,15 @@ static pid_t
 		if (haspipe)
 		{
 			close(lastpipe[1]);
-			dup2(lastpipe[0], STDIN_FILENO);
+			if (dup2(lastpipe[0], STDIN_FILENO) < 0)
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			close(lastpipe[0]);
 		}
 		if (ispipe)
 		{
 			close(newpipe[0]);
-			dup2(newpipe[1], STDOUT_FILENO);
+			if (dup2(newpipe[1], STDOUT_FILENO) < 0)
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			close(newpipe[1]);
 		}
 		if (is_builtin(c))
@@ -315,8 +308,14 @@ static pid_t
 			ft_execute_builtin(c);
 			ft_exit_n_free_g_vars(g_status);
 		}
-		else if (ft_set_redirection(c->redirects))
-			do_command(c, environ);
+		else
+		{
+			ft_save_fds(std_fds);
+			if (ft_set_redirection(c->redirects, std_fds))
+				do_command(c, environ);
+			else
+				ft_exit_n_free_g_vars(g_status);
+		}
 	}
 	if (haspipe)
 	{
@@ -346,19 +345,12 @@ t_command
 		if (res == COMPLETED)
 		{
 			if (c->args || c->redirects)
-			{
 				c->pid = start_command(c, is_pipe(c), haspipe, lastpipe, environ);
-				haspipe = is_pipe(c);
-				if (haspipe)
-					c = c->next;
-				else
-					break ;
-			}
-			else
-			{
+			haspipe = is_pipe(c);
+			if (haspipe)
 				c = c->next;
-				break;
-			}
+			else
+				break ;
 		}
 		else if (res == REDIRECT_DELETED)
 		{
@@ -496,7 +488,7 @@ int
 						}
 						commands = ft_execute_pipeline(commands, environ);
 						if (!commands || waitpid(commands->pid, &term_status, 0) < 0)
-							exit_with_error();
+							ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 						if (WIFEXITED(term_status))
 							g_status = WEXITSTATUS(term_status);
 						else if (!commands)

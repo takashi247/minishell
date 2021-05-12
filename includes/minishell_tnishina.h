@@ -115,7 +115,7 @@ void		ft_sig_prior(void);
 void		ft_sig_post(void);
 
 /* set_redirection.c */
-t_bool		ft_set_redirection(t_list *rd);
+t_bool		ft_set_redirection(t_list *rd, int std_fds[3]);
 void		ft_save_fds(int std_fds[3]);
 void		ft_restore_fds(int std_fds[3]);
 
