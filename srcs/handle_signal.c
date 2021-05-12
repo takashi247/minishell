@@ -21,7 +21,8 @@ void
 void
 	sig_quit_post()
 {
-	ft_putstr_fd("Quit: 3\n", STDERR_FILENO);
+	if (kill(g_latest_pid, 0) == 0)
+		ft_putstr_fd("Quit: 3\n", STDERR_FILENO);
 	g_status = 131;
 }
 
