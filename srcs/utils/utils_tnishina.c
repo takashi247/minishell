@@ -52,6 +52,8 @@ int
 {
 	uint64_t	num;
 	int			is_minus;
+
+	is_minus = 0;
 	while (ft_isspace(*s))
 		s++;
 	if (*s == '-')

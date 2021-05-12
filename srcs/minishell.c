@@ -2,13 +2,6 @@
 #include "minishell_sikeda.h"
 #include "libft.h"
 
-void
-	exit_with_error(void)
-{
-	ft_put_error(strerror(errno));
-	ft_exit_n_free_g_vars(g_status);
-}
-
 static char
 	*get_pathenv(char *s)
 {
@@ -127,11 +120,11 @@ void
 	err_arg = NULL;
 	err_status = NO_ERROR;
 	path_env = ft_getenv("PATH");
-	if (command[0] == '/' || command[0] == '.' || !path_env || !*path_env)
+	command_dir = get_command_dir(command);
+	if (!command_dir)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	if (command[0] == '/' || command[0] == '.' || !path_env || !*path_env || *command_dir)
 	{
-		command_dir = get_command_dir(command);
-		if (!command_dir)
-			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 		if (*command_dir)
 		{
 			if (stat(command_dir, &buf) != 0)
@@ -167,13 +160,11 @@ void
 			ft_exit_n_free_g_vars(g_status);
 		}
 		else
-		{
 			execve(argv[0], argv, environ);
-			ft_exit_n_free_g_vars(g_status);
-		}
 	}
 	else
 	{
+		ft_free(&command_dir);
 		path_env = get_pathenv(path_env);
 		paths = ft_split(path_env, ':');
 		if (!path_env || !paths)
@@ -188,35 +179,20 @@ void
 			if (!tmp || !argv[0])
 				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			ft_free(&tmp);
-			command_dir = get_command_dir(command);
-			if (!command_dir)
-				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-			if (*command_dir)
-			{
-				if (stat(command_dir, &buf) != 0)
-				{
-					err_arg = ft_strdup(argv[0]);
-					err_msg = ft_strdup(strerror(errno));
-					err_status = STATUS_COMMAND_NOT_FOUND;
-				}
-				else if (!(buf.st_mode & S_IFDIR))
-				{
-					err_arg = ft_strdup(argv[0]);
-					err_msg = ft_strdup(IS_NOT_DIR_ERR_MSG);
-					err_status = STATUS_CANNOT_EXECUTE;
-				}
-			}
-			ft_free(&command_dir);
 			if (stat(argv[0], &buf) == 0)
 			{
 				if (buf.st_mode & S_IFDIR)
 				{
+					ft_free(&err_arg);
+					ft_free(&err_msg);
 					err_arg = ft_strdup(argv[0]);
 					err_msg = ft_strdup(IS_DIR_ERROR_MSG);
 					err_status = STATUS_COMMAND_NOT_FOUND;
 				}
 				else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
 				{
+					ft_free(&err_arg);
+					ft_free(&err_msg);
 					err_arg = ft_strdup(argv[0]);
 					err_msg = ft_strdup(PERMISSION_ERR_MSG);
 					err_status = STATUS_CANNOT_EXECUTE;
@@ -255,7 +231,7 @@ int
 
 	res = KEEP_RUNNING;
 	ft_save_fds(std_fds);
-	if (ft_set_redirection(c->redirects) == FALSE)
+	if (ft_set_redirection(c->redirects, std_fds) == FALSE)
 		return (STOP);
 	if (c->args)
 	{
@@ -306,6 +282,7 @@ static pid_t
 {
 	pid_t	pid;
 	int		newpipe[2];
+	int		std_fds[3];
 
 	if (ispipe)
 		pipe(newpipe);
@@ -315,13 +292,15 @@ static pid_t
 		if (haspipe)
 		{
 			close(lastpipe[1]);
-			dup2(lastpipe[0], STDIN_FILENO);
+			if (dup2(lastpipe[0], STDIN_FILENO) < 0)
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			close(lastpipe[0]);
 		}
 		if (ispipe)
 		{
 			close(newpipe[0]);
-			dup2(newpipe[1], STDOUT_FILENO);
+			if (dup2(newpipe[1], STDOUT_FILENO) < 0)
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 			close(newpipe[1]);
 		}
 		if (is_builtin(c))
@@ -329,8 +308,14 @@ static pid_t
 			ft_execute_builtin(c);
 			ft_exit_n_free_g_vars(g_status);
 		}
-		else if (ft_set_redirection(c->redirects))
-			do_command(c, environ);
+		else
+		{
+			ft_save_fds(std_fds);
+			if (ft_set_redirection(c->redirects, std_fds))
+				do_command(c, environ);
+			else
+				ft_exit_n_free_g_vars(g_status);
+		}
 	}
 	if (haspipe)
 	{
@@ -360,19 +345,12 @@ t_command
 		if (res == COMPLETED)
 		{
 			if (c->args || c->redirects)
-			{
 				c->pid = start_command(c, is_pipe(c), haspipe, lastpipe, environ);
-				haspipe = is_pipe(c);
-				if (haspipe)
-					c = c->next;
-				else
-					break ;
-			}
-			else
-			{
+			haspipe = is_pipe(c);
+			if (haspipe)
 				c = c->next;
-				break;
-			}
+			else
+				break ;
 		}
 		else if (res == REDIRECT_DELETED)
 		{
@@ -523,14 +501,15 @@ int
 						}
 						commands = ft_execute_pipeline(commands, environ);
 						if (!commands || !wait_pipeline(commands->pid))
-							exit_with_error();
+							ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 					}
 				}
 				commands = commands->next;
 			}
-			if (res == EXIT)
+			if (res == EXIT || res == EXIT_NON_NUMERIC)
 			{
-				ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
+				if (res == EXIT)
+					ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 				break;
 			}
 		}
@@ -540,7 +519,6 @@ int
 	}
 	ft_free(&line);
 	ft_free(&trimmed);
-	get_next_line(STDIN_FILENO, NULL);
 	ft_clear_commands(&head);
 	ft_exit_n_free_g_vars(g_status);
 }

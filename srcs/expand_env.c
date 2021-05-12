@@ -274,6 +274,26 @@ t_bool
 		return (FALSE);
 }
 
+static t_bool
+	has_valid_name(const char *content)
+{
+	char	*name;
+	t_bool	res;
+
+	if (!ft_strchr(content, '='))
+		return (FALSE);
+	name = ft_extract_envname_from_str(content);
+	if (!name)
+	{
+		g_status = STATUS_GENERAL_ERR;
+		ft_put_error(strerror(errno));
+		ft_exit_n_free_g_vars(g_status);
+	}
+	res = ft_validate_name(name);
+	ft_free(&name);
+	return (res);
+}
+
 static int
 	find_n_replace_env(t_list **args)
 {
@@ -284,13 +304,19 @@ static int
 	int		q_flag[2];
 	int		res;
 	int		b_flag;
+	t_bool	has_name;
+	int		equal_flag;
 
 	i = 0;
 	ft_memset(q_flag, 0, sizeof(q_flag));
 	b_flag = 0;
-	while (((char*)(*args)->content)[i])
+	equal_flag = 0;
+	has_name = has_valid_name((char *)(*args)->content);
+	while ((*args)->content && ((char*)(*args)->content)[i])
 	{
 		flag = 1;
+		if (((char *)(*args)->content)[i] == '=')
+			equal_flag = 1;
 		if (!b_flag && ((char *)(*args)->content)[i] == '\\' && !q_flag[0] && (!q_flag[1]
 			|| ft_is_escapable_in_dquote(((char *)(*args)->content)[i + 1])))
 		{
@@ -319,7 +345,7 @@ static int
 			if (j - env_pos[0] == 1 && ((char*)(*args)->content)[j] == '?')
 				j++;
 			env_pos[1] = j;
-			if (q_flag[1] || env_pos[0] != 0)
+			if (q_flag[1] || (has_name && equal_flag))
 			{
 				res = replace_env_in_quote(((char**)&((*args)->content)), env_pos, &i);
 				if (res == FAILED)

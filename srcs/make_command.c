@@ -12,16 +12,17 @@ t_bool
 }
 
 static void
-	delone_command(t_command *command)
+	delone_command(t_command **command)
 {
-	if (command)
+	if (*command)
 	{
-		if (command->args)
-			ft_lstclear(&(command->args), free);
-		if (command->redirects)
-			ft_lstclear(&(command->redirects), free);
-		FREE(command->op);
-		FREE(command);
+		if ((*command)->args)
+			ft_lstclear(&((*command)->args), free);
+		if ((*command)->redirects)
+			ft_lstclear(&((*command)->redirects), free);
+		ft_free(&((*command)->op));
+		free(*command);
+		*command = NULL;
 	}
 }
 
@@ -38,7 +39,7 @@ void
 	{
 		prev = current;
 		current = current->next;
-		delone_command(prev);
+		delone_command(&prev);
 	}
 	*c = NULL;
 }
@@ -141,36 +142,31 @@ t_bool
 static t_bool
 	is_valid_command(t_command *c)
 {
-	t_list	*head;
+	t_list	*current;
 
-	while (c)
+	if ((!(ft_strcmp(c->op, "|")) && !(c->args)) ||
+		(!(ft_strcmp(c->op, ";")) && !(c->args)))
 	{
-		if ((!(ft_strcmp(c->op, "|")) && !(c->args)) ||
-			(!(ft_strcmp(c->op, ";")) && !(c->args)))
+		ft_put_syntaxerror_with_token(c->op);
+		return (FALSE);
+	}
+	current = c->args;
+	while (current)
+	{
+		if (ft_is_redirect((char *)(current->content)))
 		{
-			ft_put_syntaxerror_with_token(c->op);
-			return (FALSE);
-		}
-		head = c->args;
-		while (c->args)
-		{
-			if (ft_is_redirect((char *)(c->args->content)))
+			if (!(current->next))
 			{
-				if (!(c->args->next))
-				{
-					ft_put_syntaxerror_with_token(c->op);
-					return (FALSE);
-				}
-				else if (ft_is_redirect((char *)(c->args->next->content)))
-				{
-					ft_put_syntaxerror_with_token((char *)(c->args->next->content));
-					return (FALSE);
-				}
+				ft_put_syntaxerror_with_token(c->op);
+				return (FALSE);
 			}
-			c->args = c->args->next;
+			else if (ft_is_redirect((char *)(current->next->content)))
+			{
+				ft_put_syntaxerror_with_token((char *)(current->next->content));
+				return (FALSE);
+			}
 		}
-		c->args = head;
-		c = c->next;
+		current = current->next;
 	}
 	return (TRUE);
 }
@@ -208,7 +204,7 @@ int
 		if (!(new_command = create_command(head)))
 			return (clear_commands_and_tokens(commands, &head, &tmp));
 		add_command(commands, new_command);
-		if (!(is_valid_command(*commands)))
+		if (!(is_valid_command(get_last_command(*commands))))
 			return (clear_with_syntax_error(commands, NULL, &tmp));
 		ft_extract_redirect(*commands);
 		tokens = tmp;
