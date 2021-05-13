@@ -78,5 +78,6 @@ void
 {
 	ft_free(&g_pwd);
 	ft_lstclear(&g_env, free);
+	ft_clear_history(&g_ms.hist.last);
 	exit(exit_status);
 }
