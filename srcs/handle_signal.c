@@ -15,15 +15,18 @@ void
 	sig_int_post()
 {
 	ft_putstr_fd("\n", STDERR_FILENO);
-	g_status = 130;
+	if (kill(g_latest_pid, 0) == 0)
+		g_status = 130;
 }
 
 void
 	sig_quit_post()
 {
 	if (kill(g_latest_pid, 0) == 0)
+	{
 		ft_putstr_fd("Quit: 3\n", STDERR_FILENO);
-	g_status = 131;
+		g_status = 131;
+	}
 }
 
 void

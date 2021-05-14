@@ -444,23 +444,19 @@ int
 	int			res;
 	int			expand_res;
 
-	if (ft_init_env() == STOP)
+	if (init_minishell() == UTIL_ERROR)
 		return (EXIT_FAILURE);
-	if (ft_init_pwd() == STOP)
-	{
-		ft_lstclear(&g_env, free);
-		return (EXIT_FAILURE);
-	}
+	line = NULL;
+	trimmed = NULL;
+	head = NULL;
 	while (1)
 	{
-		ft_putstr_fd(PROMPT, STDERR_FILENO);
 		ft_sig_prior();
-		res = get_next_line(STDIN_FILENO, &line);
-		get_next_line(STDIN_FILENO, NULL);
-		if (res == 0 && ft_strlen(line) == 0)
+		res = ft_get_line(&line);
+		if (res == GNL_ERROR)
 		{
-			ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
-			ft_exit_n_free_g_vars(0);
+			g_status = STATUS_GENERAL_ERR;
+			break ;
 		}
 		ft_sig_post();
 		if (is_end_with_escape(line))
