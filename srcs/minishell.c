@@ -3,80 +3,6 @@
 #include "libft.h"
 
 static char
-	*get_pathenv(char *s)
-{
-	int		i;
-	char*	path_env;
-	char*	tmp;
-	char*	front;
-	char*	back;
-	char*	pwd;
-
-	if (!s)
-		return (NULL);
-	path_env = ft_strdup(s);
-	if (!path_env)
-		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-	tmp = NULL;
-	pwd = ".";
-	i = 0;
-	while (path_env[i])
-	{
-		if (!i && path_env[i] == ':')
-		{
-			tmp = path_env;
-			path_env = ft_strjoin(pwd, path_env);
-			if (!path_env)
-				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-			ft_free(&tmp);
-			i += ft_strlen(pwd);
-		}
-		else if (path_env[i] == ':' && path_env[i + 1] == ':')
-		{
-			tmp = path_env;
-			front = ft_substr(path_env, 0, i + 1);
-			back = ft_strdup(path_env + i + 1);
-			ft_free(&tmp);
-			tmp = ft_strjoin(front, pwd);
-			path_env = ft_strjoin(tmp, back);
-			if (!front || !back || !tmp || !path_env)
-				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-			ft_free(&front);
-			ft_free(&back);
-			ft_free(&tmp);
-			i += ft_strlen(pwd);
-		}
-		else if (path_env[i] == ':' && !path_env[i + 1])
-		{
-			tmp = path_env;
-			path_env = ft_strjoin(path_env, pwd);
-			if (!path_env)
-				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-			ft_free(&tmp);
-			i += ft_strlen(pwd);
-		}
-		else
-			i++;
-	}
-	return (path_env);
-}
-
-void
-	ft_do_command_err(char *c, char *err_arg, char *err_msg, int err_status)
-{
-	if (err_status == NO_ERROR)
-	{
-		ft_put_cmderror(c, COMMAND_NOT_FOUND_ERR_MSG);
-		g_status = STATUS_COMMAND_NOT_FOUND;
-	}
-	else
-	{
-		ft_put_cmderror(err_arg, err_msg);
-		g_status = err_status;
-	}
-}
-
-static char
 	*get_command_dir(char *command)
 {
 	int		len;
@@ -95,121 +21,26 @@ void
 	do_command(t_command *c, char **environ)
 {
 	char		**argv;
-	char		**paths;
-	char		*tmp;
-	char		*command;
 	char		*path_env;
-	char		**head;
-	struct stat	buf;
-	char		*err_msg;
-	char		*err_arg;
-	int			err_status;
 	char		*command_dir;
 
 	if (!c || !environ)
-		exit(STATUS_GENERAL_ERR);
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (!c->args)
-		exit(g_status);
+		ft_exit_n_free_g_vars(g_status);
 	argv = ft_convert_list(c->args);
 	if (!argv)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-	command = ft_strdup(argv[0]);
-	if (!command)
-		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-	err_msg = NULL;
-	err_arg = NULL;
-	err_status = NO_ERROR;
 	path_env = ft_getenv("PATH");
-	command_dir = get_command_dir(command);
+	command_dir = get_command_dir(argv[0]);
 	if (!command_dir)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-	if (command[0] == '/' || command[0] == '.' || !path_env || !*path_env || *command_dir)
-	{
-		if (*command_dir)
-		{
-			if (stat(command_dir, &buf) != 0)
-			{
-				ft_put_cmderror(command, strerror(errno));
-				g_status = STATUS_COMMAND_NOT_FOUND;
-				ft_exit_n_free_g_vars(g_status);
-			}
-			else if (!(buf.st_mode & S_IFDIR))
-			{
-				ft_put_cmderror(command, IS_NOT_DIR_ERR_MSG);
-				g_status = STATUS_CANNOT_EXECUTE;
-				ft_exit_n_free_g_vars(g_status);
-			}
-		}
-		ft_free(&command_dir);
-		if (stat(command, &buf) != 0)
-		{
-			ft_put_cmderror(command, strerror(errno));
-			g_status = STATUS_COMMAND_NOT_FOUND;
-			ft_exit_n_free_g_vars(g_status);
-		}
-		else if (buf.st_mode & S_IFDIR)
-		{
-			ft_put_cmderror(command, IS_DIR_ERROR_MSG);
-			g_status = STATUS_CANNOT_EXECUTE;
-			ft_exit_n_free_g_vars(g_status);
-		}
-		else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
-		{
-			ft_put_cmderror(command, PERMISSION_ERR_MSG);
-			g_status = STATUS_CANNOT_EXECUTE;
-			ft_exit_n_free_g_vars(g_status);
-		}
-		else
-			execve(argv[0], argv, environ);
-	}
+	if (argv[0][0] == '/' || argv[0][0] == '.' || !path_env || !*path_env || *command_dir)
+		ft_do_path_command(argv, command_dir, environ);
 	else
 	{
 		ft_free(&command_dir);
-		path_env = get_pathenv(path_env);
-		paths = ft_split(path_env, ':');
-		if (!path_env || !paths)
-			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-		head = paths;
-		while (*paths)
-		{
-			ft_free(&(argv[0]));
-			tmp = ft_strjoin(*paths, "/");
-			if (tmp)
-				argv[0] = ft_strjoin(tmp, command);
-			if (!tmp || !argv[0])
-				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-			ft_free(&tmp);
-			if (stat(argv[0], &buf) == 0)
-			{
-				if (buf.st_mode & S_IFDIR)
-				{
-					ft_free(&err_arg);
-					ft_free(&err_msg);
-					err_arg = ft_strdup(argv[0]);
-					err_msg = ft_strdup(IS_DIR_ERROR_MSG);
-					err_status = STATUS_COMMAND_NOT_FOUND;
-				}
-				else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
-				{
-					ft_free(&err_arg);
-					ft_free(&err_msg);
-					err_arg = ft_strdup(argv[0]);
-					err_msg = ft_strdup(PERMISSION_ERR_MSG);
-					err_status = STATUS_CANNOT_EXECUTE;
-				}
-				else
-					execve(argv[0], argv, environ);
-			}
-			paths++;
-		}
-		ft_do_command_err(command, err_arg, err_msg, err_status);
-		ft_free(&err_msg);
-		ft_free(&err_arg);
-		ft_free(&command);
-		ft_free(&path_env);
-		ft_free_split(&head);
-		ft_free_split(&argv);
-		ft_exit_n_free_g_vars(g_status);
+		ft_do_nonpath_command(&path_env, &argv, environ);
 	}
 }
 
@@ -220,6 +51,28 @@ static t_bool
 		return (TRUE);
 	else
 		return (FALSE);
+}
+
+static int
+	do_builtin_cmd(char **argv)
+{
+	int	res;
+
+	if (!ft_strcmp(argv[0], "echo"))
+		res = ft_echo(argv);
+	else if (!ft_strcmp(argv[0], "cd"))
+		res = ft_cd(argv);
+	else if (!ft_strcmp(argv[0], "pwd"))
+		res = ft_pwd(argv);
+	else if (!ft_strcmp(argv[0], "export"))
+		res = ft_export(argv);
+	else if (!ft_strcmp(argv[0], "unset"))
+		res = ft_unset(argv);
+	else if (!ft_strcmp(argv[0], "env"))
+		res = ft_env(argv);
+	else
+		res = ft_exit(argv);
+	return (res);
 }
 
 int
@@ -241,20 +94,7 @@ int
 			g_status = 1;
 			return (STOP);
 		}
-		if (!ft_strcmp(argv[0], "echo"))
-			res = ft_echo(argv);
-		else if (!ft_strcmp(argv[0], "cd"))
-			res = ft_cd(argv);
-		else if (!ft_strcmp(argv[0], "pwd"))
-			res = ft_pwd(argv);
-		else if (!ft_strcmp(argv[0], "export"))
-			res = ft_export(argv);
-		else if (!ft_strcmp(argv[0], "unset"))
-			res = ft_unset(argv);
-		else if (!ft_strcmp(argv[0], "env"))
-			res = ft_env(argv);
-		else if (!ft_strcmp(argv[0], "exit"))
-			res = ft_exit(argv);
+		res = do_builtin_cmd(argv);
 		ft_clear_argv(&argv);
 	}
 	ft_restore_fds(std_fds);
@@ -277,86 +117,109 @@ static t_bool
 		return (FALSE);
 }
 
-static pid_t
-	start_command(t_command *c, t_bool ispipe, t_bool haspipe, int lastpipe[2], char **environ)
+static void
+	dup_to_stdfd(t_bool pipe_flag[2], int lastpipe[2], int newpipe[2])
+{
+	if (pipe_flag[1])
+	{
+		close(lastpipe[1]);
+		if (dup2(lastpipe[0], STDIN_FILENO) < 0)
+			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+		close(lastpipe[0]);
+	}
+	if (pipe_flag[0])
+	{
+		close(newpipe[0]);
+		if (dup2(newpipe[1], STDOUT_FILENO) < 0)
+			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+		close(newpipe[1]);
+	}
+}
+
+static void
+	execute_child(t_command *c, int std_fds[3], char **environ)
+{
+	if (is_builtin(c))
+	{
+		ft_execute_builtin(c);
+		ft_exit_n_free_g_vars(g_status);
+	}
+	else
+	{
+		ft_save_fds(std_fds);
+		if (ft_set_redirection(c->redirects, std_fds))
+			do_command(c, environ);
+		else
+			ft_exit_n_free_g_vars(g_status);
+	}
+}
+
+static void
+	update_pipes(t_bool pipe_flag[2], int lastpipe[2], int newpipe[2])
+{
+	if (pipe_flag[1])
+	{
+		close(lastpipe[0]);
+		close(lastpipe[1]);
+	}
+	if (pipe_flag[0])
+	{
+		lastpipe[0] = newpipe[0];
+		lastpipe[1] = newpipe[1];
+	}
+}
+
+static void
+	start_command(t_command *c, t_bool pipe_flag[2], int lastpipe[2], char **environ)
 {
 	pid_t	pid;
 	int		newpipe[2];
 	int		std_fds[3];
 
-	if (ispipe)
-		pipe(newpipe);
-	pid = fork();
-	if (pid == 0)
+	pipe_flag[0] = is_pipe(c);
+	if (c->args || c->redirects)
 	{
-		if (haspipe)
+		if (pipe_flag[0])
+			pipe(newpipe);
+		pid = fork();
+		if (pid == 0)
 		{
-			close(lastpipe[1]);
-			if (dup2(lastpipe[0], STDIN_FILENO) < 0)
-				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-			close(lastpipe[0]);
+			dup_to_stdfd(pipe_flag, lastpipe, newpipe);
+			execute_child(c, std_fds, environ);
 		}
-		if (ispipe)
-		{
-			close(newpipe[0]);
-			if (dup2(newpipe[1], STDOUT_FILENO) < 0)
-				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-			close(newpipe[1]);
-		}
-		if (is_builtin(c))
-		{
-			ft_execute_builtin(c);
-			ft_exit_n_free_g_vars(g_status);
-		}
-		else
-		{
-			ft_save_fds(std_fds);
-			if (ft_set_redirection(c->redirects, std_fds))
-				do_command(c, environ);
-			else
-				ft_exit_n_free_g_vars(g_status);
-		}
+		update_pipes(pipe_flag, lastpipe, newpipe);
+		c->pid = pid;
 	}
-	if (haspipe)
-	{
-		close(lastpipe[0]);
-		close(lastpipe[1]);
-	}
-	if (ispipe)
-	{
-		lastpipe[0] = newpipe[0];
-		lastpipe[1] = newpipe[1];
-	}
-	return (pid);
+	pipe_flag[1] = is_pipe(c);
 }
+
+/*
+** pipe_flag[0]: a flag to denote if a command's operator is a pipe
+** pipe_flag[1]: a flag to denote if a command is piped from the previous one
+*/
 
 t_command
 	*ft_execute_pipeline(t_command *c, char **environ)
 {
-	t_bool	haspipe;
+	t_bool	pipe_flag[2];
 	int		lastpipe[2];
 	int		res;
 
-	haspipe = FALSE;
-	ft_memset(lastpipe, -1, sizeof(int) * 2);
-	while (c)
+	pipe_flag[1] = FALSE;
+	ft_memset(lastpipe, -1, sizeof(lastpipe));
+	while (c && res != REDIRECT_DELETED)
 	{
 		res = ft_expand_env_var(c);
 		if (res == COMPLETED)
 		{
-			if (c->args || c->redirects)
-				c->pid = start_command(c, is_pipe(c), haspipe, lastpipe, environ);
-			haspipe = is_pipe(c);
-			if (haspipe)
+			start_command(c, pipe_flag, lastpipe, environ);
+			if (pipe_flag[1])
 				c = c->next;
 			else
 				break ;
 		}
 		else if (res == REDIRECT_DELETED)
-		{
 			c = c->next;
-			break;
-		}
 		else
 			return (NULL);
 	}

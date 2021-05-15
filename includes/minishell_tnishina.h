@@ -63,12 +63,6 @@
 # define IS_NOT_DIR_ERR_MSG "Not a directory"
 # define PERMISSION_ERR_MSG "Permission denied"
 
-/*
-** macro
-*/
-
-# define FREE(p) ((p) ? free(p) : (p), (p) = NULL)
-
 typedef enum e_status
 {
 	FAILED,
@@ -83,7 +77,7 @@ typedef enum e_status
 ** need to add member variables to store redirection info
 */
 
-typedef struct			s_command
+typedef struct s_command
 {
 	t_list				*args;
 	char				*op;
@@ -91,54 +85,65 @@ typedef struct			s_command
 	pid_t				pid;
 	struct s_command	*next;
 	t_bool				expanded;
-}						t_command;
-
+}	t_command;
 
 /* global variables */
 
 pid_t	g_latest_pid;
+char	*g_err_arg;
+char	*g_err_msg;
 
 /* function declarations */
 
-int			get_next_line(int fd, char **line);
-void		ft_free_str(char **str);
-int			ft_make_token(t_list **tokens, char *line, t_bool(*f)(char*, int, int*));
-t_bool		ft_is_delimiter_or_quote(char *l, int i, int *fl);
-t_bool		ft_is_delimiter(char c);
-void		ft_put_fderror(int fd_from);
+int		get_next_line(int fd, char **line);
+void	ft_free_str(char **str);
+int		ft_make_token(
+			t_list **tokens, char *line, t_bool(*f)(char*, int, int*));
+t_bool	ft_is_delimiter_or_quote(char *l, int i, int *fl);
+t_bool	ft_is_delimiter(char c);
+void	ft_put_fderror(int fd_from);
 
 /* expand_env.c */
-int			ft_expand_env_var(t_command *c);
-t_bool		ft_remove_char(char **s, int i);
-t_bool		ft_is_quote(char *s, int i);
+int		ft_expand_env_var(t_command *c);
+t_bool	ft_remove_char(char **s, int i);
+t_bool	ft_is_quote(char *s, int i);
 
 /* utils_tnishina.c */
-char		**ft_convert_list(t_list *l);
-void		ft_clear_argv(char ***argv);
-int			ft_isover_intrange(char *s);
-void		ft_exit_n_free_g_vars(int exit_status);
+char	**ft_convert_list(t_list *l);
+void	ft_clear_argv(char ***argv);
+int		ft_isover_intrange(char *s);
+void	ft_exit_n_free_g_vars(int exit_status);
 
 /* handle_signal.c */
-void		ft_sig_prior(void);
-void		ft_sig_post(void);
+void	ft_sig_prior(void);
+void	ft_sig_post(void);
 
 /* set_redirection.c */
-t_bool		ft_set_redirection(t_list *rd, int std_fds[3]);
-void		ft_save_fds(int std_fds[3]);
-void		ft_restore_fds(int std_fds[3]);
+t_bool	ft_set_redirection(t_list *rd, int std_fds[3]);
+void	ft_save_fds(int std_fds[3]);
+void	ft_restore_fds(int std_fds[3]);
 
 /* add_space.c */
-int			ft_add_space(char **l);
+int		ft_add_space(char **l);
 
 /* make_command.c */
-t_bool		ft_is_redirect(char *arg);
-int			ft_make_command(t_command **commands, t_list *tokens);
-void		ft_clear_commands(t_command **c);
+t_bool	ft_is_redirect(char *arg);
+int		ft_make_command(t_command **commands, t_list *tokens);
+void	ft_clear_commands(t_command **c);
 
 /* extract_redirect.c */
-void		ft_extract_redirect(t_command *c);
+void	ft_extract_redirect(t_command *c);
 
 /* remove_escape.c */
-int			ft_remove_escape(t_list *lst);
+int		ft_remove_escape(t_list *lst);
+
+/* get_pathenv.c */
+char	*ft_get_pathenv(char *s);
+
+/* do_path_command.c */
+void	ft_do_path_command(char **argv, char *command_dir, char **environ);
+
+/* do_nonpath_command.c */
+void	ft_do_nonpath_command(char **path_env, char ***argv, char **environ);
 
 #endif

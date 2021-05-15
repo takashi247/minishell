@@ -1,4 +1,17 @@
 #include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
+
+void
+	ft_do_command_err(char *c)
+{
+	if (g_status == STATUS_SUCCESS)
+	{
+		ft_put_cmderror(c, COMMAND_NOT_FOUND_ERR_MSG);
+		g_status = STATUS_COMMAND_NOT_FOUND;
+	}
+	else
+		ft_put_cmderror(g_err_arg, g_err_msg);
+}
 
 void
 	ft_put_cmderror(char *cmd_name, char *msg)

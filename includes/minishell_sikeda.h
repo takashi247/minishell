@@ -116,6 +116,7 @@ void	ft_put_cmderror(char *cmd_name, char *msg);
 void	ft_put_cmderror_with_arg(char *cmd_name, char *msg, char *arg);
 void	ft_put_cmderror_with_quoted_arg(char *cmd_name, char *msg, char *arg);
 void	ft_put_cmderror_with_help(char *cmd_name, char *help);
+void	ft_do_command_err(char *c);
 
 /* inir_env.c */
 int		ft_init_env(void);

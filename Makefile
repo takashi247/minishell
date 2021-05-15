@@ -16,6 +16,7 @@ SRCS		:= init_minishell.c \
 				env_sort.c env_copy.c \
 				get_next_line.c make_token.c make_command.c expand_env.c \
 				handle_signal.c set_redirection.c \
+				do_nonpath_command.c do_path_command.c get_pathenv.c \
 				$(HISTDIR)hlist_utils.c \
 				$(UTILDIR)command_utils.c $(UTILDIR)command_errors.c $(UTILDIR)minishell_errors.c \
 				$(UTILDIR)tlist_utils.c $(UTILDIR)split_utils.c $(UTILDIR)utils_tnishina.c $(UTILDIR)utils.c \

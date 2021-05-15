@@ -5,7 +5,7 @@
 static int
 	exit_with_error(t_list **tokens, char **cpy)
 {
-	FREE(*cpy);
+	ft_free(cpy);
 	ft_lstclear(tokens, free);
 	g_status = STATUS_GENERAL_ERR;
 	return (FAILED);
