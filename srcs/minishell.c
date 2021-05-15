@@ -432,8 +432,8 @@ static t_bool
 	return (TRUE);
 }
 
-int
-	main(void)
+static void
+	minishell_loop_without_term(void)
 {
 	char		*line;
 	char		*trimmed;
@@ -444,11 +444,99 @@ int
 	int			res;
 	int			expand_res;
 
-	if (init_minishell() == UTIL_ERROR)
-		return (EXIT_FAILURE);
 	line = NULL;
 	trimmed = NULL;
 	head = NULL;
+	while (1)
+	{
+		ft_putstr_fd(PROMPT, STDERR_FILENO);
+		ft_sig_prior();
+		res = get_next_line(STDIN_FILENO, &line);
+		get_next_line(STDIN_FILENO, NULL);
+		if (res == GNL_EOF && ft_strlen(line) == 0)
+		{
+			ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
+			ft_exit_n_free_g_vars(EXIT_SUCCESS);
+			break ;
+		}
+		ft_sig_post();
+		if (is_end_with_escape(line))
+			ft_put_cmderror("\\", MULTILINE_ERROR_MSG);
+		else
+		{
+			res = ft_add_space(&line);
+			trimmed = ft_strtrim(line, " \t");
+			if (is_end_with_escape(trimmed))
+				add_final_char(&trimmed, line);
+			if (res != KEEP_RUNNING || !trimmed
+				|| ft_make_token(&tokens, trimmed, ft_is_delimiter_or_quote) != COMPLETED
+				|| ft_make_command(&commands, tokens) != COMPLETED)
+			{
+				ft_free(&line);
+				ft_free(&trimmed);
+				ft_lstclear(&tokens, free);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+			}
+			res = KEEP_RUNNING;
+			head = commands;
+			while (commands)
+			{
+				expand_res = ft_expand_env_var(commands);
+				if (expand_res == FAILED)
+					break ;
+				else if (expand_res == COMPLETED)
+				{
+					if (commands->args || commands->redirects)
+					{
+						if (is_builtin(commands) && !is_pipe(commands))
+						{
+							res = ft_execute_builtin(commands);
+							if (res != KEEP_RUNNING)
+								break ;
+							commands = commands->next;
+							continue ;
+						}
+						commands = ft_execute_pipeline(commands, environ);
+						if (!commands || !wait_pipeline(commands->pid))
+							ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+					}
+				}
+				commands = commands->next;
+			}
+			if (res == EXIT || res == EXIT_NON_NUMERIC)
+			{
+				if (res == EXIT)
+					ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
+				break;
+			}
+		}
+		ft_free(&line);
+		ft_free(&trimmed);
+		ft_clear_commands(&head);
+	}
+	ft_free(&line);
+	ft_free(&trimmed);
+	get_next_line(STDIN_FILENO, NULL);
+	ft_clear_commands(&head);
+}
+
+static void
+	minishell_loop(void)
+{
+	char		*line;
+	char		*trimmed;
+	extern char	**environ;
+	t_list		*tokens;
+	t_command	*head;
+	t_command	*commands;
+	int			res;
+	int			expand_res;
+
+	line = NULL;
+	trimmed = NULL;
+	head = NULL;
+	if (ft_init_term() == UTIL_ERROR)
+		ft_exit_n_free_g_vars(EXIT_FAILURE);
 	while (1)
 	{
 		ft_sig_prior();
@@ -516,5 +604,16 @@ int
 	ft_free(&line);
 	ft_free(&trimmed);
 	ft_clear_commands(&head);
+}
+
+int
+	main(void)
+{
+	if (init_minishell() == UTIL_ERROR)
+		return (EXIT_FAILURE);
+	if (isatty(STDIN_FILENO))
+		minishell_loop();
+	else
+		minishell_loop_without_term();
 	ft_exit_n_free_g_vars(g_status);
 }

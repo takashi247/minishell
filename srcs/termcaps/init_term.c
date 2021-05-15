@@ -38,7 +38,10 @@ int
 	}
 	ft_get_win_size();
 	if (get_definition_from_termcap() == UTIL_ERROR)
+	{
+		ft_put_error("Cannot find termcaps.");
 		return (UTIL_ERROR);
+	}
 	if (tcgetattr(STDIN_FILENO, &g_ms.ms_term) != 0)
 	{
 		ft_put_error(strerror(errno));

@@ -10,13 +10,6 @@ int
 		ft_lstclear(&g_env, free);
 		return (UTIL_ERROR);
 	}
-	if (ft_init_term() == UTIL_ERROR)
-	{
-		printf("error\n");
-		ft_lstclear(&g_env, free);
-		ft_free(&g_pwd);
-		return (UTIL_ERROR);
-	}
 	g_ms.interrupted = FALSE;
 	return (UTIL_SUCCESS);
 }
