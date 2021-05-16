@@ -34,11 +34,11 @@ printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export --"
@@ -48,11 +48,11 @@ printf "${YELLOW}%s${RESET}\n" "[bash] export --"
 echo "export -- > bash_export" | bash
 echo $?
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 printf "${CYAN}%s${RESET}\n" "export EXPORTTEST=0123"
@@ -66,13 +66,13 @@ printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
 printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
 unset EXPORTTEST
-rm mini_export bash_export
 echo
 
 # nameのみの環境変数はシェル起動時に引き継がない
@@ -87,11 +87,11 @@ printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export -z"
@@ -142,11 +142,11 @@ echo "export EXPORTTEST" | bash
 echo $?
 echo "export EXPORTTEST; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST="
@@ -157,11 +157,11 @@ echo "export EXPORTTEST=" | bash
 echo $?
 echo "export EXPORTTEST= ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=0123"
@@ -172,11 +172,13 @@ echo "export EXPORTTEST=0123" | bash
 echo $?
 echo "export EXPORTTEST=0123 ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\"B=C\""
@@ -187,9 +189,13 @@ echo "export EXPORTTEST=\"B=C\"" | bash
 echo $?
 echo "export EXPORTTEST=\"B=C\" ; export > bash_export" | bash
 echo "===diff check start==="
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export \"EXPORTTEST=B\"=C"
@@ -200,11 +206,13 @@ echo "export \"EXPORTTEST=B\"=C" | bash
 echo $?
 echo "export \"EXPORTTEST=B\"=C ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\"aaa     b\""
@@ -215,11 +223,13 @@ echo "export EXPORTTEST=\"aaa     b\"" | bash
 echo $?
 echo "export EXPORTTEST=\"aaa     b\" ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST==="
@@ -230,11 +240,13 @@ echo "export EXPORTTEST===" | bash
 echo $?
 echo "export EXPORTTEST=== ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\\\"hello\\\""
@@ -245,11 +257,13 @@ echo "export EXPORTTEST=\\\"hello\\\"" | bash
 echo $?
 echo "export EXPORTTEST=\\\"hello\\\" ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\$hello"
@@ -260,11 +274,13 @@ echo "export EXPORTTEST=\\\$hello" | bash
 echo $?
 echo "export EXPORTTEST=\\\$hello ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\\hello"
@@ -275,11 +291,13 @@ echo "export EXPORTTEST=\\\\hello" | bash
 echo $?
 echo "export EXPORTTEST=\\\\hello ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\`hello"
@@ -290,11 +308,13 @@ echo "export EXPORTTEST=\\\`hello" | bash
 echo $?
 echo "export EXPORTTEST=\\\`hello ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST=\" hello\""
@@ -305,11 +325,13 @@ echo "export EXPORTTEST=\" hello\"" | bash
 echo $?
 echo "export EXPORTTEST=\" hello\" ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 printf "${YELLOW}%s${RESET}\n" "[mini] export EXPORTTEST= 0123"
@@ -327,7 +349,6 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export EXPORTTEST$=0123"
 echo "export EXPORTTEST$=0123" | bash
 echo $?
-rm mini_export bash_export
 echo
 
 # 先頭に数字
@@ -337,7 +358,6 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export 0EXPORTTEST=0123"
 echo "export 0EXPORTTEST=0123" | bash
 echo $?
-rm mini_export bash_export
 echo
 
 # 途中に数字
@@ -349,11 +369,11 @@ echo "export EXPORT0TEST=0123" | bash
 echo $?
 echo "export EXPORT0TEST=0123 ; export> bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 # 最後に数字
@@ -365,11 +385,11 @@ echo "export EXPORTTEST0=0123" | bash
 echo $?
 echo "export EXPORTTEST0=0123 ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 # _ (under score)
@@ -381,11 +401,11 @@ echo "export _A=0123" | bash
 echo $?
 echo "export _A=0123 ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 # OLDPWDにexportで値を設定
@@ -397,11 +417,11 @@ echo "export OLDPWD=override_oldpwd" | bash
 echo $?
 echo "export OLDPWD=override_oldpwd ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 # PWDがunsetされた状態でminishell起動
@@ -416,11 +436,11 @@ printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 # 既存の環境変数をnameのみで上書きしようとする -> 何もしない
@@ -431,11 +451,11 @@ printf "${YELLOW}%s${RESET}\n" "[bash] export HOME"
 echo "export HOME ; export > bash_export" | bash
 echo $?
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 # 既存の環境変数をnameのみで上書きしようとする -> 何もしない & 正常ケース
@@ -457,11 +477,13 @@ echo "export EXPORTTEST=\"echo \"\$USER\"\"" | bash
 echo $?
 echo "export EXPORTTEST=\"echo \"\$USER\"\" ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 # += new
@@ -473,11 +495,13 @@ echo "export EXPORTTEST+=012" | bash
 echo $?
 echo "export EXPORTTEST+=012 ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 # = new, += join
@@ -489,11 +513,13 @@ echo "export EXPORTTEST=012 EXPORTTEST+=34" | bash
 echo $?
 echo "export EXPORTTEST=012 ; EXPORTTEST+=34 ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 #  += new, += join, += join
@@ -505,11 +531,13 @@ echo "export EXPORTTEST+=012 EXPORTTEST+=34 EXPORTTEST+=abc" | bash
 echo $?
 echo "export EXPORTTEST+=012 ; EXPORTTEST+=34 ; EXPORTTEST+=abc ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 # += new (no value)
@@ -521,11 +549,13 @@ echo "export EXPORTTEST+=" | bash
 echo $?
 echo "export EXPORTTEST+= ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
+printf "${CYAN}%s${RESET}\n" "unset EXPORTTEST"
+unset EXPORTTEST
 echo
 
 # _+=
@@ -537,11 +567,11 @@ echo "export _+=" | bash
 echo $?
 echo "export _+= ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 # __+=
@@ -553,11 +583,11 @@ echo "export __+=" | bash
 echo $?
 echo "export __+= ; export > bash_export" | bash
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 echo
 
 # _+
@@ -589,11 +619,11 @@ printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
 echo "===diff check start==="
-cat mini_export | grep -vE '^declare -x _=' > mini_export
-cat bash_export | grep -vE '^declare -x _=' > bash_export
-diff mini_export bash_export
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
 echo "===diff check end==="
-rm mini_export bash_export
+rm mini_export bash_export mini_export_2 bash_export_2
 export SHLVL=$MYSHLVL
 echo
 
@@ -607,7 +637,12 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-rm mini_export bash_export
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
 export SHLVL=$MYSHLVL
 echo
 
@@ -621,7 +656,12 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-rm mini_export bash_export
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
 export SHLVL=$MYSHLVL
 echo
 
@@ -635,7 +675,50 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-rm mini_export bash_export
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=+1000; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=+1000"
+export SHLVL=+1000
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=-1000; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=-1000"
+export SHLVL=-1000
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
 export SHLVL=$MYSHLVL
 echo
 
@@ -649,7 +732,12 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-rm mini_export bash_export
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
 export SHLVL=$MYSHLVL
 echo
 
@@ -663,7 +751,12 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-rm mini_export bash_export
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
 export SHLVL=$MYSHLVL
 echo
 
@@ -677,6 +770,239 @@ echo $?
 printf "${YELLOW}%s${RESET}\n" "[bash] export"
 echo "export > bash_export" | bash
 echo $?
-rm mini_export bash_export
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=9223372036854775807; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=9223372036854775807"
+export SHLVL=9223372036854775807
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=9223372036854775808; export;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=9223372036854775808"
+export SHLVL=9223372036854775808
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf "\t\n\v\f\r 42"`;
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \"\t\n\v\f\r 42\"\`"
+export SHLVL=`printf "\t\n\v\f\r 42"`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf " 42 "`
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \" 42 \"\`"
+export SHLVL=`printf " 42 "`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf " 42\t"`
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \" 42\t\"\`"
+export SHLVL=`printf " 42\t"`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf " 42\v"`
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \" 42\v\"\`"
+export SHLVL=`printf " 42\v"`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf " 42\n"`
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \" 42\n\"\`"
+export SHLVL=`printf " 42\n"`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf " 42\f"`
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \" 42\f\"\`"
+export SHLVL=`printf " 42\f"`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf " 42\r"`
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \" 42\r\"\`"
+export SHLVL=`printf " 42\r"`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf " 42a"`
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \" 42a\"\`"
+export SHLVL=`printf " 42a"`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf " 42!"`
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \" 42!\"\`"
+export SHLVL=`printf " 42!"`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
+export SHLVL=$MYSHLVL
+echo
+
+# export SHLVL=`printf " 42~"`
+MYSHLVL=$SHLVL
+printf "${CYAN}%s${RESET}\n" "export SHLVL=\`printf \" 42~\"\`"
+export SHLVL=`printf " 42~"`
+printf "${YELLOW}%s${RESET}\n" "[mini] export"
+./builtin.out export > mini_export
+echo $?
+printf "${YELLOW}%s${RESET}\n" "[bash] export"
+echo "export > bash_export" | bash
+echo $?
+echo "===diff check start==="
+cat mini_export | grep -vE '^declare -x _=' > mini_export_2
+cat bash_export | grep -vE '^declare -x _=' > bash_export_2
+diff mini_export_2 bash_export_2
+echo "===diff check end==="
+rm mini_export bash_export mini_export_2 bash_export_2
 export SHLVL=$MYSHLVL
 echo

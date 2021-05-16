@@ -1,5 +1,32 @@
 #include "../includes/minishell_sikeda.h"
 
+/* return zero when overflow and check char after number */
+static int
+	shlvl_atoi(const char *str)
+{
+	uint64_t	num;
+	int			sign;
+
+	num = 0;
+	sign = 1;
+	while (ft_isspace(*str))
+		str++;
+	if (*str == '-' || *str == '+')
+	{
+		if (*str++ == '-')
+			sign = -1;
+	}
+	while (ft_isdigit(*str))
+	{
+		num = (num * 10) + (*str++ - '0');
+		if (num >> 63)
+			return (0);
+	}
+	if (*str && !(*str == ' ' || *str == '\n' || *str == '\t'))
+		return (0);
+	return (sign * num);
+}
+
 static int
 	init_env_list(const char *current, const int i)
 {
@@ -54,7 +81,7 @@ static int
 	shlvl = ft_getenv("SHLVL");
 	if (shlvl)
 	{
-		current_level = ft_atoi(shlvl);
+		current_level = shlvl_atoi(shlvl);
 		if ((INT_MAX - 1) < current_level)
 			current_level = -1;
 		next_level = ft_itoa(current_level + 1);
