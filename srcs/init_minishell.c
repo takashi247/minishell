@@ -1,4 +1,5 @@
 #include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 int
 	init_minishell(void)
@@ -18,5 +19,7 @@ int
 		return (UTIL_ERROR);
 	}
 	g_ms.interrupted = FALSE;
+	g_err_arg = NULL;
+	g_err_msg = NULL;
 	return (UTIL_SUCCESS);
 }

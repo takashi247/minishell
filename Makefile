@@ -17,9 +17,14 @@ SRCS		:= init_minishell.c \
 				get_next_line.c make_token.c make_command.c expand_env.c \
 				handle_signal.c set_redirection.c \
 				do_nonpath_command.c do_path_command.c get_pathenv.c \
+				is_delimiter_or_quote.c create_n_add_command.c \
+				execute_redirection.c replace_env.c find_n_replace_env.c \
+				replace_env_token.c reconnect_tokens.c replace_q_env.c \
+				run_commands.c execute_pipeline.c execute_builtin.c do_command.c \
 				$(HISTDIR)hlist_utils.c \
 				$(UTILDIR)command_utils.c $(UTILDIR)command_errors.c $(UTILDIR)minishell_errors.c \
 				$(UTILDIR)tlist_utils.c $(UTILDIR)split_utils.c $(UTILDIR)utils_tnishina.c $(UTILDIR)utils.c \
+				$(UTILDIR)make_command_utils.c $(UTILDIR)redirection_utils.c $(UTILDIR)expand_utils.c \
 				$(TERMDIR)edit_term_history.c $(TERMDIR)edit_term.c $(TERMDIR)get_line.c \
 				$(TERMDIR)handle_keys.c $(TERMDIR)init_term.c $(TERMDIR)term_utils.c
 SRCS_PRODUCTION	:= $(SRCS)

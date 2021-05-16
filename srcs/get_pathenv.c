@@ -50,7 +50,7 @@ char
 	*ft_get_pathenv(char *s)
 {
 	int		i;
-	char*	path_env;
+	char	*path_env;
 
 	if (!s)
 		return (NULL);
