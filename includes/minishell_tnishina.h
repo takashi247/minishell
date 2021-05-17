@@ -63,15 +63,10 @@
 # define IS_NOT_DIR_ERR_MSG "Not a directory"
 # define PERMISSION_ERR_MSG "Permission denied"
 
-/*
-** macro
-*/
-
-# define FREE(p) ((p) ? free(p) : (p), (p) = NULL)
-
 typedef enum e_status
 {
 	FAILED,
+	CONDITIONS_MET,
 	ENV_DELETED,
 	TOKEN_DELETED,
 	REDIRECT_DELETED,
@@ -83,7 +78,7 @@ typedef enum e_status
 ** need to add member variables to store redirection info
 */
 
-typedef struct			s_command
+typedef struct s_command
 {
 	t_list				*args;
 	char				*op;
@@ -91,28 +86,32 @@ typedef struct			s_command
 	pid_t				pid;
 	struct s_command	*next;
 	t_bool				expanded;
-}						t_command;
-
+}	t_command;
 
 /* global variables */
 
 pid_t	g_latest_pid;
+char	*g_err_arg;
+char	*g_err_msg;
 
 /* function declarations */
 
 int			get_next_line(int fd, char **line);
 void		ft_free_str(char **str);
-int			ft_make_token(t_list **tokens, char *line, t_bool(*f)(char*, int, int*));
+void		ft_put_fderror(int fd_from);
+
+/* make_token.c */
+int			ft_make_token(
+				t_list **tokens, char *line, t_bool(*f)(char*, int, int*));
+
+/* is_delimiter_or_quote.c */
 t_bool		ft_is_delimiter_or_quote(char *l, int i, int *fl);
 t_bool		ft_is_delimiter(char c);
-void		ft_put_fderror(int fd_from);
 
 /* expand_env.c */
 int			ft_expand_env_var(t_command *c);
-t_bool		ft_remove_char(char **s, int i);
-t_bool		ft_is_quote(char *s, int i);
 
-/* utils_tnishina.c */
+/* utils/utils_tnishina.c */
 char		**ft_convert_list(t_list *l);
 void		ft_clear_argv(char ***argv);
 int			ft_isover_intrange(char *s);
@@ -124,11 +123,9 @@ void		ft_sig_post(void);
 
 /* set_redirection.c */
 t_bool		ft_set_redirection(t_list *rd, int std_fds[3]);
-void		ft_save_fds(int std_fds[3]);
-void		ft_restore_fds(int std_fds[3]);
 
 /* add_space.c */
-int			ft_add_space(char **l);
+void		ft_add_space(char **l);
 
 /* make_command.c */
 t_bool		ft_is_redirect(char *arg);
@@ -140,5 +137,71 @@ void		ft_extract_redirect(t_command *c);
 
 /* remove_escape.c */
 int			ft_remove_escape(t_list *lst);
+
+/* get_pathenv.c */
+char		*ft_get_pathenv(char *s);
+
+/* do_path_command.c */
+void		ft_do_path_command(char **argv, char *command_dir, char **environ);
+
+/* do_nonpath_command.c */
+void		ft_do_nonpath_command(char **path_env, char ***argv, char **environ);
+
+/* create_n_add_command.c */
+t_command	*ft_create_command(t_list *token_head);
+t_bool		ft_is_operator(char c);
+void		ft_add_command(t_command **head, t_command *new);
+t_command	*ft_get_last_command(t_command *head);
+
+/* utils/make_command_utils.c */
+void		ft_clear_commands(t_command **c);
+int			ft_clear_commands_n_tokens(t_command **c, t_list **t1, t_list **t2);
+int			ft_clear_with_syntax_error(t_command **c, t_list **t);
+t_bool		ft_is_redirect(char *arg);
+
+/* execute_redirection.c */
+t_bool		ft_execute_redirection(int fd, char *op, char *path, int stdfds[3]);
+
+/* utils/redirection_utils.c */
+void		ft_save_fds(int std_fds[3]);
+void		ft_restore_fds(int std_fds[3]);
+
+/* utils/expand_utils.c */
+t_bool		ft_is_space(char *l, int i, int *fl);
+t_bool		ft_remove_char(char **s, int i);
+t_bool		ft_is_quote(char *s, int i);
+t_bool		ft_is_escapable_in_dquote(char c);
+t_bool		ft_is_env_name_end(char c);
+
+/* replace_env.c */
+int			ft_replace_env(t_list **args, int dq_flag, int eq_flag, int i);
+
+/* find_n_replace_env.c */
+int			ft_find_n_replace_env(t_list **args);
+
+/* replace_env_tokens.c */
+int			ft_replace_env_token(t_list **args, int *env_pos, int *i);
+
+/* reconnect_tokens.c */
+int			ft_reconnect_tokens(t_list *t, char *new[3], t_list **args, int *i);
+
+/* replace_q_env.c */
+void		ft_free_all_chars(char **env, char *tmp[2], char *new[3]);
+int			ft_replace_q_env(char **content, int *env_pos, int *i);
+t_bool		ft_create_new_strs(char *content, int *env_pos, char *new[3]);
+
+/* run_command.c */
+t_bool		ft_is_pipe(t_command *c);
+t_bool		ft_is_builtin(t_command *c);
+void		ft_run_commands(t_command *c, char **environ, int *res);
+
+/* execute_pipeline.c */
+t_command	*ft_execute_pipeline(t_command *c, char **environ);
+
+/* execute_builtin.c */
+int			ft_execute_builtin(t_command *c);
+
+/* do_command.c */
+void		ft_do_command(t_command *c, char **environ);
 
 #endif

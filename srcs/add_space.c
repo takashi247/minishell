@@ -33,7 +33,7 @@ t_bool
 ** f[1]: a flag for double quotations (")
 */
 
-int
+void
 	ft_add_space(char **l)
 {
 	int		i;
@@ -51,9 +51,8 @@ int
 			&& ((*l)[i] == '<' || ((*l)[i] == '>' && (*l)[i + 1] != '>')))
 		{
 			if (!add_space_after_redirect(l, &i))
-			 return (STOP);
+				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 		}
 		i++;
 	}
-	return (KEEP_RUNNING);
 }

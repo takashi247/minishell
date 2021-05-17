@@ -10,14 +10,14 @@ char
 
 	if (!l)
 		return (NULL);
-	argv = (char** )malloc(sizeof(char* ) * (ft_lstsize(l) + 1));
+	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(l) + 1));
 	if (!argv)
 		return (NULL);
 	head = argv;
-	ft_memset(argv, 0, sizeof(char* ) * (ft_lstsize(l) + 1));
+	ft_memset(argv, 0, sizeof(char *) * (ft_lstsize(l) + 1));
 	while (l)
 	{
-		*argv = ft_strdup((char* )(l->content));
+		*argv = ft_strdup((char *)(l->content));
 		if (!*argv)
 		{
 			ft_clear_argv(&head);
@@ -77,6 +77,8 @@ void
 	ft_exit_n_free_g_vars(int exit_status)
 {
 	ft_free(&g_pwd);
+	ft_free(&g_err_arg);
+	ft_free(&g_err_msg);
 	ft_lstclear(&g_env, free);
 	ft_clear_history(&g_ms.hist.last);
 	exit(exit_status);
