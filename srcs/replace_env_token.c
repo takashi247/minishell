@@ -61,15 +61,14 @@ int
 		return (FAILED);
 	if (ft_make_token(&tokens, env, ft_is_space) == FAILED)
 	{
-		ft_free_all_chars(NULL, new);
-		ft_free(&env);
+		ft_lstclear(&tokens, free);
+		ft_free_all_chars(&env, NULL, new);
 		return (FAILED);
 	}
-	ft_free(&env);
 	if (tokens)
 		res = ft_reconnect_tokens(tokens, new, args, i);
 	else
 		res = reconnect_deleted_token(new, args);
-	ft_free_all_chars(NULL, new);
+	ft_free_all_chars(&env, NULL, new);
 	return (res);
 }

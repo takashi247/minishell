@@ -174,7 +174,7 @@ t_bool		ft_is_escapable_in_dquote(char c);
 t_bool		ft_is_env_name_end(char c);
 
 /* replace_env.c */
-int			ft_replace_env(t_list **args, int dq_flag, int e_flag, int i);
+int			ft_replace_env(t_list **args, int dq_flag, int eq_flag, int i);
 
 /* find_n_replace_env.c */
 int			ft_find_n_replace_env(t_list **args);
@@ -186,7 +186,7 @@ int			ft_replace_env_token(t_list **args, int *env_pos, int *i);
 int			ft_reconnect_tokens(t_list *t, char *new[3], t_list **args, int *i);
 
 /* replace_q_env.c */
-void		ft_free_all_chars(char *tmp[2], char *new[3]);
+void		ft_free_all_chars(char **env, char *tmp[2], char *new[3]);
 int			ft_replace_q_env(char **content, int *env_pos, int *i);
 t_bool		ft_create_new_strs(char *content, int *env_pos, char *new[3]);
 

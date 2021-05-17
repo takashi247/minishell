@@ -3,8 +3,10 @@
 #include "libft.h"
 
 void
-	ft_free_all_chars(char *tmp[2], char *new[3])
+	ft_free_all_chars(char **env, char *tmp[2], char *new[3])
 {
+	if (env)
+		ft_free(env);
 	if (tmp)
 	{
 		ft_free(&tmp[0]);
@@ -58,7 +60,7 @@ static t_bool
 	*content = ft_strjoin(tmp[2], new[2]);
 	if (!tmp[1] || !tmp[2] || !(*content))
 	{
-		ft_free_all_chars(tmp, new);
+		ft_free_all_chars(NULL, tmp, new);
 		return (FALSE);
 	}
 	*i += ft_strlen(tmp[1]);
@@ -82,6 +84,6 @@ int
 		res = ENV_DELETED;
 	else
 		res = COMPLETED;
-	ft_free_all_chars(tmp, new);
+	ft_free_all_chars(NULL, tmp, new);
 	return (res);
 }

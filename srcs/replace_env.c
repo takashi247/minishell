@@ -23,7 +23,7 @@ static t_bool
 }
 
 int
-	ft_replace_env(t_list **args, int dq_flag, int e_flag, int i)
+	ft_replace_env(t_list **args, int dq_flag, int eq_flag, int i)
 {
 	t_bool	has_name;
 	int		env_pos[2];
@@ -38,7 +38,7 @@ int
 	if (j - env_pos[0] == 1 && ((char *)(*args)->content)[j] == '?')
 		j++;
 	env_pos[1] = j;
-	if (dq_flag || (has_name && e_flag))
+	if (dq_flag || (has_name && eq_flag))
 		return (ft_replace_q_env(((char **)&((*args)->content)), env_pos, &i));
 	else
 		return (ft_replace_env_token(args, env_pos, &i));

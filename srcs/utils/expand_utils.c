@@ -25,7 +25,7 @@ t_bool
 		*s = ft_strjoin(front, back);
 	if (!front || !back || !(*s))
 	{
-		g_status = 1;
+		g_status = STATUS_GENERAL_ERR;
 		ft_free(&front);
 		ft_free(&back);
 		return (FALSE);

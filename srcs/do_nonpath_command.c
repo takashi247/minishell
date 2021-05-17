@@ -65,6 +65,7 @@ void
 		paths++;
 	}
 	ft_do_command_err(command);
+	ft_free(&command);
 	ft_free(path_env);
 	ft_free_split(argv);
 	ft_free_split(&head);
