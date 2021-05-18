@@ -13,10 +13,14 @@ static int
 	i = 0;
 	while (split[i])
 	{
-		if (!ft_strcmp(split[i], "."))
-			i++;
-		else if (ft_lstnew_and_lstadd_back(path_list, split[i++]) == UTIL_ERROR)
+		if (!ft_strcmp(split[i], ".."))
+			ft_lstdelend(path_list, free);
+		else if (!ft_strcmp(split[i], "."))
+			;
+		else if (ft_lstnew_and_lstadd_back(path_list, split[i]) == UTIL_ERROR)
 			break ;
+		i++;
+
 	}
 	ft_free_split(&split);
 	if (0 < i && !*path_list)
