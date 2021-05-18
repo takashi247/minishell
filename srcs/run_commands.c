@@ -43,11 +43,12 @@ static t_bool
 }
 
 void
-	ft_run_commands(t_command *c, int *res)
+	ft_run_commands(t_command *commands, int *res)
 {
 	int			expand_res;
+	t_command	*c;
 
-	*res = KEEP_RUNNING;
+	c = commands;
 	while (c)
 	{
 		expand_res = ft_expand_env_var(c);
