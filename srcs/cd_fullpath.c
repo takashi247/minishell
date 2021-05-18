@@ -20,7 +20,6 @@ static int
 		else if (ft_lstnew_and_lstadd_back(path_list, split[i]) == UTIL_ERROR)
 			break ;
 		i++;
-
 	}
 	ft_free_split(&split);
 	if (0 < i && !*path_list)

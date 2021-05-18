@@ -56,7 +56,6 @@ static void
 			g_pwd = ft_strjoin(g_pwd, input_path);
 		else
 			g_pwd = ft_join_path(g_pwd, input_path);
-
 	}
 	ft_free(&oldpwd);
 }
