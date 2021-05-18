@@ -142,10 +142,11 @@ int			ft_remove_escape(t_list *lst);
 char		*ft_get_pathenv(char *s);
 
 /* do_path_command.c */
-void		ft_do_path_command(char **argv, char *command_dir, char **environ);
+void		ft_do_path_command(char **argv, char *command_dir);
+void		ft_execute_w_environ(char **argv);
 
 /* do_nonpath_command.c */
-void		ft_do_nonpath_command(char **path_env, char ***argv, char **environ);
+void		ft_do_nonpath_command(char **path_env, char ***argv);
 
 /* create_n_add_command.c */
 t_command	*ft_create_command(t_list *token_head);
@@ -163,8 +164,9 @@ t_bool		ft_is_redirect(char *arg);
 t_bool		ft_execute_redirection(int fd, char *op, char *path, int stdfds[3]);
 
 /* utils/redirection_utils.c */
-void		ft_save_fds(int std_fds[3]);
-void		ft_restore_fds(int std_fds[3]);
+void		ft_save_fds(t_command *c, int std_fds[3]);
+void		ft_restore_fds(t_command *c, int std_fds[3]);
+t_bool		ft_check_param_error(int fd_from, char *path, char *redirect_op);
 
 /* utils/expand_utils.c */
 t_bool		ft_is_space(char *l, int i, int *fl);
@@ -193,15 +195,15 @@ t_bool		ft_create_new_strs(char *content, int *env_pos, char *new[3]);
 /* run_command.c */
 t_bool		ft_is_pipe(t_command *c);
 t_bool		ft_is_builtin(t_command *c);
-void		ft_run_commands(t_command *c, char **environ, int *res);
+void		ft_run_commands(t_command *c, int *res);
 
 /* execute_pipeline.c */
-t_command	*ft_execute_pipeline(t_command *c, char **environ);
+t_command	*ft_execute_pipeline(t_command *c);
 
 /* execute_builtin.c */
 int			ft_execute_builtin(t_command *c);
 
 /* do_command.c */
-void		ft_do_command(t_command *c, char **environ);
+void		ft_do_command(t_command *c);
 
 #endif

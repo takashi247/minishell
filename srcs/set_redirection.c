@@ -64,24 +64,21 @@ t_bool
 	char	*path;
 	char	*redirect_op;
 	int		res;
+	t_list	*head;
 
 	res = TRUE;
+	head = rd;
 	while (rd && res)
 	{
 		set_rd_params(rd, &fd_from, &redirect_op, &path);
-		if (fd_from <= TOKEN_ERROR || FD_MAX < fd_from || !redirect_op || !path)
-		{
-			if (fd_from == OVER_INT_RANGE || FD_MAX < fd_from)
-				ft_put_fderror(fd_from);
-			g_status = STATUS_GENERAL_ERR;
-			ft_free(&redirect_op);
+		if (!ft_check_param_error(fd_from, path, redirect_op))
 			return (FALSE);
-		}
 		if (!ft_execute_redirection(fd_from, redirect_op, path, std_fds))
 			res = FALSE;
 		free_n_update_params(&rd, &redirect_op, &path);
 	}
 	if (res)
 		g_status = STATUS_SUCCESS;
+	rd = head;
 	return (res);
 }

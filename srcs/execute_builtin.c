@@ -32,7 +32,7 @@ int
 	int		std_fds[3];
 
 	res = KEEP_RUNNING;
-	ft_save_fds(std_fds);
+	ft_save_fds(c, std_fds);
 	if (ft_set_redirection(c->redirects, std_fds) == FALSE)
 		return (STOP);
 	if (c->args)
@@ -46,6 +46,6 @@ int
 		res = do_builtin_cmd(argv);
 		ft_clear_argv(&argv);
 	}
-	ft_restore_fds(std_fds);
+	ft_restore_fds(c, std_fds);
 	return (res);
 }
