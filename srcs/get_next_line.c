@@ -1,11 +1,12 @@
 #include "minishell_tnishina.h"
+#include "minishell_sikeda.h"
 #include "libft.h"
 
 void
-	ft_free_str(char **str)
+	ft_free_strs(char **line, char **fd_array)
 {
-	free(*str);
-	*str = NULL;
+	ft_free(line);
+	ft_free(fd_array);
 }
 
 static int
@@ -19,20 +20,20 @@ static int
 	{
 		tmp = *fd_array;
 		*line = ft_substr(*fd_array, 0, find - *fd_array);
-		if (!(*fd_array = ft_strdup(find + 1)))
+		*fd_array = ft_strdup(find + 1);
+		if (!(*fd_array))
 			res = GNL_ERROR;
-		ft_free_str(&tmp);
+		ft_free(&tmp);
 	}
 	else
 	{
 		*line = ft_strdup(*fd_array);
-		ft_free_str(fd_array);
+		ft_free(fd_array);
 		res = GNL_EOF;
 	}
 	if (!(*line) || res == GNL_ERROR)
 	{
-		ft_free_str(line);
-		ft_free_str(fd_array);
+		ft_free_strs(line, fd_array);
 		res = GNL_ERROR;
 	}
 	return (res);
@@ -44,18 +45,22 @@ static void
 	char	*tmp;
 	ssize_t	read_count;
 
-	while ((read_count = read(fd, *buff, BUFFER_SIZE)) >= 0)
+	while (1)
 	{
+		read_count = read(fd, *buff, BUFFER_SIZE);
+		if (read_count < 0)
+			break ;
 		(*buff)[read_count] = '\0';
 		if (*fd_array)
 		{
 			tmp = *fd_array;
 			*fd_array = ft_strjoin(*fd_array, *buff);
-			ft_free_str(&tmp);
+			ft_free(&tmp);
 		}
 		else
 			*fd_array = ft_strdup(*buff);
-		if ((*find = ft_strchr(*fd_array, '\n')) || !read_count || !*fd_array)
+		*find = ft_strchr(*fd_array, '\n');
+		if (*find || !read_count || !*fd_array)
 			break ;
 	}
 }
@@ -74,13 +79,14 @@ int
 	buff = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!line || !buff || read(fd, buff, 0) < 0)
 	{
-		ft_free_str(&buff);
-		ft_free_str(&fd_array[fd]);
+		ft_free(&buff);
+		ft_free(&fd_array[fd]);
 		return (GNL_ERROR);
 	}
-	if (!(find = ft_strchr(fd_array[fd], '\n')))
+	find = ft_strchr(fd_array[fd], '\n');
+	if (!find)
 		read_file(fd, &fd_array[fd], &buff, &find);
-	ft_free_str(&buff);
+	ft_free(&buff);
 	if (!fd_array[fd])
 		return (GNL_ERROR);
 	return (set_line(line, &fd_array[fd], find));

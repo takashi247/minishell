@@ -89,6 +89,7 @@ int		init_minishell(void);
 /* utils/minishell_errors.c */
 void	ft_put_error(char *msg);
 void	ft_put_syntaxerror_with_token(char *token);
+void	ft_put_fderror(int fd_from);
 
 /* utils/utils.c */
 void	*ft_realloc(void *original, size_t size, size_t original_size);

@@ -96,9 +96,8 @@ char	*g_err_msg;
 
 /* function declarations */
 
+/* get_next_line.c */
 int			get_next_line(int fd, char **line);
-void		ft_free_str(char **str);
-void		ft_put_fderror(int fd_from);
 
 /* make_token.c */
 int			ft_make_token(
