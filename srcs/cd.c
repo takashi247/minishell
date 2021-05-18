@@ -52,7 +52,10 @@ static void
 	else
 	{
 		ft_put_cderror_no_current(errno);
-		g_pwd = ft_join_path(g_pwd, input_path);
+		if (g_pwd[ft_strlen(g_pwd) - 1] == '/')
+			g_pwd = ft_strjoin(g_pwd, input_path);
+		else
+			g_pwd = ft_join_path(g_pwd, input_path);
 	}
 	ft_free(&oldpwd);
 }
