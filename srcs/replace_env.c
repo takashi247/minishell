@@ -23,15 +23,15 @@ static t_bool
 }
 
 int
-	ft_replace_env(t_list **args, int dq_flag, int eq_flag, int i)
+	ft_replace_env(t_list **args, int dq_flag, int eq_flag, int *i)
 {
 	t_bool	has_name;
 	int		env_pos[2];
 	int		j;
 
 	has_name = has_valid_name((char *)(*args)->content);
-	env_pos[0] = i;
-	j = i + 1;
+	env_pos[0] = *i;
+	j = *i + 1;
 	while (!(ft_is_env_name_end(((char *)(*args)->content)[j]))
 		&& ((char*)(*args)->content)[j] != '?')
 		j++;
@@ -39,7 +39,7 @@ int
 		j++;
 	env_pos[1] = j;
 	if (dq_flag || (has_name && eq_flag))
-		return (ft_replace_q_env(((char **)&((*args)->content)), env_pos, &i));
+		return (ft_replace_q_env(((char **)&((*args)->content)), env_pos, i));
 	else
-		return (ft_replace_env_token(args, env_pos, &i));
+		return (ft_replace_env_token(args, env_pos, i));
 }
