@@ -43,7 +43,7 @@ static t_bool
 }
 
 void
-	ft_run_commands(t_command *c, char **environ, int *res)
+	ft_run_commands(t_command *c, int *res)
 {
 	int			expand_res;
 
@@ -63,7 +63,7 @@ void
 				c = c->next;
 				continue ;
 			}
-			c = ft_execute_pipeline(c, environ);
+			c = ft_execute_pipeline(c);
 			if (!c || !wait_pipeline(c->pid))
 				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 		}

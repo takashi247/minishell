@@ -23,7 +23,7 @@ static void
 }
 
 static void
-	execute_command_loop(char *c, char *path, char **argv, char **environ)
+	execute_command_loop(char *c, char *path, char **argv)
 {
 	char		*tmp;
 	struct stat	buf;
@@ -41,12 +41,12 @@ static void
 		else if (!(buf.st_mode & S_IRUSR) || !(buf.st_mode & S_IXUSR))
 			set_permission_error(argv[0]);
 		else
-			execve(argv[0], argv, environ);
+			ft_execute_w_environ(argv);
 	}
 }
 
 void
-	ft_do_nonpath_command(char **path_env, char ***argv, char **environ)
+	ft_do_nonpath_command(char **path_env, char ***argv)
 {
 	char		**paths;
 	char		**head;
@@ -61,7 +61,7 @@ void
 	while (*paths)
 	{
 		ft_free(&((*argv)[0]));
-		execute_command_loop(command, *paths, *argv, environ);
+		execute_command_loop(command, *paths, *argv);
 		paths++;
 	}
 	ft_do_command_err(command);

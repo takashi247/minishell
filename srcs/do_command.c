@@ -18,13 +18,13 @@ static char
 }
 
 void
-	ft_do_command(t_command *c, char **environ)
+	ft_do_command(t_command *c)
 {
 	char		**argv;
 	char		*path_env;
 	char		*command_dir;
 
-	if (!c || !environ)
+	if (!c)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (!c->args)
 		ft_exit_n_free_g_vars(g_status);
@@ -37,10 +37,10 @@ void
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (argv[0][0] == '/' || argv[0][0] == '.' || !path_env
 		|| !*path_env || *command_dir)
-		ft_do_path_command(argv, command_dir, environ);
+		ft_do_path_command(argv, command_dir);
 	else
 	{
 		ft_free(&command_dir);
-		ft_do_nonpath_command(&path_env, &argv, environ);
+		ft_do_nonpath_command(&path_env, &argv);
 	}
 }

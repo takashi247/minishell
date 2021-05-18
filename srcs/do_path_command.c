@@ -21,8 +21,20 @@ static void
 	}
 }
 
+void
+	ft_execute_w_environ(char **argv)
+{
+	char	**envp;
+
+	envp = ft_convert_list(g_env);
+	if (!envp)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	execve(argv[0], argv, envp);
+	ft_free_split(&envp);
+}
+
 static void
-	execute_path_command(char **argv, char **environ)
+	execute_path_command(char **argv)
 {
 	struct stat	buf;
 
@@ -45,15 +57,15 @@ static void
 		ft_exit_n_free_g_vars(g_status);
 	}
 	else
-		execve(argv[0], argv, environ);
+		ft_execute_w_environ(argv);
 }
 
 void
-	ft_do_path_command(char **argv, char *command_dir, char **environ)
+	ft_do_path_command(char **argv, char *command_dir)
 {
 	if (*command_dir)
 		check_command_dir(argv[0], command_dir);
 	ft_free(&command_dir);
-	execute_path_command(argv, environ);
+	execute_path_command(argv);
 	ft_exit_n_free_g_vars(g_status);
 }

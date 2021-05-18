@@ -22,7 +22,7 @@ static void
 }
 
 static void
-	execute_child(t_command *c, int std_fds[3], char **environ)
+	execute_child(t_command *c, int std_fds[3])
 {
 	if (ft_is_builtin(c))
 	{
@@ -31,9 +31,9 @@ static void
 	}
 	else
 	{
-		ft_save_fds(std_fds);
+		ft_save_fds(c, std_fds);
 		if (ft_set_redirection(c->redirects, std_fds))
-			ft_do_command(c, environ);
+			ft_do_command(c);
 		else
 			ft_exit_n_free_g_vars(g_status);
 	}
@@ -55,7 +55,7 @@ static void
 }
 
 static void
-	start_command(t_command *c, t_bool p_flag[2], int l_pipe[2], char **environ)
+	start_command(t_command *c, t_bool p_flag[2], int l_pipe[2])
 {
 	pid_t	pid;
 	int		newpipe[2];
@@ -70,7 +70,7 @@ static void
 		if (pid == 0)
 		{
 			dup_to_stdfd(p_flag, l_pipe, newpipe);
-			execute_child(c, std_fds, environ);
+			execute_child(c, std_fds);
 		}
 		update_pipes(p_flag, l_pipe, newpipe);
 		c->pid = pid;
@@ -84,7 +84,7 @@ static void
 */
 
 t_command
-	*ft_execute_pipeline(t_command *c, char **environ)
+	*ft_execute_pipeline(t_command *c)
 {
 	t_bool	pipe_flag[2];
 	int		lastpipe[2];
@@ -98,7 +98,7 @@ t_command
 		res = ft_expand_env_var(c);
 		if (res == COMPLETED)
 		{
-			start_command(c, pipe_flag, lastpipe, environ);
+			start_command(c, pipe_flag, lastpipe);
 			if (pipe_flag[1])
 				c = c->next;
 			else

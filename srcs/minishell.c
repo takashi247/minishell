@@ -94,7 +94,6 @@ static void
 int
 	main(void)
 {
-	extern char	**environ;
 	t_command	*commands;
 	t_command	*head;
 	int			res;
@@ -106,7 +105,7 @@ int
 		res = KEEP_RUNNING;
 		get_interactive_input(&commands);
 		head = commands;
-		ft_run_commands(commands, environ, &res);
+		ft_run_commands(commands, &res);
 		ft_clear_commands(&head);
 		if (res == EXIT || res == EXIT_NON_NUMERIC)
 		{
