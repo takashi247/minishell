@@ -4,7 +4,6 @@
 static int
 	exit_with_too_many_args(char **trimmed_arg)
 {
-	ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 	ft_put_cmderror("exit", "too many arguments");
 	g_status = STATUS_GENERAL_ERR;
 	if (*trimmed_arg)
@@ -15,7 +14,6 @@ static int
 static int
 	exit_with_non_numeric(char *arg, char **trimmed_arg)
 {
-	ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 	ft_put_cmderror_with_arg("exit", "numeric argument required", arg);
 	g_status = STATUS_OUT_OF_RANGE_ERR;
 	if (*trimmed_arg)

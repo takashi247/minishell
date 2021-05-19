@@ -61,11 +61,17 @@ static void
 }
 
 void
-	ft_do_path_command(char **argv, char *command_dir)
+	ft_do_path_command(char **argv, char **command_dir)
 {
-	if (*command_dir)
-		check_command_dir(argv[0], command_dir);
-	ft_free(&command_dir);
-	execute_path_command(argv);
+	if (*command_dir && **command_dir)
+		check_command_dir(argv[0], *command_dir);
+	ft_free(command_dir);
+	if (!argv[0][0])
+	{
+		ft_put_cmderror(argv[0], COMMAND_NOT_FOUND_ERR_MSG);
+		g_status = STATUS_COMMAND_NOT_FOUND;
+	}
+	else
+		execute_path_command(argv);
 	ft_exit_n_free_g_vars(g_status);
 }

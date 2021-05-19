@@ -58,7 +58,7 @@ void
 		{
 			if (ft_is_builtin(c) && !ft_is_pipe(c))
 			{
-				*res = ft_execute_builtin(c);
+				*res = ft_execute_builtin(FALSE, c);
 				if (*res != KEEP_RUNNING)
 					break ;
 				c = c->next;

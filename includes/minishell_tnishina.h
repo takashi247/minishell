@@ -141,7 +141,7 @@ int			ft_remove_escape(t_list *lst);
 char		*ft_get_pathenv(char *s);
 
 /* do_path_command.c */
-void		ft_do_path_command(char **argv, char *command_dir);
+void		ft_do_path_command(char **argv, char **command_dir);
 void		ft_execute_w_environ(char **argv);
 
 /* do_nonpath_command.c */
@@ -200,7 +200,7 @@ void		ft_run_commands(t_command *commands, int *res);
 t_command	*ft_execute_pipeline(t_command *c);
 
 /* execute_builtin.c */
-int			ft_execute_builtin(t_command *c);
+int			ft_execute_builtin(t_bool is_pipe, t_command *c);
 
 /* do_command.c */
 void		ft_do_command(t_command *c);

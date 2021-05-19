@@ -121,11 +121,7 @@ int
 			ft_clear_commands(&commands);
 		}
 		if (res == EXIT || res == EXIT_NON_NUMERIC)
-		{
-			if (res == EXIT)
-				ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 			break ;
-		}
 	}
 	ft_exit_n_free_g_vars(g_status);
 }
