@@ -96,9 +96,8 @@ char	*g_err_msg;
 
 /* function declarations */
 
+/* get_next_line.c */
 int			get_next_line(int fd, char **line);
-void		ft_free_str(char **str);
-void		ft_put_fderror(int fd_from);
 
 /* make_token.c */
 int			ft_make_token(
@@ -176,7 +175,7 @@ t_bool		ft_is_escapable_in_dquote(char c);
 t_bool		ft_is_env_name_end(char c);
 
 /* replace_env.c */
-int			ft_replace_env(t_list **args, int dq_flag, int eq_flag, int i);
+int			ft_replace_env(t_list **args, int dq_flag, int eq_flag, int *i);
 
 /* find_n_replace_env.c */
 int			ft_find_n_replace_env(t_list **args);
@@ -195,7 +194,7 @@ t_bool		ft_create_new_strs(char *content, int *env_pos, char *new[3]);
 /* run_command.c */
 t_bool		ft_is_pipe(t_command *c);
 t_bool		ft_is_builtin(t_command *c);
-void		ft_run_commands(t_command *c, int *res);
+void		ft_run_commands(t_command *commands, int *res);
 
 /* execute_pipeline.c */
 t_command	*ft_execute_pipeline(t_command *c);
@@ -205,5 +204,12 @@ int			ft_execute_builtin(t_command *c);
 
 /* do_command.c */
 void		ft_do_command(t_command *c);
+
+/* run_commandline.c */
+void		ft_run_commandline(char **av);
+
+/* minishell.c */
+t_command	*ft_convert_line(char **line, t_command **commands);
+t_bool		ft_is_end_with_escape(char *line);
 
 #endif

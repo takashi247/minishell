@@ -84,11 +84,12 @@ void	ft_delone_history(t_history *node);
 void	ft_clear_history(t_history **node_ptr);
 
 /* init_minishell.c */
-int		init_minishell(void);
+int		init_minishell(int ac);
 
 /* utils/minishell_errors.c */
 void	ft_put_error(char *msg);
 void	ft_put_syntaxerror_with_token(char *token);
+void	ft_put_fderror(int fd_from);
 
 /* utils/utils.c */
 void	*ft_realloc(void *original, size_t size, size_t original_size);

@@ -37,7 +37,6 @@ static int
 	char	*tmp[2];
 
 	ft_memset(tmp, 0, sizeof(tmp));
-	*i += ft_strlen((char *)tokens->content);
 	tmp[0] = ft_strjoin(new[0], (char *)tokens->content);
 	tmp[1] = ft_strjoin(tmp[0], new[2]);
 	if (!tmp[0] || !tmp[1])
@@ -52,6 +51,7 @@ static int
 	ft_free(&tmp[0]);
 	ft_free((char **)&((*args)->content));
 	(*args)->content = tmp[1];
+	*i += ft_strlen((char *)tokens->content);
 	ft_lstdelone(tokens, free);
 	return (COMPLETED);
 }
