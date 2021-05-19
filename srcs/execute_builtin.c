@@ -3,7 +3,7 @@
 #include "libft.h"
 
 static int
-	do_builtin_cmd(char **argv)
+	do_builtin_cmd(t_bool is_pipe, char **argv)
 {
 	int	res;
 
@@ -20,12 +20,16 @@ static int
 	else if (!ft_strcmp(argv[0], "env"))
 		res = ft_env(argv);
 	else
+	{
+		if (!is_pipe)
+			ft_putstr_fd(EXIT_PROMPT, STDERR_FILENO);
 		res = ft_exit(argv);
+	}
 	return (res);
 }
 
 int
-	ft_execute_builtin(t_command *c)
+	ft_execute_builtin(t_bool is_pipe, t_command *c)
 {
 	char	**argv;
 	int		res;
@@ -43,7 +47,7 @@ int
 			g_status = 1;
 			return (STOP);
 		}
-		res = do_builtin_cmd(argv);
+		res = do_builtin_cmd(is_pipe, argv);
 		ft_clear_argv(&argv);
 	}
 	ft_restore_fds(c, std_fds);
