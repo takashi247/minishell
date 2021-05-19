@@ -64,6 +64,7 @@ static void
 	p_flag[0] = ft_is_pipe(c);
 	if (p_flag[0])
 		pipe(newpipe);
+	ft_sig_pipe();
 	pid = fork();
 	if (pid == 0)
 	{

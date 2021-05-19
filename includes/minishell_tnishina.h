@@ -212,4 +212,8 @@ void		ft_run_commandline(char **av);
 t_command	*ft_convert_line(char **line, t_command **commands);
 t_bool		ft_is_end_with_escape(char *line);
 
+/* pipe_signal.c */
+void		ft_sig_pipe(void);
+void		ft_handle_post_pipe_signal(int signal);
+
 #endif

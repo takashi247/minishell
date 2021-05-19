@@ -37,8 +37,11 @@ static t_bool
 		return (FALSE);
 	if (WIFEXITED(term_status))
 		g_status = WEXITSTATUS(term_status);
+	else if (WIFSIGNALED(term_status))
+		ft_handle_post_pipe_signal(WTERMSIG(term_status));
 	while (wait(NULL) > 0)
 		;
+	ft_sig_post();
 	return (TRUE);
 }
 
