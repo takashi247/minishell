@@ -3,7 +3,7 @@
 #include "libft.h"
 
 static void
-	dup_to_stdfd(t_bool pipe_flag[2], int lastpipe[2], int newpipe[2])
+	dup_to_stdfd(t_command *c, t_bool pipe_flag[2], int lastpipe[2], int newpipe[2])
 {
 	if (pipe_flag[1])
 	{
@@ -15,7 +15,7 @@ static void
 	if (pipe_flag[0])
 	{
 		close(newpipe[0]);
-		if (dup2(newpipe[1], STDOUT_FILENO) < 0)
+		if (c->args && dup2(newpipe[1], STDOUT_FILENO) < 0)
 			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 		close(newpipe[1]);
 	}
@@ -26,13 +26,13 @@ static void
 {
 	if (ft_is_builtin(c))
 	{
-		ft_execute_builtin(c);
+		ft_execute_builtin(TRUE, c);
 		ft_exit_n_free_g_vars(g_status);
 	}
 	else
 	{
 		ft_save_fds(c, std_fds);
-		if (ft_set_redirection(c->redirects, std_fds))
+		if (ft_set_redirection(c->redirects, std_fds) && c->args)
 			ft_do_command(c);
 		else
 			ft_exit_n_free_g_vars(g_status);
@@ -62,19 +62,16 @@ static void
 	int		std_fds[3];
 
 	p_flag[0] = ft_is_pipe(c);
-	if (c->args || c->redirects)
+	if (p_flag[0])
+		pipe(newpipe);
+	pid = fork();
+	if (pid == 0)
 	{
-		if (p_flag[0])
-			pipe(newpipe);
-		pid = fork();
-		if (pid == 0)
-		{
-			dup_to_stdfd(p_flag, l_pipe, newpipe);
-			execute_child(c, std_fds);
-		}
-		update_pipes(p_flag, l_pipe, newpipe);
-		c->pid = pid;
+		dup_to_stdfd(c, p_flag, l_pipe, newpipe);
+		execute_child(c, std_fds);
 	}
+	update_pipes(p_flag, l_pipe, newpipe);
+	c->pid = pid;
 	p_flag[1] = ft_is_pipe(c);
 }
 

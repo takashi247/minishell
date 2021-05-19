@@ -35,9 +35,9 @@ void
 	command_dir = get_command_dir(argv[0]);
 	if (!command_dir)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-	if (argv[0][0] == '/' || argv[0][0] == '.' || !path_env
-		|| !*path_env || *command_dir)
-		ft_do_path_command(argv, command_dir);
+	if (argv[0][0] == '/' || argv[0][0] == '.' || !(argv[0][0])
+		|| !path_env || !*path_env || *command_dir)
+		ft_do_path_command(argv, &command_dir);
 	else
 	{
 		ft_free(&command_dir);
