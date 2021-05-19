@@ -43,6 +43,7 @@ SRCS_TERMTEST	+= minishell_term.c
 SRCS_TERMTEST	:= $(addprefix $(SRCSDIR), $(SRCS_TERMTEST))
 
 SRCS_LEAKS		:= $(SRCSDIR)leaks.c
+OBJS_LEAKS		:= $(SRCS_LEAKS:.c=.o)
 
 ifdef LEAKS
 NAME			:= $(NAME_LEAKS)
@@ -56,8 +57,8 @@ LFLAGS		:= -L${LIBDIR} -lft -lcurses
 
 CC			:= gcc
 CFLAGS		:= -Wall -Wextra -Werror
-DEBUG		:= -g #-fsanitize=address
-# DEBUG		:=
+# DEBUG		:= -g -fsanitize=address
+DEBUG		:=
 
 RM			:= rm -f
 C_GREEN		:= "\x1b[32m"
@@ -91,14 +92,14 @@ termtest:	$(LIBPATH)	## Compile for testing terminal operations.
 			$(CC) $(CFLAGS) $(SRCS_TERMTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -o term.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
-leaks:
+leaks:		## For leak check
 			$(MAKE) CFLAGS="$(CFLAGS) -D LEAKS=1" SRCS_PRODUCTION="$(SRCS_PRODUCTION) $(SRCS_LEAKS)" LEAKS=TRUE
 
 $(LIBPATH):
 			$(MAKE) -C $(LIBDIR)
 
 clean:		## Remove all the temporary generated files.
-			$(RM) $(OBJS_PRODUCTION)
+			$(RM) $(OBJS_PRODUCTION) $(OBJS_LEAKS)
 			$(MAKE) clean -C $(LIBDIR)
 
 fclean:		clean	## `make clean' plus all the binary made with `make all'.
@@ -110,4 +111,4 @@ re:			fclean $(NAME)	## `make fclean' followed by `make all'.
 help:		## Display this help screen.
 			@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-.PHONY:		all clean fclean re help btest bltest cdtest cdltest termtest
+.PHONY:		all clean fclean re help btest bltest cdtest cdltest termtest leaks

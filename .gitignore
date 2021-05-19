@@ -1,6 +1,9 @@
 # Project file
 minishell
 
+# For leak check
+minishell_leaks
+
 # General
 .DS_Store
 
