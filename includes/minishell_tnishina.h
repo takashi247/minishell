@@ -73,6 +73,15 @@ typedef enum e_status
 	COMPLETED
 }	t_status;
 
+typedef enum e_cd_status
+{
+	CD_FAILED,
+	CD_SUCCESS,
+	CD_PATH_FAILED,
+	CD_PATH_SUCCESS,
+	MALLOC_ERR
+}	t_cd_status;
+
 /*
 ** a strucutre to store commands
 ** need to add member variables to store redirection info
@@ -211,5 +220,8 @@ void		ft_run_commandline(char **av);
 /* minishell.c */
 t_command	*ft_convert_line(char **line, t_command **commands);
 t_bool		ft_is_end_with_escape(char *line);
+
+/* exec_cd_path.c */
+int			ft_exec_cd_path(char **path, char **cd_path);
 
 #endif

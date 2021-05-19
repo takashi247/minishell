@@ -1,4 +1,5 @@
 #include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static t_bool
 	validate_args(const char *args)
@@ -16,23 +17,31 @@ static t_bool
 	return (ret);
 }
 
-static t_bool
-	exec_cd(const char *path, const char *args)
+static int
+	exec_cd(char **path, const char *args)
 {
-	t_bool	ret;
+	int		ret;
+	char	*cd_path;
 
-	ret = FALSE;
-	if (!path)
-		return (ret);
-	if (chdir(path) != 0)
+	if (!*path)
+		return (CD_FAILED);
+	cd_path = ft_getenv("CDPATH");
+	if (cd_path && **path != '/' && **path != '.')
 	{
+		ret = ft_exec_cd_path(path, &cd_path);
+		if (ret == CD_PATH_SUCCESS || ret == MALLOC_ERR || ret == CD_SUCCESS)
+			return (ret);
+	}
+	if (chdir(*path) != 0)
+	{
+		ret = CD_FAILED;
 		if (args)
 			ft_put_cmderror_with_arg("cd", strerror(errno), (char *)args);
 		else
-			ft_put_cmderror_with_arg("cd", strerror(errno), (char *)path);
+			ft_put_cmderror_with_arg("cd", strerror(errno), (char *)(*path));
 	}
 	else
-		ret = TRUE;
+		ret = CD_SUCCESS;
 	return (ret);
 }
 
@@ -82,6 +91,7 @@ int
 	ft_cd(char **args)
 {
 	char	*path;
+	int		res;
 
 	g_status = STATUS_GENERAL_ERR;
 	args++;
@@ -94,11 +104,24 @@ int
 		return (KEEP_RUNNING);
 	if (path && *path == '\0')
 		path = g_pwd;
-	if (exec_cd(path, *args) == TRUE)
+	path = ft_strdup(path);
+	if (!path)
 	{
-		if (update_path_env(path) == FALSE)
-			return (STOP);
-		g_status = STATUS_SUCCESS;
+		ft_put_cmderror("cd", strerror(errno));
+		return (STOP);
 	}
+	res = exec_cd(&path, *args);
+	if (res == MALLOC_ERR
+		|| ((res == CD_SUCCESS || res == CD_PATH_SUCCESS)
+			&& update_path_env(path) == FALSE))
+	{
+		ft_free(&path);
+		return (STOP);
+	}
+	if (res == CD_PATH_SUCCESS)
+		ft_putendl_fd(g_pwd, STDOUT_FILENO);
+	if (res == CD_PATH_SUCCESS || res == CD_SUCCESS)
+		g_status = STATUS_SUCCESS;
+	ft_free(&path);
 	return (KEEP_RUNNING);
 }
