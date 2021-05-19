@@ -39,5 +39,5 @@ int
 		ft_put_cmderror("cd", strerror(errno));
 		return (STOP);
 	}
-	return ft_get_cd_result(&path, *args);
+	return (ft_get_cd_result(&path, *args));
 }
