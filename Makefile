@@ -42,7 +42,7 @@ SRCS_TERMTEST	:= $(SRCS)
 SRCS_TERMTEST	+= minishell_term.c
 SRCS_TERMTEST	:= $(addprefix $(SRCSDIR), $(SRCS_TERMTEST))
 
-SRCS_LEAKS		:= leaks.c
+SRCS_LEAKS		:= $(SRCSDIR)leaks.c
 
 ifdef LEAKS
 NAME			:= $(NAME_LEAKS)
@@ -91,7 +91,8 @@ termtest:	$(LIBPATH)	## Compile for testing terminal operations.
 			$(CC) $(CFLAGS) $(SRCS_TERMTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -o term.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
-leaks:		$(MAKE) CFLAGS="$(CFLAGS) -D LEAKS=1" SRCS="$(SRCS_PRODUCTION) $(SRCS_LEAKS)" LEAKS=TRUE
+leaks:
+			$(MAKE) CFLAGS="$(CFLAGS) -D LEAKS=1" SRCS_PRODUCTION="$(SRCS_PRODUCTION) $(SRCS_LEAKS)" LEAKS=TRUE
 
 $(LIBPATH):
 			$(MAKE) -C $(LIBDIR)
