@@ -49,3 +49,7 @@ file ; > file
 > file | > file
 < file
 whereis ls | cat -e | cat -e > test
+"$NO"
+exit 0 0 | echo hello
+echo a | $NO_ENV | cat
+echo a | $NO_ENV | echo b
