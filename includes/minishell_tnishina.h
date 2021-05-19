@@ -224,4 +224,7 @@ t_bool		ft_is_end_with_escape(char *line);
 /* exec_cd_path.c */
 int			ft_exec_cd_path(char **path, char **cd_path);
 
+/* get_cd_result.c */
+int			ft_get_cd_result(char **path, const char *args);
+
 #endif

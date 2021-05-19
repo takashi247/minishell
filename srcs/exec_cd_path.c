@@ -30,13 +30,48 @@ static char
 	return (ret);
 }
 
+static int
+	free_all_n_return(char **s, char ***arry, int res)
+{
+	ft_free(s);
+	ft_free_split(arry);
+	return (res);
+}
+
+static int
+	check_path_arry(char **path, char **path_arry, char **original_path)
+{
+	char	**head;
+	int		res;
+
+	head = path_arry;
+	while (*path_arry)
+	{
+		ft_free(path);
+		*path = create_new_path(*path_arry, *original_path);
+		if (!*path)
+			return (free_all_n_return(original_path, &head, MALLOC_ERR));
+		if (chdir(*path) == 0)
+		{
+			if (!ft_strcmp(".", *path_arry))
+				res = CD_SUCCESS;
+			else
+				res = CD_PATH_SUCCESS;
+			return (free_all_n_return(original_path, &head, res));
+		}
+		path_arry++;
+	}
+	ft_free(path);
+	*path = *original_path;
+	ft_free_split(&head);
+	return (CD_PATH_FAILED);
+}
+
 int
 	ft_exec_cd_path(char **path, char **cd_path)
 {
 	char	**path_arry;
-	char	**head;
 	char	*original_path;
-	int		res;
 
 	if (!*path || !*cd_path)
 		return (CD_FAILED);
@@ -49,33 +84,6 @@ int
 		ft_free(&original_path);
 		return (MALLOC_ERR);
 	}
-	head = path_arry;
-	while (*path_arry)
-	{
-		ft_free(path);
-		*path = create_new_path(*path_arry, original_path);
-		if (!*path)
-		{
-			ft_free(&original_path);
-			ft_free(cd_path);
-			ft_free_split(&head);
-			return (MALLOC_ERR);
-		}
-		if (chdir(*path) == 0)
-		{
-			if (!ft_strcmp(".", *path_arry))
-				res = CD_SUCCESS;
-			else
-				res = CD_PATH_SUCCESS;
-			ft_free(&original_path);
-			ft_free(cd_path);
-			ft_free_split(&head);
-			return (res);
-		}
-		path_arry++;
-	}
-	*path = original_path;
 	ft_free(cd_path);
-	ft_free_split(&head);
-	return (CD_PATH_FAILED);
+	return (check_path_arry(path, path_arry, &original_path));
 }
