@@ -10,6 +10,13 @@ int
 		ft_free(&g_pwd);
 		return (STOP);
 	}
+	g_ms.sh_pwd = ft_strdup(g_pwd);
+	if (!g_ms.sh_pwd)
+	{
+		ft_put_error(strerror(errno));
+		ft_free(&g_pwd);
+		return (STOP);
+	}
 	return (KEEP_RUNNING);
 }
 

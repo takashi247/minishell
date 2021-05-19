@@ -34,6 +34,7 @@ SRCS_PRODUCTION	:= $(addprefix $(SRCSDIR), $(SRCS_PRODUCTION))
 OBJS_PRODUCTION	:= $(SRCS_PRODUCTION:.c=.o)
 
 SRCS_BUILTINTEST	:= $(SRCS)
+SRCS_BUILTINTEST	+= minishell.c
 SRCS_BUILTINTEST	:= $(addprefix $(SRCSDIR), $(SRCS_BUILTINTEST))
 SRCS_BUILTINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
 
@@ -69,7 +70,7 @@ btest:		$(LIBPATH)	## Compile for commands testing.
 			@echo $(C_GREEN)"=== Make Done ==="
 
 bltest:		$(LIBPATH)	## Compile for commands testing with `leaks'.
-			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D CDTEST -D LEAKS -o builtin.out
+			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -D LEAKS -o builtin.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
 cdtest:		$(LIBPATH)	## Compile for cd command testing.

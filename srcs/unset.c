@@ -27,6 +27,10 @@ static void
 	int		flag;
 	char	*tmp;
 
+	if (!ft_strcmp(name, "PWD"))
+		ft_free(&g_ms.sh_pwd);
+	else if (!ft_strcmp(name, "OLDPWD"))
+		ft_free(&g_ms.sh_oldpwd);
 	flag = 0;
 	tmp = ft_getenv(name);
 	if (tmp)
@@ -34,13 +38,17 @@ static void
 	ft_unsetenv(name);
 	tmp = ft_getenv(name);
 	if (!tmp && flag == 1)
-		puts("\033[32munset success\033[0m");
+		printf("\033[32munset success\033[0m\n");
 }
 
 #else
 static void
 	unsetenv_wrapper(const char *name)
 {
+	if (!ft_strcmp(name, "PWD"))
+		ft_free(&g_ms.sh_pwd);
+	else if (!ft_strcmp(name, "OLDPWD"))
+		ft_free(&g_ms.sh_oldpwd);
 	ft_unsetenv(name);
 }
 #endif
