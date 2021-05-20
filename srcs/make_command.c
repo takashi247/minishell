@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 static t_bool
 	is_valid_rediret(t_command *c, t_list *current)

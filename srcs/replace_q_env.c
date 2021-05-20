@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 void
 	ft_free_all_chars(char **env, char *tmp[2], char *new[3])
@@ -51,7 +49,7 @@ static t_bool
 {
 	tmp[0] = *content;
 	if (!ft_strcmp(new[1], "\?"))
-		tmp[1] = ft_itoa(g_status);
+		tmp[1] = ft_itoa(g_ms.status);
 	else if (ft_getenv(new[1]))
 		tmp[1] = ft_strdup(ft_getenv(new[1]));
 	else

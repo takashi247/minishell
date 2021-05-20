@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 static int
 	do_builtin_cmd(t_bool is_pipe, char **argv)
@@ -44,7 +42,7 @@ int
 		argv = ft_convert_list(c->args);
 		if (!argv)
 		{
-			g_status = 1;
+			g_ms.status = 1;
 			return (STOP);
 		}
 		res = do_builtin_cmd(is_pipe, argv);

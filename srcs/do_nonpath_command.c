@@ -1,25 +1,23 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 static void
 	set_dir_error(char *command)
 {
-	ft_free(&g_err_arg);
-	ft_free(&g_err_msg);
-	g_err_arg = ft_strdup(command);
-	g_err_msg = ft_strdup(IS_DIR_ERROR_MSG);
-	g_status = STATUS_COMMAND_NOT_FOUND;
+	ft_free(&g_ms.err_arg);
+	ft_free(&g_ms.err_msg);
+	g_ms.err_arg = ft_strdup(command);
+	g_ms.err_msg = ft_strdup(IS_DIR_ERROR_MSG);
+	g_ms.status = STATUS_COMMAND_NOT_FOUND;
 }
 
 static void
 	set_permission_error(char *command)
 {
-	ft_free(&g_err_arg);
-	ft_free(&g_err_msg);
-	g_err_arg = ft_strdup(command);
-	g_err_msg = ft_strdup(PERMISSION_ERR_MSG);
-	g_status = STATUS_CANNOT_EXECUTE;
+	ft_free(&g_ms.err_arg);
+	ft_free(&g_ms.err_msg);
+	g_ms.err_arg = ft_strdup(command);
+	g_ms.err_msg = ft_strdup(PERMISSION_ERR_MSG);
+	g_ms.status = STATUS_CANNOT_EXECUTE;
 }
 
 static void
@@ -69,5 +67,5 @@ void
 	ft_free(path_env);
 	ft_free_split(argv);
 	ft_free_split(&head);
-	ft_exit_n_free_g_vars(g_status);
+	ft_exit_n_free_g_vars(g_ms.status);
 }

@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 t_bool
 	ft_is_end_with_escape(char *line)
@@ -89,7 +87,7 @@ static t_bool
 	if (ft_is_end_with_escape(line))
 	{
 		ft_put_cmderror("\\", MULTILINE_ERROR_MSG);
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		res = FALSE;
 	}
 	else
@@ -124,6 +122,6 @@ int
 		if (res == EXIT || res == EXIT_NON_NUMERIC)
 			break ;
 	}
-	ft_exit_n_free_g_vars(g_status);
+	ft_exit_n_free_g_vars(g_ms.status);
 }
 #endif

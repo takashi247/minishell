@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 static char
 	*get_command_dir(char *command)
@@ -27,7 +25,7 @@ void
 	if (!c)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (!c->args)
-		ft_exit_n_free_g_vars(g_status);
+		ft_exit_n_free_g_vars(g_ms.status);
 	argv = ft_convert_list(c->args);
 	if (!argv)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);

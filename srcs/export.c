@@ -1,9 +1,9 @@
-#include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static int
 	stop_with_puterror(const int err)
 {
-	g_status = STATUS_GENERAL_ERR;
+	g_ms.status = STATUS_GENERAL_ERR;
 	ft_put_error(strerror(err));
 	return (STOP);
 }
@@ -57,7 +57,7 @@ static int
 		plus_mode = is_plus_mode(args[1], name);
 		if (ft_validate_name(name) == FALSE)
 		{
-			g_status = STATUS_GENERAL_ERR;
+			g_ms.status = STATUS_GENERAL_ERR;
 			ft_put_cmderror_with_quoted_arg(
 				"export", CMD_IDENTIFIER_ERR, args++[1]);
 		}
@@ -76,12 +76,12 @@ int
 {
 	char	option[3];
 
-	g_status = STATUS_SUCCESS;
+	g_ms.status = STATUS_SUCCESS;
 	if (args[1] && !ft_strcmp(args[1], "--"))
 		args++;
 	else if (ft_get_cmd_option(option, args[1]))
 	{
-		g_status = STATUS_MISUSE_OF_BUILTINS_ERR;
+		g_ms.status = STATUS_MISUSE_OF_BUILTINS_ERR;
 		ft_put_cmderror_with_arg("export", CMD_OPTION_ERR, option);
 		ft_put_cmderror_with_help("export", CMD_EXPORT_HELP);
 		return (KEEP_RUNNING);

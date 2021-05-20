@@ -83,7 +83,6 @@ char	*ft_strndup_append_null(const char *s, size_t n);
 int		ft_strcmp(const char *s1, const char *s2);
 int		ft_isspace(char c);
 int		ft_isnumeric(char *s);
-void	ft_free(char **ptr);
 
 /* utils/split_utils.c */
 void	ft_free_split(char ***split);

@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 void
 	ft_handle_post_pipe_signal(int signal)
@@ -16,15 +14,15 @@ static void
 {
 	if (signal == SIGINT)
 	{
-		if (kill(g_latest_pid, 0) == 0)
-			g_status = 130;
+		if (kill(g_ms.latest_pid, 0) == 0)
+			g_ms.status = 130;
 		else
 			ft_putstr_fd("\n", STDERR_FILENO);
 	}
 	else if (signal == SIGQUIT)
 	{
-		if (kill(g_latest_pid, 0) == 0)
-			g_status = 131;
+		if (kill(g_ms.latest_pid, 0) == 0)
+			g_ms.status = 131;
 	}
 }
 

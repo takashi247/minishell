@@ -1,13 +1,11 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 static int
 	exit_w_quotation_error(char *cpy, t_list **tokens)
 {
 	ft_put_cmderror(cpy, MULTILINE_ERROR_MSG);
 	ft_lstclear(tokens, free);
-	g_status = STATUS_GENERAL_ERR;
+	g_ms.status = STATUS_GENERAL_ERR;
 	return (COMPLETED);
 }
 

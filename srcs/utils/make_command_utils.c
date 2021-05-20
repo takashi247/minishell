@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
 #include "libft.h"
 
 static void
@@ -41,7 +40,7 @@ int
 	ft_lstclear(t1, free);
 	ft_lstclear(t2, free);
 	ft_clear_commands(c);
-	g_status = STATUS_GENERAL_ERR;
+	g_ms.status = STATUS_GENERAL_ERR;
 	return (FAILED);
 }
 
@@ -50,7 +49,7 @@ int
 {
 	ft_lstclear(t, free);
 	ft_clear_commands(c);
-	g_status = STATUS_SYNTAX_ERR;
+	g_ms.status = STATUS_SYNTAX_ERR;
 	return (COMPLETED);
 }
 

@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 static char
 	*convert_env(char *new[3])
@@ -8,7 +6,7 @@ static char
 	char	*env;
 
 	if (!ft_strcmp(new[1], "\?"))
-		env = ft_itoa(g_status);
+		env = ft_itoa(g_ms.status);
 	else
 	{
 		if ((ft_getenv(new[1])))

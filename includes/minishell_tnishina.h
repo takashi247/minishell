@@ -139,6 +139,7 @@ char		**ft_convert_list(t_list *l);
 void		ft_clear_argv(char ***argv);
 int			ft_isover_intrange(char *s);
 void		ft_exit_n_free_g_vars(int exit_status);
+void		ft_free(char **ptr);
 
 /* handle_signal.c */
 void		ft_sig_prior(void);

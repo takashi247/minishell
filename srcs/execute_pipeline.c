@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 static void
 	dup_to_stdfd(t_command *c, t_bool p_flag[2], int last_p[2], int new_p[2])
@@ -27,7 +25,7 @@ static void
 	if (ft_is_builtin(c))
 	{
 		ft_execute_builtin(TRUE, c);
-		ft_exit_n_free_g_vars(g_status);
+		ft_exit_n_free_g_vars(g_ms.status);
 	}
 	else
 	{
@@ -35,7 +33,7 @@ static void
 		if (ft_set_redirection(c->redirects, std_fds) && c->args)
 			ft_do_command(c);
 		else
-			ft_exit_n_free_g_vars(g_status);
+			ft_exit_n_free_g_vars(g_ms.status);
 	}
 }
 

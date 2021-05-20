@@ -1,4 +1,4 @@
-#include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 void
 	ft_clear_copied_env(t_list **cpy)
@@ -23,7 +23,7 @@ t_list
 	t_list	*current;
 
 	copy = NULL;
-	envptr = g_env;
+	envptr = g_ms.env;
 	while (envptr)
 	{
 		current = ft_lstnew(envptr->content);

@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 static t_bool
 	append_redirect_out(int fd_from, char *path, int std_fds[3])
@@ -11,7 +9,7 @@ static t_bool
 	if (fd_to < 0)
 	{
 		ft_put_cmderror(path, strerror(errno));
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		return (FALSE);
 	}
 	if (fd_from == NO_FD_SETTING)
@@ -40,7 +38,7 @@ static t_bool
 	if (fd_to < 0)
 	{
 		ft_put_cmderror(path, strerror(errno));
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		return (FALSE);
 	}
 	if (fd_from == NO_FD_SETTING)
@@ -69,7 +67,7 @@ static t_bool
 	if (fd_to < 0)
 	{
 		ft_put_cmderror(path, strerror(errno));
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		return (FALSE);
 	}
 	if (fd_from == NO_FD_SETTING)

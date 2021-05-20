@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
 #include "libft.h"
 
 void
@@ -40,7 +39,7 @@ t_bool
 	{
 		if (fd_from == OVER_INT_RANGE || FD_MAX < fd_from)
 			ft_put_fderror(fd_from);
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		ft_free(&path);
 		ft_free(&redirect_op);
 		return (FALSE);
