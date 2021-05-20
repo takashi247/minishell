@@ -68,6 +68,8 @@ typedef struct s_minishell
 	struct termios	origin_term;
 	t_bool			interrupted;
 	t_history_list	hist;
+	char			*sh_pwd;
+	char			*sh_oldpwd;
 }	t_minishell;
 
 t_minishell	g_ms;

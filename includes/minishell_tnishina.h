@@ -73,6 +73,15 @@ typedef enum e_status
 	COMPLETED
 }	t_status;
 
+typedef enum e_cd_status
+{
+	CD_FAILED,
+	CD_SUCCESS,
+	CD_PATH_FAILED,
+	CD_PATH_SUCCESS,
+	MALLOC_ERR
+}	t_cd_status;
+
 /*
 ** a strucutre to store commands
 ** need to add member variables to store redirection info
@@ -215,5 +224,11 @@ t_bool		ft_is_end_with_escape(char *line);
 /* pipe_signal.c */
 void		ft_sig_pipe(void);
 void		ft_handle_post_pipe_signal(int signal);
+
+/* exec_cd_path.c */
+int			ft_exec_cd_path(char **path, char **cd_path);
+
+/* get_cd_result.c */
+int			ft_get_cd_result(char **path, const char *args);
 
 #endif

@@ -14,9 +14,13 @@ char
 	while (envptr)
 	{
 		current = envptr->content;
-		if (!ft_strncmp(name, current, len)
-			&& (current[len] == '=' || current[len] == '\0'))
-			return (current + len + 1);
+		if (!ft_strncmp(name, current, len))
+		{
+			if (current[len] == '=')
+				return (current + len + 1);
+			else if (current[len] == '\0')
+				return (current + len);
+		}
 		envptr = envptr->next;
 	}
 	return (NULL);
