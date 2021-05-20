@@ -1,4 +1,5 @@
 #include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static t_bool
 	validate_args(const char *args)
@@ -107,11 +108,11 @@ int
 		return (KEEP_RUNNING);
 	if (path && *path == '\0')
 		path = g_pwd;
-	if (exec_cd(path, *args) == TRUE)
+	path = ft_strdup(path);
+	if (!path)
 	{
-		if (update_path_env(path) == FALSE)
-			return (STOP);
-		g_status = STATUS_SUCCESS;
+		ft_put_cmderror("cd", strerror(errno));
+		return (STOP);
 	}
-	return (KEEP_RUNNING);
+	return (ft_get_cd_result(&path, *args));
 }

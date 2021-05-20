@@ -1,4 +1,5 @@
 NAME		:= minishell
+NAME_LEAKS	:= minishell_leaks
 
 SRCSDIR		:= ./srcs/
 HISTDIR		:= history/
@@ -21,7 +22,7 @@ SRCS		:= init_minishell.c \
 				execute_redirection.c replace_env.c find_n_replace_env.c \
 				replace_env_token.c reconnect_tokens.c replace_q_env.c \
 				run_commands.c execute_pipeline.c execute_builtin.c do_command.c \
-				run_commandline.c \
+				run_commandline.c exec_cd_path.c get_cd_result.c \
 				$(HISTDIR)hlist_utils.c \
 				$(UTILDIR)command_utils.c $(UTILDIR)command_errors.c $(UTILDIR)minishell_errors.c \
 				$(UTILDIR)tlist_utils.c $(UTILDIR)split_utils.c $(UTILDIR)utils_tnishina.c $(UTILDIR)utils.c \
@@ -41,6 +42,13 @@ SRCS_BUILTINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/t
 SRCS_TERMTEST	:= $(SRCS)
 SRCS_TERMTEST	+= minishell_term.c
 SRCS_TERMTEST	:= $(addprefix $(SRCSDIR), $(SRCS_TERMTEST))
+
+SRCS_LEAKS		:= $(SRCSDIR)leaks.c
+OBJS_LEAKS		:= $(SRCS_LEAKS:.c=.o)
+
+ifdef LEAKS
+NAME			:= $(NAME_LEAKS)
+endif
 
 INCLUDE		:= -I./includes/ -I./libft/ -I./test/
 
@@ -85,11 +93,14 @@ termtest:	$(LIBPATH)	## Compile for testing terminal operations.
 			$(CC) $(CFLAGS) $(SRCS_TERMTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -o term.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
+leaks:		## For leak check
+			$(MAKE) CFLAGS="$(CFLAGS) -D LEAKS=1" SRCS_PRODUCTION="$(SRCS_PRODUCTION) $(SRCS_LEAKS)" LEAKS=TRUE
+
 $(LIBPATH):
 			$(MAKE) -C $(LIBDIR)
 
 clean:		## Remove all the temporary generated files.
-			$(RM) $(OBJS_PRODUCTION)
+			$(RM) $(OBJS_PRODUCTION) $(OBJS_LEAKS)
 			$(MAKE) clean -C $(LIBDIR)
 
 fclean:		clean	## `make clean' plus all the binary made with `make all'.
@@ -101,4 +112,4 @@ re:			fclean $(NAME)	## `make fclean' followed by `make all'.
 help:		## Display this help screen.
 			@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-.PHONY:		all clean fclean re help btest bltest cdtest cdltest termtest
+.PHONY:		all clean fclean re help btest bltest cdtest cdltest termtest leaks

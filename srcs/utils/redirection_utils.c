@@ -41,6 +41,7 @@ t_bool
 		if (fd_from == OVER_INT_RANGE || FD_MAX < fd_from)
 			ft_put_fderror(fd_from);
 		g_status = STATUS_GENERAL_ERR;
+		ft_free(&path);
 		ft_free(&redirect_op);
 		return (FALSE);
 	}
