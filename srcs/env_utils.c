@@ -1,4 +1,4 @@
-#include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 char
 	*ft_getenv(const char *name)
@@ -7,10 +7,10 @@ char
 	size_t	len;
 	char	*current;
 
-	if (!g_env || !*name)
+	if (!g_ms.env || !*name)
 		return (NULL);
 	len = ft_strlen(name);
-	envptr = g_env;
+	envptr = g_ms.env;
 	while (envptr)
 	{
 		current = envptr->content;
@@ -55,7 +55,7 @@ int
 	t_list	*new;
 	char	*cpy;
 
-	if (!g_env || !str || !*str)
+	if (!g_ms.env || !str || !*str)
 		return (UTIL_ERROR);
 	delone_env(str);
 	cpy = ft_strdup(str);
@@ -67,7 +67,7 @@ int
 			ft_free(&cpy);
 		return (UTIL_ERROR);
 	}
-	ft_lstadd_back(&g_env, new);
+	ft_lstadd_back(&g_ms.env, new);
 	return (UTIL_SUCCESS);
 }
 
@@ -78,7 +78,7 @@ int
 	char	*env_str;
 	int		ret;
 
-	if (!g_env || !name)
+	if (!g_ms.env || !name)
 		return (UTIL_ERROR);
 	equal_value = NULL;
 	if (value)
@@ -104,9 +104,9 @@ int
 	t_list			*prev;
 	const size_t	len = ft_strlen(name);
 
-	if (!g_env || !name || !*name)
+	if (!g_ms.env || !name || !*name)
 		return (UTIL_ERROR);
-	envptr = g_env;
+	envptr = g_ms.env;
 	prev = NULL;
 	while (envptr)
 	{
@@ -117,7 +117,7 @@ int
 			if (prev)
 				prev->next = envptr->next;
 			else
-				g_env = envptr->next;
+				g_ms.env = envptr->next;
 			ft_lstdelone(envptr, free);
 			return (UTIL_SUCCESS);
 		}

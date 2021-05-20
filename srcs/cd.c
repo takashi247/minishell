@@ -22,7 +22,7 @@ int
 {
 	char	*path;
 
-	g_status = STATUS_GENERAL_ERR;
+	g_ms.status = STATUS_GENERAL_ERR;
 	args++;
 	if (*args && !ft_strcmp(*args, "--"))
 		args++;
@@ -32,7 +32,7 @@ int
 	if (!path)
 		return (KEEP_RUNNING);
 	if (path && *path == '\0')
-		path = g_pwd;
+		path = g_ms.pwd;
 	path = ft_strdup(path);
 	if (!path)
 	{

@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
 #include "libft.h"
 
 t_bool
@@ -32,11 +31,11 @@ static t_bool
 {
 	int		term_status;
 
-	g_latest_pid = pid;
+	g_ms.latest_pid = pid;
 	if (waitpid(pid, &term_status, 0) < 0)
 		return (FALSE);
 	if (WIFEXITED(term_status))
-		g_status = WEXITSTATUS(term_status);
+		g_ms.status = WEXITSTATUS(term_status);
 	else if (WIFSIGNALED(term_status))
 		ft_handle_post_pipe_signal(WTERMSIG(term_status));
 	while (wait(NULL) > 0)

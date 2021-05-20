@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
 #include "libft.h"
 
 static void
@@ -10,7 +9,7 @@ static void
 		ft_putstr_fd("\n", STDERR_FILENO);
 		ft_putstr_fd(PROMPT, STDERR_FILENO);
 		g_ms.interrupted = TRUE;
-		g_status = 1;
+		g_ms.status = 1;
 	}
 }
 
@@ -35,15 +34,15 @@ static void
 	if (signal == SIGINT)
 	{
 		ft_putstr_fd("\n", STDERR_FILENO);
-		if (kill(g_latest_pid, 0) == 0)
-			g_status = 130;
+		if (kill(g_ms.latest_pid, 0) == 0)
+			g_ms.status = 130;
 	}
 	else if (signal == SIGQUIT)
 	{
-		if (kill(g_latest_pid, 0) == 0)
+		if (kill(g_ms.latest_pid, 0) == 0)
 		{
 			ft_putstr_fd("Quit: 3\n", STDERR_FILENO);
-			g_status = 131;
+			g_ms.status = 131;
 		}
 	}
 }

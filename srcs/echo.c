@@ -1,4 +1,5 @@
 #include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static t_bool
 	has_n_option(const char *args)
@@ -39,6 +40,6 @@ int
 	}
 	if (is_n == FALSE)
 		ft_putchar_fd('\n', STDOUT_FILENO);
-	g_status = STATUS_SUCCESS;
+	g_ms.status = STATUS_SUCCESS;
 	return (KEEP_RUNNING);
 }

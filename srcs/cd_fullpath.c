@@ -1,4 +1,5 @@
 #include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static int
 	make_current_path_list(t_list **path_list)
@@ -6,7 +7,7 @@ static int
 	char	**split;
 	size_t	i;
 
-	split = ft_split(g_pwd, '/');
+	split = ft_split(g_ms.pwd, '/');
 	if (!split)
 		return (UTIL_ERROR);
 	*path_list = NULL;

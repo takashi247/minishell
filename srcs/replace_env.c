@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
 #include "libft.h"
 
 static t_bool
@@ -13,9 +12,9 @@ static t_bool
 	name = ft_extract_envname_from_str(content);
 	if (!name)
 	{
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		ft_put_error(strerror(errno));
-		ft_exit_n_free_g_vars(g_status);
+		ft_exit_n_free_g_vars(g_ms.status);
 	}
 	res = ft_validate_name(name);
 	ft_free(&name);

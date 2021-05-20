@@ -1,4 +1,4 @@
-#include "../includes/minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 /* return zero when overflow and check char after number */
 static int
@@ -41,13 +41,13 @@ static int
 	{
 		if (cpy)
 			ft_free(&cpy);
-		ft_lstclear(&g_env, free);
+		ft_lstclear(&g_ms.env, free);
 		return (STOP);
 	}
 	if (i == 0)
-		g_env = new;
+		g_ms.env = new;
 	else
-		ft_lstadd_back(&g_env, new);
+		ft_lstadd_back(&g_ms.env, new);
 	return (KEEP_RUNNING);
 }
 

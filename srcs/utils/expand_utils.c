@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
 #include "libft.h"
 
 t_bool
@@ -25,7 +24,7 @@ t_bool
 		*s = ft_strjoin(front, back);
 	if (!front || !back || !(*s))
 	{
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		ft_free(&front);
 		ft_free(&back);
 		return (FALSE);

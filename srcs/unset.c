@@ -1,4 +1,4 @@
-#include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static t_bool
 	validate_arg(char *arg)
@@ -58,12 +58,12 @@ int
 {
 	char	option[3];
 
-	g_status = STATUS_SUCCESS;
+	g_ms.status = STATUS_SUCCESS;
 	if (args[1] && !ft_strcmp(args[1], "--"))
 		args++;
 	else if (ft_get_cmd_option(option, args[1]))
 	{
-		g_status = STATUS_MISUSE_OF_BUILTINS_ERR;
+		g_ms.status = STATUS_MISUSE_OF_BUILTINS_ERR;
 		ft_put_cmderror_with_arg("unset", CMD_OPTION_ERR, option);
 		ft_put_cmderror_with_help("unset", CMD_UNSET_HELP);
 		return (KEEP_RUNNING);
@@ -72,7 +72,7 @@ int
 	{
 		if (!validate_arg(args[1]))
 		{
-			g_status = STATUS_GENERAL_ERR;
+			g_ms.status = STATUS_GENERAL_ERR;
 			ft_put_cmderror_with_quoted_arg(
 				"unset", CMD_IDENTIFIER_ERR, args[1]);
 		}

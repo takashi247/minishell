@@ -1,4 +1,4 @@
-#include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 #ifdef EXPORTTEST
 static void
@@ -50,7 +50,7 @@ static int
 	}
 	else if (!ft_strcmp("PWD", args[1]))
 	{
-		*value = ft_strdup(g_pwd);
+		*value = ft_strdup(g_ms.pwd);
 		if (!*value)
 			return (UTIL_ERROR);
 	}

@@ -1,4 +1,3 @@
-#include "minishell_sikeda.h"
 #include "minishell_tnishina.h"
 #include "libft.h"
 
@@ -34,6 +33,6 @@ void
 		ft_clear_commands(&head);
 	}
 	else
-		g_status = STATUS_GENERAL_ERR;
-	ft_exit_n_free_g_vars(g_status);
+		g_ms.status = STATUS_GENERAL_ERR;
+	ft_exit_n_free_g_vars(g_ms.status);
 }

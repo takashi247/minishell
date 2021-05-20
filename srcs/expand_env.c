@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
 #include "libft.h"
 
 static t_bool
@@ -10,7 +9,7 @@ static t_bool
 	str = ft_strdup("");
 	if (!str)
 	{
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		ft_lstdelone(*tokens, free);
 		return (FALSE);
 	}
@@ -59,7 +58,7 @@ static int
 	else if (l[0] && ft_is_redirect((char *)l[0]->content))
 	{
 		ft_put_cmderror(*pre_expand, AMBIGUOUS_REDIRECT_ERR_MSG);
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		ft_free(pre_expand);
 		return (REDIRECT_DELETED);
 	}

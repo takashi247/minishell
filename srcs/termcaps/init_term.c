@@ -1,4 +1,4 @@
-#include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static int
 	get_definition_from_termcap(void)

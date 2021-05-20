@@ -1,4 +1,4 @@
-#include "../includes/minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static void
 	put_enverror_with_option(char *option)
@@ -52,12 +52,12 @@ static void
 	option = check_args(args, &has_path);
 	if (has_path == FALSE && option)
 	{
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		put_enverror_with_option(option);
 	}
 	else if (has_path == TRUE || option)
 	{
-		g_status = STATUS_GENERAL_ERR;
+		g_ms.status = STATUS_GENERAL_ERR;
 		ft_put_cmderror_with_help("env", CMD_ENV_HELP);
 	}
 }
@@ -73,12 +73,12 @@ int
 {
 	t_list	*envptr;
 
-	g_status = STATUS_SUCCESS;
+	g_ms.status = STATUS_SUCCESS;
 	if (args[1] && !is_only_double_hyphen(args))
 		env_with_args(args);
 	else
 	{
-		envptr = g_env;
+		envptr = g_ms.env;
 		while (envptr)
 		{
 			if (ft_strchr(envptr->content, '='))

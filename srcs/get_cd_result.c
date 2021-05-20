@@ -1,4 +1,3 @@
-#include "minishell_sikeda.h"
 #include "minishell_tnishina.h"
 #include "libft.h"
 
@@ -36,23 +35,23 @@ static int
 	char	*cwd;
 
 	ft_free(&g_ms.sh_oldpwd);
-	g_ms.sh_oldpwd = g_pwd;
+	g_ms.sh_oldpwd = g_ms.pwd;
 	cwd = getcwd(NULL, 0);
 	if (cwd)
 	{
 		ft_free(&cwd);
-		g_pwd = ft_make_full_path(input_path);
+		g_ms.pwd = ft_make_full_path(input_path);
 	}
 	else
 	{
 		ft_put_cderror_no_current(errno);
-		if (g_pwd[ft_strlen(g_pwd) - 1] == '/')
-			g_pwd = ft_strjoin(g_pwd, input_path);
+		if (g_ms.pwd[ft_strlen(g_ms.pwd) - 1] == '/')
+			g_ms.pwd = ft_strjoin(g_ms.pwd, input_path);
 		else
-			g_pwd = ft_join_path(g_pwd, input_path);
+			g_ms.pwd = ft_join_path(g_ms.pwd, input_path);
 	}
 	ft_free(&g_ms.sh_pwd);
-	g_ms.sh_pwd = ft_strdup(g_pwd);
+	g_ms.sh_pwd = ft_strdup(g_ms.pwd);
 	if (!g_ms.sh_pwd)
 		return (UTIL_ERROR);
 	return (UTIL_SUCCESS);
@@ -76,8 +75,8 @@ static t_bool
 		ft_put_cmderror("cd", strerror(errno));
 		return (FALSE);
 	}
-	if (!g_pwd
-		|| (ft_getenv("PWD") && ft_setenv_sep("PWD", g_pwd) == UTIL_ERROR))
+	if (!g_ms.pwd
+		|| (ft_getenv("PWD") && ft_setenv_sep("PWD", g_ms.pwd) == UTIL_ERROR))
 	{
 		ft_put_cmderror("cd", strerror(errno));
 		return (FALSE);
@@ -101,9 +100,9 @@ int
 		return (STOP);
 	}
 	if (res == CD_PATH_SUCCESS)
-		ft_putendl_fd(g_pwd, STDOUT_FILENO);
+		ft_putendl_fd(g_ms.pwd, STDOUT_FILENO);
 	if (res == CD_PATH_SUCCESS || res == CD_SUCCESS)
-		g_status = STATUS_SUCCESS;
+		g_ms.status = STATUS_SUCCESS;
 	ft_free(path);
 	return (KEEP_RUNNING);
 }

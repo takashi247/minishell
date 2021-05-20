@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
 #include "libft.h"
 
 static int
@@ -78,7 +77,7 @@ t_bool
 		free_n_update_params(&rd, &redirect_op, &path);
 	}
 	if (res)
-		g_status = STATUS_SUCCESS;
+		g_ms.status = STATUS_SUCCESS;
 	rd = head;
 	return (res);
 }
