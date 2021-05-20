@@ -1,7 +1,7 @@
 #ifndef TEST_BUILTIN_H
 # define TEST_BUILTIN_H
 
-# include "minishell_sikeda.h"
+# include "minishell_tnishina.h"
 
 /* test_init.c */
 int	test_init_minishell(void);
