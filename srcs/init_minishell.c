@@ -22,8 +22,6 @@ int
 		}
 		g_ms.interrupted = FALSE;
 	}
-	g_ms.sh_pwd = NULL;
-	g_ms.sh_oldpwd = NULL;
 	g_err_arg = NULL;
 	g_err_msg = NULL;
 	return (UTIL_SUCCESS);
