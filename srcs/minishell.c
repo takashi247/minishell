@@ -75,6 +75,7 @@ t_command
 	return (*commands);
 }
 
+#ifndef TEST
 static t_bool
 	get_interactive_input(t_command **commands)
 {
@@ -125,3 +126,4 @@ int
 	}
 	ft_exit_n_free_g_vars(g_status);
 }
+#endif
