@@ -43,6 +43,7 @@ SRCS_TERMTEST	+= minishell_term.c
 SRCS_TERMTEST	:= $(addprefix $(SRCSDIR), $(SRCS_TERMTEST))
 
 SRCS_LEAKS		:= $(SRCSDIR)leaks.c
+OBJS_LEAKS		:= $(SRCS_LEAKS:.c=.o)
 
 ifdef LEAKS
 NAME			:= $(NAME_LEAKS)
@@ -98,7 +99,7 @@ $(LIBPATH):
 			$(MAKE) -C $(LIBDIR)
 
 clean:		## Remove all the temporary generated files.
-			$(RM) $(OBJS_PRODUCTION)
+			$(RM) $(OBJS_PRODUCTION) $(OBJS_LEAKS)
 			$(MAKE) clean -C $(LIBDIR)
 
 fclean:		clean	## `make clean' plus all the binary made with `make all'.
