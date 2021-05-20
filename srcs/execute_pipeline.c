@@ -3,21 +3,21 @@
 #include "libft.h"
 
 static void
-	dup_to_stdfd(t_command *c, t_bool pipe_flag[2], int lastpipe[2], int newpipe[2])
+	dup_to_stdfd(t_command *c, t_bool p_flag[2], int last_p[2], int new_p[2])
 {
-	if (pipe_flag[1])
+	if (p_flag[1])
 	{
-		close(lastpipe[1]);
-		if (dup2(lastpipe[0], STDIN_FILENO) < 0)
+		close(last_p[1]);
+		if (dup2(last_p[0], STDIN_FILENO) < 0)
 			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-		close(lastpipe[0]);
+		close(last_p[0]);
 	}
-	if (pipe_flag[0])
+	if (p_flag[0])
 	{
-		close(newpipe[0]);
-		if (c->args && dup2(newpipe[1], STDOUT_FILENO) < 0)
+		close(new_p[0]);
+		if (c->args && dup2(new_p[1], STDOUT_FILENO) < 0)
 			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-		close(newpipe[1]);
+		close(new_p[1]);
 	}
 }
 
@@ -64,6 +64,7 @@ static void
 	p_flag[0] = ft_is_pipe(c);
 	if (p_flag[0])
 		pipe(newpipe);
+	ft_sig_pipe();
 	pid = fork();
 	if (pid == 0)
 	{

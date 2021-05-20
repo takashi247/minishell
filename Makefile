@@ -22,6 +22,7 @@ SRCS		:= init_minishell.c \
 				execute_redirection.c replace_env.c find_n_replace_env.c \
 				replace_env_token.c reconnect_tokens.c replace_q_env.c \
 				run_commands.c execute_pipeline.c execute_builtin.c do_command.c \
+				pipe_signal.c \
 				run_commandline.c exec_cd_path.c get_cd_result.c \
 				$(HISTDIR)hlist_utils.c \
 				$(UTILDIR)command_utils.c $(UTILDIR)command_errors.c $(UTILDIR)minishell_errors.c \
