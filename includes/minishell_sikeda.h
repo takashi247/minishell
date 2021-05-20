@@ -61,22 +61,6 @@ typedef struct s_history_list
 	size_t		input_len;
 }	t_history_list;
 
-typedef struct s_minishell
-{
-	t_terminfo		terminfo;
-	struct termios	ms_term;
-	struct termios	origin_term;
-	t_bool			interrupted;
-	t_history_list	hist;
-	char			*sh_pwd;
-	char			*sh_oldpwd;
-}	t_minishell;
-
-t_minishell	g_ms;
-int			g_status;
-char		*g_pwd;
-t_list		*g_env;
-
 /* history/utils.c */
 int		ft_add_history(
 			t_history_list *hlist, const char *line, const size_t len);

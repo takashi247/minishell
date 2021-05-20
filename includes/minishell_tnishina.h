@@ -99,9 +99,24 @@ typedef struct s_command
 
 /* global variables */
 
-pid_t	g_latest_pid;
-char	*g_err_arg;
-char	*g_err_msg;
+typedef struct s_minishell
+{
+	t_terminfo		terminfo;
+	struct termios	ms_term;
+	struct termios	origin_term;
+	t_bool			interrupted;
+	t_history_list	hist;
+	char			*pwd;
+	char			*sh_pwd;
+	char			*sh_oldpwd;
+	int				status;
+	t_list			*env;
+	pid_t			latest_pid;
+	char			*err_arg;
+	char			*err_msg;
+}	t_minishell;
+
+t_minishell	g_ms;
 
 /* function declarations */
 
