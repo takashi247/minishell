@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "libft.h"
 
 static t_bool
 	has_valid_name(const char *content)

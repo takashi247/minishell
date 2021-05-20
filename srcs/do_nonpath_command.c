@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "libft.h"
 
 static void
 	set_dir_error(char *command)

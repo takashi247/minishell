@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "libft.h"
 
 t_bool
 	ft_is_space(char *l, int i, int *fl)

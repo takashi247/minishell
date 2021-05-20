@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 t_command
 	*ft_get_last_command(t_command *head)

@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "libft.h"
 
 static int
 	exit_w_quotation_error(char *cpy, t_list **tokens)

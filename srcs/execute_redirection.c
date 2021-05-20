@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "libft.h"
 
 static t_bool
 	append_redirect_out(int fd_from, char *path, int std_fds[3])

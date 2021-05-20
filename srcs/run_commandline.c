@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "libft.h"
 
 static void
 	get_commandline_input(char *input, t_command **commands)

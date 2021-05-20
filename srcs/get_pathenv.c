@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 static void
 	add_pwd_front(char **path_env)

@@ -1,6 +1,4 @@
 #include "minishell_tnishina.h"
-#include "minishell_sikeda.h"
-#include "libft.h"
 
 void
 	ft_free_strs(char **line, char **fd_array)

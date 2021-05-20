@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "libft.h"
 
 char
 	**ft_convert_list(t_list *l)

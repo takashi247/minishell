@@ -1,5 +1,4 @@
 #include "minishell_tnishina.h"
-#include "libft.h"
 
 static t_bool
 	create_empty_lst(t_list **tokens, t_list **head)
