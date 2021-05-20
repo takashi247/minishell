@@ -1,3 +1,6 @@
+#ifndef LEAKS_H
+# define LEAKS_H
+
 # ifndef LEAKS
 #  define LEAKS 0
 # endif
@@ -7,3 +10,5 @@
 void	end(void) __attribute__((destructor));
 
 # endif
+
+#endif

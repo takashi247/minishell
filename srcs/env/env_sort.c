@@ -1,4 +1,4 @@
-#include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static int
 	change_first_target_to_char(char *str, char target, char c)

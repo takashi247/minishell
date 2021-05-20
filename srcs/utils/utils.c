@@ -1,4 +1,4 @@
-#include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 void
 	*ft_realloc(void *original, size_t size, size_t original_size)
@@ -17,42 +17,6 @@ void
 	}
 	free(original);
 	return (new);
-}
-
-char
-	*ft_strndup_append_null(const char *s, size_t n)
-{
-	char	*p;
-	size_t	i;
-
-	if (!s)
-		return (NULL);
-	if (n == SIZE_MAX)
-		return (NULL);
-	p = (char *)malloc(sizeof(char) * (n + 1));
-	if (!p)
-		return (NULL);
-	i = 0;
-	while (s[i] && i < n)
-	{
-		p[i] = s[i];
-		i++;
-	}
-	p[i] = '\0';
-	return (p);
-}
-
-int
-	ft_strcmp(const char *s1, const char *s2)
-{
-	while (*s1 || *s2)
-	{
-		if (*s1 != *s2)
-			return (*(unsigned char *)s1 - *(unsigned char *)s2);
-		s1++;
-		s2++;
-	}
-	return (0);
 }
 
 int
@@ -76,4 +40,33 @@ int
 			return (0);
 	}
 	return (1);
+}
+
+char
+	**ft_convert_list(t_list *l)
+{
+	char	**argv;
+	char	**head;
+
+	if (!l)
+		return (NULL);
+	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(l) + 1));
+	if (!argv)
+		return (NULL);
+	head = argv;
+	ft_memset(argv, 0, sizeof(char *) * (ft_lstsize(l) + 1));
+	while (l)
+	{
+		*argv = ft_strdup((char *)(l->content));
+		if (!*argv)
+		{
+			ft_clear_argv(&head);
+			ft_put_error(strerror(errno));
+			return (NULL);
+		}
+		argv++;
+		l = l->next;
+	}
+	*argv = NULL;
+	return (head);
 }

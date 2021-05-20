@@ -1,4 +1,4 @@
-#include "minishell_sikeda.h"
+#include "minishell_tnishina.h"
 
 static t_history
 	*new_history(const char *line, const size_t len,
