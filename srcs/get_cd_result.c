@@ -82,6 +82,8 @@ int
 		|| ((res == CD_SUCCESS || res == CD_PATH_SUCCESS)
 			&& update_path_env(*path) == FALSE))
 	{
+		if (res == MALLOC_ERR)
+			ft_put_cmderror("cd", strerror(errno));
 		ft_free(path);
 		return (STOP);
 	}

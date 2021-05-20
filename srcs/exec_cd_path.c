@@ -22,11 +22,7 @@ static char
 		ft_free(&tmp);
 	}
 	else
-	{
 		ret = ft_strjoin(cd_path, path);
-		if (!ret)
-			return (NULL);
-	}
 	return (ret);
 }
 
