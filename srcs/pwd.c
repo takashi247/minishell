@@ -17,6 +17,7 @@ int
 		ft_free(&g_pwd);
 		return (STOP);
 	}
+	g_ms.sh_oldpwd = NULL;
 	return (KEEP_RUNNING);
 }
 
