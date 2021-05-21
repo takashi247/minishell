@@ -2,19 +2,15 @@ NAME		:= minishell
 NAME_LEAKS	:= minishell_leaks
 
 SRCSDIR		:= ./srcs/
+BUILTINDIR	:= builtins/
+ENVDIR		:= env/
 HISTDIR		:= history/
-UTILDIR		:= utils/
 TERMDIR		:= termcaps/
+UTILDIR		:= utils/
 
 SRCS		:= init_minishell.c \
 				add_space.c \
-				cd.c cd_error.c cd_path_utils.c cd_fullpath.c \
-				echo.c pwd.c exit.c \
-				env.c unset.c \
 				extract_redirect.c \
-				export.c export_print.c export_setenv.c \
-				init_env.c env_utils.c env_utils2.c \
-				env_sort.c env_copy.c \
 				get_next_line.c make_token.c make_command.c expand_env.c \
 				handle_signal.c set_redirection.c \
 				do_nonpath_command.c do_path_command.c get_pathenv.c \
@@ -23,13 +19,46 @@ SRCS		:= init_minishell.c \
 				replace_env_token.c reconnect_tokens.c replace_q_env.c \
 				run_commands.c execute_pipeline.c execute_builtin.c do_command.c \
 				pipe_signal.c \
-				run_commandline.c exec_cd_path.c get_cd_result.c \
+				run_commandline.c \
+				$(BUILTINDIR)cd/cd.c \
+				$(BUILTINDIR)cd/cd_error.c \
+				$(BUILTINDIR)cd/cd_fullpath.c \
+				$(BUILTINDIR)cd/cd_path_utils.c \
+				$(BUILTINDIR)cd/exec_cd_path.c \
+				$(BUILTINDIR)cd/get_cd_result.c \
+				$(BUILTINDIR)echo.c \
+				$(BUILTINDIR)env.c \
+				$(BUILTINDIR)exit.c \
+				$(BUILTINDIR)export.c \
+				$(BUILTINDIR)export_print.c \
+				$(BUILTINDIR)export_setenv.c \
+				$(BUILTINDIR)pwd.c \
+				$(BUILTINDIR)unset.c \
+				$(ENVDIR)env_copy.c \
+				$(ENVDIR)env_sort.c \
+				$(ENVDIR)env_utils.c \
+				$(ENVDIR)env_utils2.c \
+				$(ENVDIR)init_env.c \
+				$(TERMDIR)edit_term.c \
+				$(TERMDIR)edit_term_history.c \
+				$(TERMDIR)get_line.c \
+				$(TERMDIR)handle_keys.c \
+				$(TERMDIR)init_term.c \
+				$(TERMDIR)term_utils.c \
 				$(HISTDIR)hlist_utils.c \
-				$(UTILDIR)command_utils.c $(UTILDIR)command_errors.c $(UTILDIR)minishell_errors.c \
-				$(UTILDIR)tlist_utils.c $(UTILDIR)split_utils.c $(UTILDIR)utils_tnishina.c $(UTILDIR)utils.c \
-				$(UTILDIR)make_command_utils.c $(UTILDIR)redirection_utils.c $(UTILDIR)expand_utils.c \
-				$(TERMDIR)edit_term_history.c $(TERMDIR)edit_term.c $(TERMDIR)get_line.c \
-				$(TERMDIR)handle_keys.c $(TERMDIR)init_term.c $(TERMDIR)term_utils.c
+				$(UTILDIR)command_errors.c \
+				$(UTILDIR)command_utils.c \
+				$(UTILDIR)expand_utils.c \
+				$(UTILDIR)free_utils.c \
+				$(UTILDIR)make_command_utils.c \
+				$(UTILDIR)minishell_errors.c \
+				$(UTILDIR)minishell_utils.c \
+				$(UTILDIR)redirection_utils.c \
+				$(UTILDIR)split_utils.c \
+				$(UTILDIR)str_utils.c \
+				$(UTILDIR)tlist_utils.c \
+				$(UTILDIR)typerange_utils.c \
+				$(UTILDIR)utils.c
 SRCS_PRODUCTION	:= $(SRCS)
 SRCS_PRODUCTION	+= minishell.c
 SRCS_PRODUCTION	:= $(addprefix $(SRCSDIR), $(SRCS_PRODUCTION))
@@ -39,10 +68,6 @@ SRCS_BUILTINTEST	:= $(SRCS)
 SRCS_BUILTINTEST	+= minishell.c
 SRCS_BUILTINTEST	:= $(addprefix $(SRCSDIR), $(SRCS_BUILTINTEST))
 SRCS_BUILTINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
-
-SRCS_TERMTEST	:= $(SRCS)
-SRCS_TERMTEST	+= minishell_term.c
-SRCS_TERMTEST	:= $(addprefix $(SRCSDIR), $(SRCS_TERMTEST))
 
 SRCS_LEAKS		:= $(SRCSDIR)leaks.c
 OBJS_LEAKS		:= $(SRCS_LEAKS:.c=.o)
@@ -90,10 +115,6 @@ cdltest:	$(LIBPATH)	## Compile for cd command testing with `leaks'.
 			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D CDTEST -D LEAKS -o builtin.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
-termtest:	$(LIBPATH)	## Compile for testing terminal operations.
-			$(CC) $(CFLAGS) $(SRCS_TERMTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -o term.out
-			@echo $(C_GREEN)"=== Make Done ==="
-
 leaks:		## For leak check
 			$(MAKE) CFLAGS="$(CFLAGS) -D LEAKS=1" SRCS_PRODUCTION="$(SRCS_PRODUCTION) $(SRCS_LEAKS)" LEAKS=TRUE
 
@@ -115,4 +136,4 @@ bonus:		$(NAME)	## For bonus
 help:		## Display this help screen.
 			@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-.PHONY:		all clean fclean re bonus help btest bltest cdtest cdltest termtest leaks
+.PHONY:		all clean fclean re help btest bltest cdtest cdltest leaks

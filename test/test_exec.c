@@ -11,7 +11,7 @@ int
 	if (args[1] && ft_strcmp(args[1], "--"))
 		need_export = TRUE;
 	ret = ft_export(args++);
-	if (g_status == EXIT_SUCCESS && need_export == TRUE)
+	if (g_ms.status == EXIT_SUCCESS && need_export == TRUE)
 		ft_export((char **)export_test);
 	return (ret);
 }

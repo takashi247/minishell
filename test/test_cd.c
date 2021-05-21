@@ -7,7 +7,7 @@ int
 	int			ret;
 
 	ret = ft_cd(args);
-	if (g_status == STATUS_SUCCESS || is_nodir == TRUE)
+	if (g_ms.status == STATUS_SUCCESS || is_nodir == TRUE)
 	{
 		ft_pwd((char **)pwdargs);
 		printf("PWD: %s\n", ft_getenv("PWD"));

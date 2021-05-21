@@ -7,7 +7,7 @@ int
 		return (EXIT_FAILURE);
 	if (ft_init_pwd() == STOP)
 	{
-		ft_lstclear(&g_env, free);
+		ft_lstclear(&g_ms.env, free);
 		return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);
@@ -35,10 +35,10 @@ int
 		free(*args_head);
 		*args_head = NULL;
 	}
-	if (g_pwd)
-		ft_free(&g_pwd);
-	if (g_env)
-		ft_lstclear(&g_env, free);
+	if (g_ms.pwd)
+		ft_free(&g_ms.pwd);
+	if (g_ms.env)
+		ft_lstclear(&g_ms.env, free);
 	exec_leaks();
 	exit(exit_code);
 }
