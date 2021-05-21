@@ -69,10 +69,6 @@ SRCS_BUILTINTEST	+= minishell.c
 SRCS_BUILTINTEST	:= $(addprefix $(SRCSDIR), $(SRCS_BUILTINTEST))
 SRCS_BUILTINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
 
-SRCS_TERMTEST	:= $(SRCS)
-SRCS_TERMTEST	+= minishell_term.c
-SRCS_TERMTEST	:= $(addprefix $(SRCSDIR), $(SRCS_TERMTEST))
-
 SRCS_LEAKS		:= $(SRCSDIR)leaks.c
 OBJS_LEAKS		:= $(SRCS_LEAKS:.c=.o)
 
@@ -119,10 +115,6 @@ cdltest:	$(LIBPATH)	## Compile for cd command testing with `leaks'.
 			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D CDTEST -D LEAKS -o builtin.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
-termtest:	$(LIBPATH)	## Compile for testing terminal operations.
-			$(CC) $(CFLAGS) $(SRCS_TERMTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -o term.out
-			@echo $(C_GREEN)"=== Make Done ==="
-
 leaks:		## For leak check
 			$(MAKE) CFLAGS="$(CFLAGS) -D LEAKS=1" SRCS_PRODUCTION="$(SRCS_PRODUCTION) $(SRCS_LEAKS)" LEAKS=TRUE
 
@@ -142,4 +134,4 @@ re:			fclean $(NAME)	## `make fclean' followed by `make all'.
 help:		## Display this help screen.
 			@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
-.PHONY:		all clean fclean re help btest bltest cdtest cdltest termtest leaks
+.PHONY:		all clean fclean re help btest bltest cdtest cdltest leaks
