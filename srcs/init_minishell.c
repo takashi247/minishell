@@ -1,5 +1,23 @@
 #include "minishell_tnishina.h"
 
+#ifdef WITH_GNL
+int
+	init_minishell(int ac)
+{
+	(void)ac;
+	if (ft_init_env() == STOP)
+		return (UTIL_ERROR);
+	if (ft_init_pwd() == STOP)
+	{
+		ft_lstclear(&g_ms.env, free);
+		return (UTIL_ERROR);
+	}
+	g_ms.err_arg = NULL;
+	g_ms.err_msg = NULL;
+	return (UTIL_SUCCESS);
+}
+
+#else
 int
 	init_minishell(int ac)
 {
@@ -25,3 +43,4 @@ int
 	g_ms.err_msg = NULL;
 	return (UTIL_SUCCESS);
 }
+#endif

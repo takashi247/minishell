@@ -46,6 +46,8 @@ static void
 	while (1)
 	{
 		read_count = read(fd, *buff, BUFFER_SIZE);
+		if (read_count == EOF || read_count == 0)
+			ft_putstr_fd("  \b\b", STDERR_FILENO);
 		if (read_count < 0)
 			break ;
 		(*buff)[read_count] = '\0';

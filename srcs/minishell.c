@@ -73,7 +73,7 @@ t_command
 	return (*commands);
 }
 
-#if !defined(TEST) && !defined(CDTEST)
+#if !defined(TEST) && !defined(CDTEST) && !defined(WITH_GNL)
 static t_bool
 	get_interactive_input(t_command **commands)
 {
