@@ -55,7 +55,7 @@
 */
 
 # define MAX_FD 256
-# define BUFFER_SIZE 1024
+# define BUFFER_SIZE 1
 # define GNL_SUCCESS 1
 # define GNL_ERROR -1
 # define GNL_EOF 0
@@ -408,5 +408,11 @@ void		ft_handle_post_pipe_signal(int signal);
 
 /* init_minishell.c */
 int			init_minishell(int ac);
+
+/* ms_get_next_line.c */
+int			ft_ms_get_next_line(char **line);
+
+/* handle_signal_w_gnl.c */
+void		ft_sig_prior_w_gnl(void);
 
 #endif

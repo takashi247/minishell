@@ -20,6 +20,7 @@ SRCS		:= init_minishell.c \
 				run_commands.c execute_pipeline.c execute_builtin.c do_command.c \
 				pipe_signal.c \
 				run_commandline.c \
+				ms_get_next_line.c handle_signal_w_gnl.c \
 				$(BUILTINDIR)cd/cd.c \
 				$(BUILTINDIR)cd/cd_error.c \
 				$(BUILTINDIR)cd/cd_fullpath.c \
@@ -60,7 +61,7 @@ SRCS		:= init_minishell.c \
 				$(UTILDIR)typerange_utils.c \
 				$(UTILDIR)utils.c
 SRCS_PRODUCTION	:= $(SRCS)
-SRCS_PRODUCTION	+= minishell.c
+SRCS_PRODUCTION	+= minishell.c minishell_w_gnl.c
 SRCS_PRODUCTION	:= $(addprefix $(SRCSDIR), $(SRCS_PRODUCTION))
 OBJS_PRODUCTION	:= $(SRCS_PRODUCTION:.c=.o)
 
@@ -97,6 +98,10 @@ all:		$(NAME)	## `make' this program.
 
 $(NAME):	$(OBJS_PRODUCTION) $(LIBPATH)
 			$(CC) $(CFLAGS) $(OBJS_PRODUCTION) $(DEBUG) $(LFLAGS) -o $(NAME)
+			@echo $(C_GREEN)"=== Make Done ==="
+
+gnl:		$(LIBPATH)
+			$(CC) $(CFLAGS) $(SRCS_PRODUCTION) $(DEBUG) $(INCLUDE) $(LFLAGS) -D WITH_GNL -o minishell_gnl.out
 			@echo $(C_GREEN)"=== Make Done ==="
 
 btest:		$(LIBPATH)	## Compile for commands testing.
