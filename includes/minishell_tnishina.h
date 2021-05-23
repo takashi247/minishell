@@ -47,7 +47,7 @@
 /* redirection parameters */
 
 # define NO_FD_SETTING -1
-# define TOKEN_ERROR -2
+# define GENERAL_ERROR -2
 # define OVER_INT_RANGE -3
 
 /*
@@ -276,7 +276,7 @@ t_bool		ft_is_redirect(char *arg);
 /* utils/minishell_errors.c */
 void		ft_put_error(char *msg);
 void		ft_put_syntaxerror_with_token(char *token);
-void		ft_put_fderror(int fd_from);
+void		ft_put_fderror(int fd_from, t_bool res);
 
 /* utils/minihsell_utils.c */
 void		ft_exit_n_free_g_vars(int exit_status);
@@ -285,6 +285,8 @@ void		ft_exit_n_free_g_vars(int exit_status);
 void		ft_save_fds(t_command *c, int std_fds[3]);
 void		ft_restore_fds(t_command *c, int std_fds[3]);
 t_bool		ft_check_param_error(int fd_from, char *path, char *redirect_op);
+t_bool		ft_is_valid_path(const char *path);
+t_bool		ft_validate_path(t_list *rd, char **path, char *pre_exp, int res);
 
 /* utils/split_utils.c */
 void		ft_free_split(char ***split);
@@ -365,10 +367,10 @@ t_command	*ft_get_last_command(t_command *head);
 t_bool		ft_execute_redirection(int fd, char *op, char *path, int stdfds[3]);
 
 /* replace_env.c */
-int			ft_replace_env(t_list **args, int dq_flag, int eq_flag, int *i);
+int			ft_replace_env(t_list **args, int fl[4], int *i, t_bool is_rd);
 
 /* find_n_replace_env.c */
-int			ft_find_n_replace_env(t_list **args);
+int			ft_find_n_replace_env(t_list **args, t_bool is_redirect);
 
 /* replace_env_tokens.c */
 int			ft_replace_env_token(t_list **args, int *env_pos, int *i);
@@ -414,5 +416,8 @@ int			ft_ms_get_next_line(char **line);
 
 /* handle_signal_w_gnl.c */
 void		ft_sig_prior_w_gnl(void);
+
+/* has_env_in_path.c */
+t_bool		ft_has_env_in_path(char *path);
 
 #endif

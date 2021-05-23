@@ -66,7 +66,7 @@ static int
 */
 
 int
-	ft_find_n_replace_env(t_list **args)
+	ft_find_n_replace_env(t_list **args, t_bool is_redirect)
 {
 	int		i;
 	int		fl[4];
@@ -84,7 +84,7 @@ int
 		if (!fl[0] && !fl[3] && ((char *)(*args)->content)[i] == '$'
 			&& !(ft_is_env_name_end(((char *)(*args)->content)[i + 1])))
 		{
-			res = ft_replace_env(args, fl[1], fl[2], &i);
+			res = ft_replace_env(args, fl, &i, is_redirect);
 			if (res == FAILED || res == ENV_DELETED || res == TOKEN_DELETED)
 				return (res);
 		}

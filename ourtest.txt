@@ -53,3 +53,9 @@ whereis ls | cat -e | cat -e > test
 exit 0 0 | echo hello
 echo a | $NO_ENV | cat
 echo a | $NO_ENV | echo b
+export TEST='a b'; echo aaa >$TEST
+export TEST='a	b'; echo aaa >$TEST
+200>$NO_ENV
+200000>$NO_ENV
+20000000000000>$NO_ENV
+echo aaa > ""
