@@ -1,5 +1,7 @@
 NAME		:= minishell
 NAME_LEAKS	:= minishell_leaks
+NAME_GNL	:= minishell_gnl.out
+NAME_TEST	:= builtin.out
 
 SRCSDIR		:= ./srcs/
 BUILTINDIR	:= builtins/
@@ -8,19 +10,35 @@ HISTDIR		:= history/
 TERMDIR		:= termcaps/
 UTILDIR		:= utils/
 
-SRCS		:= init_minishell.c \
-				add_space.c \
+SRCS		:= add_space.c \
+				create_n_add_command.c \
+				do_command.c \
+				do_nonpath_command.c \
+				do_path_command.c \
+				execute_builtin.c \
+				execute_pipeline.c \
+				execute_redirection.c \
+				expand_env.c \
 				extract_redirect.c \
-				get_next_line.c make_token.c make_command.c expand_env.c \
-				handle_signal.c set_redirection.c \
-				do_nonpath_command.c do_path_command.c get_pathenv.c \
-				is_delimiter_or_quote.c create_n_add_command.c \
-				execute_redirection.c replace_env.c find_n_replace_env.c \
-				replace_env_token.c reconnect_tokens.c replace_q_env.c \
-				run_commands.c execute_pipeline.c execute_builtin.c do_command.c \
+				find_n_replace_env.c \
+				get_next_line.c \
+				get_pathenv.c \
+				handle_signal.c \
+				handle_signal_w_gnl.c \
+				init_minishell.c \
+				is_delimiter_or_quote.c \
+				make_command.c \
+				make_token.c \
+				minishell.c \
+				ms_get_next_line.c \
 				pipe_signal.c \
+				reconnect_tokens.c \
+				replace_env.c \
+				replace_env_token.c \
+				replace_q_env.c \
 				run_commandline.c \
-				ms_get_next_line.c handle_signal_w_gnl.c \
+				run_commands.c \
+				set_redirection.c \
 				$(BUILTINDIR)cd/cd.c \
 				$(BUILTINDIR)cd/cd_error.c \
 				$(BUILTINDIR)cd/cd_fullpath.c \
@@ -60,21 +78,20 @@ SRCS		:= init_minishell.c \
 				$(UTILDIR)tlist_utils.c \
 				$(UTILDIR)typerange_utils.c \
 				$(UTILDIR)utils.c
-SRCS_PRODUCTION	:= $(SRCS)
-SRCS_PRODUCTION	+= minishell.c minishell_w_gnl.c
-SRCS_PRODUCTION	:= $(addprefix $(SRCSDIR), $(SRCS_PRODUCTION))
-OBJS_PRODUCTION	:= $(SRCS_PRODUCTION:.c=.o)
+SRCS		:= $(addprefix $(SRCSDIR), $(SRCS))
+OBJS		:= $(SRCS:.c=.o)
 
-SRCS_BUILTINTEST	:= $(SRCS)
-SRCS_BUILTINTEST	+= minishell.c
-SRCS_BUILTINTEST	:= $(addprefix $(SRCSDIR), $(SRCS_BUILTINTEST))
-SRCS_BUILTINTEST	+= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
+SRCS_GNL	:= $(SRCSDIR)minishell_w_gnl.c
+OBJS_GNL	:= $(SRCS_GNL:.c=.o)
 
-SRCS_LEAKS		:= $(SRCSDIR)leaks.c
-OBJS_LEAKS		:= $(SRCS_LEAKS:.c=.o)
+SRCS_BUILTINTEST	:= test/test_builtin.c test/test_init.c test/test_exec.c test/test_launch.c test/test_cd.c
+OBJS_BUILTINTEST	:= $(SRCS_BUILTINTEST:.c=.o)
+
+SRCS_LEAKS	:= $(SRCSDIR)leaks.c
+OBJS_LEAKS	:= $(SRCS_LEAKS:.c=.o)
 
 ifdef LEAKS
-NAME			:= $(NAME_LEAKS)
+NAME		:= $(NAME_LEAKS)
 endif
 
 INCLUDE		:= -I./includes/ -I./libft/ -I./test/
@@ -96,42 +113,47 @@ C_GREEN		:= "\x1b[32m"
 
 all:		$(NAME)	## `make' this program.
 
-$(NAME):	$(OBJS_PRODUCTION) $(LIBPATH)
-			$(CC) $(CFLAGS) $(OBJS_PRODUCTION) $(DEBUG) $(LFLAGS) -o $(NAME)
+$(NAME):	$(OBJS) $(LIBPATH)
+			$(CC) $(CFLAGS) $(OBJS) $(DEBUG) $(LFLAGS) -o $(NAME)
 			@echo $(C_GREEN)"=== Make Done ==="
 
 gnl:		$(LIBPATH)
-			$(CC) $(CFLAGS) $(SRCS_PRODUCTION) $(DEBUG) $(INCLUDE) $(LFLAGS) -D WITH_GNL -o minishell_gnl.out
-			@echo $(C_GREEN)"=== Make Done ==="
+			$(RM) $(SRCSDIR)minishell.o $(SRCSDIR)init_minishell.o
+			$(MAKE) CFLAGS="$(CFLAGS) -D WITH_GNL" SRCS="$(SRCS) $(SRCS_GNL)"
+			mv $(NAME) $(NAME_GNL)
 
 btest:		$(LIBPATH)	## Compile for commands testing.
-			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -o builtin.out
-			@echo $(C_GREEN)"=== Make Done ==="
+			$(RM) $(SRCSDIR)minishell.o test/test_init.o
+			$(MAKE) CFLAGS="$(CFLAGS) -D TEST" SRCS="$(SRCS) $(SRCS_BUILTINTEST)"
+			mv $(NAME) $(NAME_TEST)
 
 bltest:		$(LIBPATH)	## Compile for commands testing with `leaks'.
-			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D TEST -D LEAKS -o builtin.out
-			@echo $(C_GREEN)"=== Make Done ==="
+			$(RM) $(SRCSDIR)minishell.o test/test_init.o
+			$(MAKE) CFLAGS="$(CFLAGS) -D TEST -D LEAKS" SRCS="$(SRCS) $(SRCS_BUILTINTEST)"
+			mv $(NAME) $(NAME_TEST)
 
 cdtest:		$(LIBPATH)	## Compile for cd command testing.
-			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D CDTEST -o builtin.out
-			@echo $(C_GREEN)"=== Make Done ==="
+			$(RM) $(SRCSDIR)minishell.o test/test_init.o
+			$(MAKE) CFLAGS="$(CFLAGS) -D CDTEST" SRCS="$(SRCS) $(SRCS_BUILTINTEST)"
+			mv $(NAME) $(NAME_TEST)
 
 cdltest:	$(LIBPATH)	## Compile for cd command testing with `leaks'.
-			$(CC) $(CFLAGS) $(SRCS_BUILTINTEST) $(DEBUG) $(INCLUDE) $(LFLAGS) -D CDTEST -D LEAKS -o builtin.out
-			@echo $(C_GREEN)"=== Make Done ==="
+			$(RM) $(SRCSDIR)minishell.o test/test_init.o
+			$(MAKE) CFLAGS="$(CFLAGS) -D CDTEST -D LEAKS" SRCS="$(SRCS) $(SRCS_BUILTINTEST)"
+			mv $(NAME) $(NAME_TEST)
 
-leaks:		## For leak check
-			$(MAKE) CFLAGS="$(CFLAGS) -D LEAKS=1" SRCS_PRODUCTION="$(SRCS_PRODUCTION) $(SRCS_LEAKS)" LEAKS=TRUE
+leaks:		$(LIBPATH)	## For leak check
+			$(MAKE) CFLAGS="$(CFLAGS) -D LEAKS=1" SRCS="$(SRCS) $(SRCS_LEAKS)" LEAKS=TRUE
 
 $(LIBPATH):
 			$(MAKE) -C $(LIBDIR)
 
 clean:		## Remove all the temporary generated files.
-			$(RM) $(OBJS_PRODUCTION) $(OBJS_LEAKS)
+			$(RM) $(OBJS) $(OBJS_LEAKS) $(OBJS_GNL) $(OBJS_BUILTINTEST)
 			$(MAKE) clean -C $(LIBDIR)
 
 fclean:		clean	## `make clean' plus all the binary made with `make all'.
-			$(RM) $(NAME)
+			$(RM) $(NAME) $(NAME_LEAKS) $(NAME_GNL) $(NAME_TEST)
 			$(MAKE) fclean -C $(LIBDIR)
 
 re:			fclean $(NAME)	## `make fclean' followed by `make all'.
