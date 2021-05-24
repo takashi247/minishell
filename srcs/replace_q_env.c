@@ -78,7 +78,7 @@ int
 		return (FAILED);
 	if (!combine_strs(content, new, tmp, i))
 		return (FAILED);
-	if (!(*content))
+	if (!(*content) || !ft_strlen(*content))
 		res = ENV_DELETED;
 	else
 		res = COMPLETED;

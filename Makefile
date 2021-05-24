@@ -39,6 +39,7 @@ SRCS		:= add_space.c \
 				run_commandline.c \
 				run_commands.c \
 				set_redirection.c \
+				has_env_in_path.c \
 				$(BUILTINDIR)cd/cd.c \
 				$(BUILTINDIR)cd/cd_error.c \
 				$(BUILTINDIR)cd/cd_fullpath.c \
