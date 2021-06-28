@@ -91,6 +91,8 @@ t_bool
 	head = rd;
 	while (rd && res)
 	{
+		if (!ft_strcmp(rd->content, HEREDOC) && !ft_heredoc(rd))
+			return (FALSE);
 		if (!set_rd_params(rd, &fd_from, &redirect_op, &path))
 			return (FALSE);
 		if (!ft_check_param_error(fd_from, path, redirect_op))

@@ -1,33 +1,36 @@
 #include "minishell_tnishina.h"
 
 void
-	put_line(const char *pre_line, size_t len)
+	ft_put_line(const char *pre_line, size_t len, t_bool is_heredoc)
 {
 	int	row;
 
 	row = g_ms.terminfo.start.row;
 	tputs(tgoto(g_ms.terminfo.def.cm, 0, row), 1, ft_putchar);
 	tputs(g_ms.terminfo.def.cd, 1, ft_putchar);
-	ft_putstr_fd(PROMPT, STDERR_FILENO);
+	if (is_heredoc)
+		ft_putstr_fd(HEREDOC_PROMPT, STDERR_FILENO);
+	else
+		ft_putstr_fd(PROMPT, STDERR_FILENO);
 	write(STDERR_FILENO, pre_line, len);
 }
 
 int
-	ft_enter(void)
+	ft_enter(t_bool is_heredoc)
 {
 	write(STDERR_FILENO, "\n", 1);
 	tputs(g_ms.terminfo.def.cr, 1, ft_putchar);
-	if (0 < g_ms.hist.input_len)
+	if (is_heredoc == FALSE && 0 < g_ms.hist.input_len)
 		ft_add_history(&g_ms.hist, g_ms.hist.input, g_ms.hist.input_len);
 	g_ms.hist.current = NULL;
 	return (GNL_EOF);
 }
 
 int
-	ft_backspace(void)
+	ft_backspace(t_bool is_heredoc)
 {
 	g_ms.hist.input_len--;
-	put_line(g_ms.hist.input, g_ms.hist.input_len);
+	ft_put_line(g_ms.hist.input, g_ms.hist.input_len, is_heredoc);
 	if (g_ms.terminfo.current.col == 1)
 	{
 		tputs(tgoto(g_ms.terminfo.def.cm, 0, g_ms.terminfo.current.row),

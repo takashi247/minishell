@@ -25,6 +25,7 @@ SRCS		:= add_space.c \
 				get_pathenv.c \
 				handle_signal.c \
 				handle_signal_w_gnl.c \
+				heredocument.c \
 				init_minishell.c \
 				is_delimiter_or_quote.c \
 				make_command.c \

@@ -15,26 +15,27 @@ static int
 **
 ** f[0]: a flag for single quotations (')
 ** f[1]: a flag for double quotations (")
-** f[2]: a flag for double arrows (>>)
+** f[2]: a flag for double right arrows (>>)
 ** f[3]: a flag for file descriptor before arrow (1>, 2>, etc.)
 ** f[4]: a flag for escape character (\)
+** f[5]: a flag for double left arrows (<<)
 */
 
 static void
-	update_c_pointer(char **l, int i, int fl[5])
+	update_c_pointer(char **l, int i, int fl[6])
 {
 	if ((*l)[i])
-		*l = *l + i + (!i || fl[0] || fl[1] || fl[2]);
+		*l = *l + i + (!i || fl[0] || fl[1] || fl[2] || fl[5]);
 	else
 		*l = *l + i;
 }
 
 static t_list
-	*tokenize_word(char *l, int i, int fl[5])
+	*tokenize_word(char *l, int i, int fl[6])
 {
 	char	*cpy;
 
-	if (i != 0 && !fl[0] && !fl[1] && !fl[2])
+	if (i != 0 && !fl[0] && !fl[1] && !fl[2] && !fl[5])
 		cpy = ft_substr(l, 0, i);
 	else
 		cpy = ft_substr(l, 0, i + 1);
@@ -48,7 +49,7 @@ int
 {
 	t_list	*n;
 	int		i;
-	int		fl[5];
+	int		fl[6];
 
 	*tokens = NULL;
 	if (!l)

@@ -20,7 +20,7 @@ static int
 }
 
 int
-	ft_get_line(char **line)
+	ft_get_line(char **line, t_bool is_heredoc)
 {
 	ssize_t	ret;
 
@@ -29,7 +29,7 @@ int
 	*line = NULL;
 	if (init_input_and_position() == GNL_ERROR)
 		return (GNL_SUCCESS);
-	ret = ft_handle_keys_loop();
+	ret = ft_handle_keys_loop(is_heredoc);
 	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.origin_term);
 	if (0 <= ret)
 		*line = ft_strndup_append_null(g_ms.hist.input, g_ms.hist.input_len);

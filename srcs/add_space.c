@@ -46,7 +46,8 @@ void
 		else if ((*l)[i] == '\"')
 			fl[1] = !fl[1];
 		if (!fl[0] && !fl[1]
-			&& ((*l)[i] == '<' || ((*l)[i] == '>' && (*l)[i + 1] != '>')))
+			&& (((*l)[i] == '<' && (*l)[i + 1] != '<')
+				|| ((*l)[i] == '>' && (*l)[i + 1] != '>')))
 		{
 			if (!add_space_after_redirect(l, &i))
 				ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);

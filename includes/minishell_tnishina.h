@@ -14,6 +14,7 @@
 # include "libft.h"
 # include <sys/stat.h>
 # include <signal.h>
+# include "t_bool.h"
 # include "termcaps.h"
 
 /*
@@ -33,12 +34,15 @@
 # define REDIRECT_IN "<"
 # define REDIRECT_OUT ">"
 # define APPEND_REDIRECT_OUT ">>"
+# define HEREDOC "<<"
 # define FD_MAX 255
 # define NEWLINE "newline"
 # define SPACE_CHARS " \t\n\v\f\r"
 # define UTIL_SUCCESS 0
 # define UTIL_ERROR -1
 # define IS_OVERFLOW -127
+# define HEREDOC_PROMPT "> "
+# define HEREDOC_PATH "/tmp/sh-thd.minihsell"
 
 /* do_command parameters */
 
@@ -81,12 +85,6 @@
 # define CMD_ENV_HELP "env"
 # define CMD_EXPORT_HELP "export [name[=value] ...]"
 # define CMD_UNSET_HELP "unset [name ...]"
-
-typedef enum e_bool
-{
-	FALSE,
-	TRUE
-}	t_bool;
 
 typedef enum e_cmd_signal
 {
@@ -362,6 +360,9 @@ t_command	*ft_create_command(t_list *token_head);
 t_bool		ft_is_operator(char c);
 void		ft_add_command(t_command **head, t_command *new);
 t_command	*ft_get_last_command(t_command *head);
+
+/* heredocument.c */
+t_bool		ft_heredoc(t_list *rd);
 
 /* execute_redirection.c */
 t_bool		ft_execute_redirection(int fd, char *op, char *path, int stdfds[3]);
