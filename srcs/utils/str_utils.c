@@ -14,7 +14,7 @@ char
 	if (!p)
 		return (NULL);
 	i = 0;
-	while (s[i] && i < n)
+	while (i < n && s[i])
 	{
 		p[i] = s[i];
 		i++;
