@@ -1,33 +1,5 @@
 #include "minishell_tnishina.h"
 
-static char
-	*get_delimiter(const char *s)
-{
-	char		*delimiter;
-	char		*delimiter_head;
-	const char	*ptr;
-	size_t		len;
-
-	// TODO: E"'O'"F のようなトークンは E'O'F にする必要があるためこの実装は不十分
-	len = 0;
-	ptr = s;
-	while (*ptr)
-		if (*ptr++ != '\'')
-			len++;
-	delimiter = (char *)malloc(len + 1);
-	if (!delimiter)
-		return (NULL);
-	delimiter_head = delimiter;
-	while (*s)
-	{
-		if (*s != '\'')
-			*delimiter++ = *s;
-		s++;
-	}
-	*delimiter = '\0';
-	return (delimiter_head);
-}
-
 t_bool
 	ft_heredoc(t_list *rd)
 {
@@ -37,12 +9,14 @@ t_bool
 	int		fd;
 
 	no_expand_flg = FALSE;
-	if (ft_strchr((char *)(rd->next->content), '\'')
-		|| ft_strchr((char *)(rd->next->content), '\"'))
+	delimiter = (char *)(rd->next->content);
+	if (ft_strchr(delimiter, '\'') || ft_strchr(delimiter, '\"'))
 		no_expand_flg = TRUE;
-	delimiter = get_delimiter((char *)(rd->next->content));
-	if (!delimiter)
+	if (ft_expand_quotation(&delimiter) == FALSE)
+	{
+		g_ms.status = STATUS_GENERAL_ERR;
 		return (FALSE);
+	}
 	fd = open(HEREDOC_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (fd < 0)
 	{
@@ -66,6 +40,5 @@ t_bool
 		write(fd, "\n", 1);
 	}
 	close(fd);
-	ft_free(&delimiter);
 	return (TRUE);
 }
