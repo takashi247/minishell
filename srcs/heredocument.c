@@ -24,21 +24,19 @@ t_bool
 		g_ms.status = STATUS_GENERAL_ERR;
 		return (FALSE);
 	}
-	while (1)
+	if (ft_get_line(&line, TRUE) == GNL_ERROR)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	while (ft_strcmp(line, delimiter))
 	{
-		if (ft_get_line(&line, TRUE) == GNL_ERROR)
-			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
-		if (!ft_strcmp(line, delimiter))
-		{
-			ft_free(&line);
-			break ;
-		}
 		// if (no_expand_flg == FALSE)
 			// TODO: 変数展開
 		write(fd, line, ft_strlen(line));
-		ft_free(&line);
 		write(fd, "\n", 1);
+		ft_free(&line);
+		if (ft_get_line(&line, TRUE) == GNL_ERROR)
+			ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	}
+	ft_free(&line);
 	close(fd);
 	return (TRUE);
 }

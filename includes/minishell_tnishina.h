@@ -42,7 +42,7 @@
 # define UTIL_ERROR -1
 # define IS_OVERFLOW -127
 # define HEREDOC_PROMPT "> "
-# define HEREDOC_PATH "/tmp/sh-thd.minihsell"
+# define HEREDOC_PATH "/tmp/sh-thd.minishell"
 
 /* do_command parameters */
 
@@ -328,7 +328,13 @@ int			ft_expand_env_var(t_command *c);
 void		ft_sig_prior(void);
 void		ft_sig_post(void);
 
+/* set_rd_params.c */
+t_bool		ft_set_rd_params_for_heredoc(
+				t_list *rd, int *fd_from, char **op, char **path);
+t_bool		ft_set_rd_params(t_list *rd, int *fd_from, char **op, char **path);
+
 /* set_redirection.c */
+void		ft_free_n_update_params(t_list **rd, char **op, char **path);
 t_bool		ft_set_redirection(t_list *rd, int std_fds[3]);
 
 /* add_space.c */
