@@ -58,6 +58,30 @@ static int
 	return (COMPLETED);
 }
 
+int
+	ft_expand_env_for_heredoc(t_list **args)
+{
+	int	fl[4];
+	int	res;
+	int	i;
+
+	i = 0;
+	ft_memset(fl, 0, sizeof(fl));
+	while ((*args)->content && ((char *)(*args)->content)[i])
+	{
+		if (((char *)(*args)->content)[i] == '$'
+			&& !(ft_is_env_name_end(((char *)(*args)->content)[i + 1])))
+		{
+			res = ft_replace_env(args, fl, &i, FALSE);
+			if (res == FAILED || res == ENV_DELETED || res == TOKEN_DELETED)
+				return (res);
+		}
+		else
+			i++;
+	}
+	return (COMPLETED);
+}
+
 /*
 ** ft_expand_quotation() is ft_find_n_replace_env() without env-var expansion
 **

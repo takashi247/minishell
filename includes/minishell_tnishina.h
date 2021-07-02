@@ -377,8 +377,9 @@ t_bool		ft_execute_redirection(int fd, char *op, char *path, int stdfds[3]);
 int			ft_replace_env(t_list **args, int fl[4], int *i, t_bool is_rd);
 
 /* find_n_replace_env.c */
-int			ft_find_n_replace_env(t_list **args, t_bool is_redirect);
+int			ft_expand_env_for_heredoc(t_list **args);
 int			ft_expand_quotation(char **s);
+int			ft_find_n_replace_env(t_list **args, t_bool is_redirect);
 
 /* replace_env_tokens.c */
 int			ft_replace_env_token(t_list **args, int *env_pos, int *i);
