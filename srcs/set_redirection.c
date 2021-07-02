@@ -9,22 +9,20 @@ void
 		*rd = (*rd)->next->next;
 }
 
-t_bool
-	ft_set_redirection(t_list *rd, int std_fds[3])
+static t_bool
+	set_redirection_loop(t_list *rd, int std_fds[3])
 {
 	int		fd_from;
 	char	*path;
 	char	*redirect_op;
 	t_bool	res;
-	t_list	*head;
 
 	res = TRUE;
-	head = rd;
 	while (rd && res)
 	{
 		if (!ft_strcmp(rd->content, HEREDOC))
 		{
-			if (!ft_heredoc(rd) || !ft_set_rd_params_for_heredoc(
+			if (!ft_set_rd_params_for_heredoc(
 					rd, &fd_from, &redirect_op, &path))
 				return (FALSE);
 		}
@@ -36,8 +34,18 @@ t_bool
 			res = FALSE;
 		ft_free_n_update_params(&rd, &redirect_op, &path);
 	}
+	return (res);
+}
+
+t_bool
+	ft_set_redirection(t_list *rd, int std_fds[3])
+{
+	t_bool	res;
+
+	if (ft_execute_all_heredoc(rd) == FALSE)
+		return (FALSE);
+	res = set_redirection_loop(rd, std_fds);
 	if (res)
 		g_ms.status = STATUS_SUCCESS;
-	rd = head;
 	return (res);
 }

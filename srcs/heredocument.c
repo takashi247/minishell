@@ -1,7 +1,7 @@
 #include "minishell_tnishina.h"
 
-t_bool
-	ft_heredoc(t_list *rd)
+static t_bool
+	heredoc(t_list *rd)
 {
 	char	*delimiter;
 	char	*line;
@@ -38,5 +38,17 @@ t_bool
 	}
 	ft_free(&line);
 	close(fd);
+	return (TRUE);
+}
+
+t_bool
+	ft_execute_all_heredoc(t_list *rd)
+{
+	while (rd)
+	{
+		if (!ft_strcmp(rd->content, HEREDOC) && !heredoc(rd))
+			return (FALSE);
+		rd = rd->next->next;
+	}
 	return (TRUE);
 }
