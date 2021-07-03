@@ -28,7 +28,8 @@ static int
 		if (res != FAILED)
 			ft_putendl_fd(tmp->content, fd);
 		ft_lstclear(&tmp, free);
-		if (res && ft_get_line(&line, TRUE) == GNL_ERROR)
+		line = NULL;
+		if (res != FAILED && ft_get_line(&line, TRUE) == GNL_ERROR)
 			close_n_exit(fd);
 	}
 	ft_free(&line);
