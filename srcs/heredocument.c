@@ -8,7 +8,20 @@ static void
 }
 
 static int
-	get_n_write_heredoc_line(int fd, const char *delimiter)
+	write_heredoc_line(int fd, t_list *tmp, int no_expand_flg)
+{
+	int	res;
+
+	res = COMPLETED;
+	if (no_expand_flg == FALSE)
+		res = ft_expand_env_for_heredoc(&tmp);
+	if (res != FAILED)
+		ft_putendl_fd(tmp->content, fd);
+	return (res);
+}
+
+static int
+	get_n_write_heredoc_line(int fd, const char *delimiter, int no_expand_flg)
 {
 	char	*line;
 	t_list	*tmp;
@@ -16,7 +29,8 @@ static int
 
 	if (ft_get_line(&line, TRUE) == GNL_ERROR)
 		close_n_exit(fd);
-	while (line && ft_strcmp(line, delimiter))
+	res = COMPLETED;
+	while (res != FAILED && ft_strcmp(line, delimiter))
 	{
 		tmp = ft_lstnew(line);
 		if (!tmp)
@@ -24,11 +38,8 @@ static int
 			ft_free(&line);
 			close_n_exit(fd);
 		}
-		res = ft_expand_env_for_heredoc(&tmp);
-		if (res != FAILED)
-			ft_putendl_fd(tmp->content, fd);
+		res = write_heredoc_line(fd, tmp, no_expand_flg);
 		ft_lstclear(&tmp, free);
-		line = NULL;
 		if (res != FAILED && ft_get_line(&line, TRUE) == GNL_ERROR)
 			close_n_exit(fd);
 	}
@@ -60,7 +71,7 @@ static t_bool
 		g_ms.status = STATUS_GENERAL_ERR;
 		return (FALSE);
 	}
-	if (get_n_write_heredoc_line(fd, delimiter) == FAILED)
+	if (get_n_write_heredoc_line(fd, delimiter, no_expand_flg) == FAILED)
 		return (FALSE);
 	return (TRUE);
 }
