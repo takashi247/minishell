@@ -77,13 +77,25 @@ static t_bool
 }
 
 t_bool
-	ft_execute_all_heredoc(t_list *rd)
+	ft_execute_all_heredoc(t_command *command)
 {
-	while (rd)
+	t_list	*rd_head;
+	t_bool	res;
+
+	res = TRUE;
+	while (res == TRUE && command)
 	{
-		if (!ft_strcmp(rd->content, HEREDOC) && !heredoc(rd))
-			return (FALSE);
-		rd = rd->next->next;
+		rd_head = command->redirects;
+		while (res == TRUE && command->redirects)
+		{
+			if (!ft_strcmp(command->redirects->content, HEREDOC)
+				&& !heredoc(command->redirects))
+				res = FALSE;
+			else
+				command->redirects = command->redirects->next->next;
+		}
+		command->redirects = rd_head;
+		command = command->next;
 	}
-	return (TRUE);
+	return (res);
 }

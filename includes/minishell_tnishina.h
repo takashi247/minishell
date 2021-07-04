@@ -368,7 +368,7 @@ void		ft_add_command(t_command **head, t_command *new);
 t_command	*ft_get_last_command(t_command *head);
 
 /* heredocument.c */
-t_bool		ft_execute_all_heredoc(t_list *rd);
+t_bool		ft_execute_all_heredoc(t_command *command);
 
 /* execute_redirection.c */
 t_bool		ft_execute_redirection(int fd, char *op, char *path, int stdfds[3]);
