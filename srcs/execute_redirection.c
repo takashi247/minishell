@@ -94,6 +94,8 @@ t_bool
 		return (append_redirect_out(fd, path, stdfds));
 	else if (!(ft_strcmp(op, REDIRECT_OUT)))
 		return (redirect_out(fd, path, stdfds));
+	else if (!(ft_strcmp(op, HEREDOC)))
+		return (redirect_in(fd, HEREDOC_PATH, stdfds));
 	else if (!(ft_strcmp(op, REDIRECT_IN)))
 		return (redirect_in(fd, path, stdfds));
 	else

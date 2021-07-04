@@ -58,6 +58,61 @@ static int
 	return (COMPLETED);
 }
 
+int
+	ft_expand_env_for_heredoc(t_list **args)
+{
+	int	fl[4];
+	int	res;
+	int	i;
+
+	i = 0;
+	ft_memset(fl, 0, sizeof(fl));
+	while ((*args)->content && ((char *)(*args)->content)[i])
+	{
+		if (((char *)(*args)->content)[i] == '$'
+			&& !(ft_is_env_name_end(((char *)(*args)->content)[i + 1])))
+		{
+			res = ft_replace_env(args, fl, &i, FALSE);
+			if (res == FAILED || res == ENV_DELETED || res == TOKEN_DELETED)
+				return (res);
+		}
+		else
+			i++;
+	}
+	return (COMPLETED);
+}
+
+/*
+** ft_expand_quotation() is ft_find_n_replace_env() without env-var expansion
+**
+** fl[0]: a flag for single quotations ('\'')
+** fl[1]: a flag for double quotations ('\"')
+** fl[2]: a flag for equal signs ('=')
+** fl[3]: a flag for backslashes ('\\')
+*/
+
+int
+	ft_expand_quotation(char **s)
+{
+	int	i;
+	int	fl[4];
+	int	res;
+
+	i = 0;
+	ft_memset(fl, 0, sizeof(fl));
+	while (*s && (*s)[i])
+	{
+		res = check_conditions(s, &i, fl);
+		if (res == CONDITIONS_MET)
+			continue ;
+		else if (res == FAILED)
+			return (res);
+		i++;
+		fl[3] = 0;
+	}
+	return (COMPLETED);
+}
+
 /*
 ** fl[0]: a flag for single quotations ('\'')
 ** fl[1]: a flag for double quotations ('\"')
@@ -68,9 +123,9 @@ static int
 int
 	ft_find_n_replace_env(t_list **args, t_bool is_redirect)
 {
-	int		i;
-	int		fl[4];
-	int		res;
+	int	i;
+	int	fl[4];
+	int	res;
 
 	i = 0;
 	ft_memset(fl, 0, sizeof(fl));

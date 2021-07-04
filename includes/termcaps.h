@@ -4,6 +4,7 @@
 # include <term.h>
 # include <termios.h>
 # include <sys/ioctl.h>
+# include "t_bool.h"
 
 # define C_EOF 4
 # define C_ESC 27
@@ -67,20 +68,20 @@ typedef struct s_terminfo
 int		ft_init_term(void);
 
 /* edit_term.c */
-void	put_line(const char *pre_line, size_t len);
-int		ft_enter(void);
-int		ft_backspace(void);
+void	ft_put_line(const char *pre_line, size_t len, t_bool is_heredoc);
+int		ft_enter(t_bool is_heredoc);
+int		ft_backspace(t_bool is_heredoc);
 int		ft_input_char(const char *buf, size_t *allocated);
 
 /* edit_term_history.c */
-int		ft_up_history(size_t *allocated);
-int		ft_down_history(size_t *allocated);
+int		ft_up_history(size_t *allocated, t_bool is_heredoc);
+int		ft_down_history(size_t *allocated, t_bool is_heredoc);
 
 /* get_line.c */
-int		ft_get_line(char **line);
+int		ft_get_line(char **line, t_bool is_heredoc);
 
 /* handle_keys.c */
-int		ft_handle_keys_loop(void);
+int		ft_handle_keys_loop(t_bool is_herecoc);
 
 /* term_utils.c */
 int		ft_putchar(int c);

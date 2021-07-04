@@ -68,6 +68,8 @@ t_bool
 	int		i;
 	int		fl[4];
 
+	if (!path)
+		return (FALSE);
 	i = 0;
 	ft_memset(fl, 0, sizeof(fl));
 	while (path[i])

@@ -14,6 +14,7 @@
 # include "libft.h"
 # include <sys/stat.h>
 # include <signal.h>
+# include "t_bool.h"
 # include "termcaps.h"
 
 /*
@@ -33,12 +34,15 @@
 # define REDIRECT_IN "<"
 # define REDIRECT_OUT ">"
 # define APPEND_REDIRECT_OUT ">>"
+# define HEREDOC "<<"
 # define FD_MAX 255
 # define NEWLINE "newline"
 # define SPACE_CHARS " \t\n\v\f\r"
 # define UTIL_SUCCESS 0
 # define UTIL_ERROR -1
 # define IS_OVERFLOW -127
+# define HEREDOC_PROMPT "> "
+# define HEREDOC_PATH "/tmp/sh-thd.minishell"
 
 /* do_command parameters */
 
@@ -81,12 +85,6 @@
 # define CMD_ENV_HELP "env"
 # define CMD_EXPORT_HELP "export [name[=value] ...]"
 # define CMD_UNSET_HELP "unset [name ...]"
-
-typedef enum e_bool
-{
-	FALSE,
-	TRUE
-}	t_bool;
 
 typedef enum e_cmd_signal
 {
@@ -330,7 +328,13 @@ int			ft_expand_env_var(t_command *c);
 void		ft_sig_prior(void);
 void		ft_sig_post(void);
 
+/* set_rd_params.c */
+t_bool		ft_set_rd_params_for_heredoc(
+				t_list *rd, int *fd_from, char **op, char **path);
+t_bool		ft_set_rd_params(t_list *rd, int *fd_from, char **op, char **path);
+
 /* set_redirection.c */
+void		ft_free_n_update_params(t_list **rd, char **op, char **path);
 t_bool		ft_set_redirection(t_list *rd, int std_fds[3]);
 
 /* add_space.c */
@@ -363,6 +367,9 @@ t_bool		ft_is_operator(char c);
 void		ft_add_command(t_command **head, t_command *new);
 t_command	*ft_get_last_command(t_command *head);
 
+/* heredocument.c */
+t_bool		ft_execute_all_heredoc(t_list *rd);
+
 /* execute_redirection.c */
 t_bool		ft_execute_redirection(int fd, char *op, char *path, int stdfds[3]);
 
@@ -370,6 +377,8 @@ t_bool		ft_execute_redirection(int fd, char *op, char *path, int stdfds[3]);
 int			ft_replace_env(t_list **args, int fl[4], int *i, t_bool is_rd);
 
 /* find_n_replace_env.c */
+int			ft_expand_env_for_heredoc(t_list **args);
+int			ft_expand_quotation(char **s);
 int			ft_find_n_replace_env(t_list **args, t_bool is_redirect);
 
 /* replace_env_tokens.c */

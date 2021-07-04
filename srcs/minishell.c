@@ -81,7 +81,7 @@ static t_bool
 	t_bool		res;
 
 	ft_sig_prior();
-	if (ft_get_line(&line) == GNL_ERROR)
+	if (ft_get_line(&line, FALSE) == GNL_ERROR)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	ft_sig_post();
 	if (ft_is_end_with_escape(line))

@@ -25,6 +25,7 @@ SRCS		:= add_space.c \
 				get_pathenv.c \
 				handle_signal.c \
 				handle_signal_w_gnl.c \
+				heredocument.c \
 				init_minishell.c \
 				is_delimiter_or_quote.c \
 				make_command.c \
@@ -38,6 +39,7 @@ SRCS		:= add_space.c \
 				replace_q_env.c \
 				run_commandline.c \
 				run_commands.c \
+				set_rd_params.c \
 				set_redirection.c \
 				has_env_in_path.c \
 				$(BUILTINDIR)cd/cd.c \
