@@ -10,6 +10,8 @@ static int
 		g_ms.hist.input_len = ft_strlen("exit");
 		ft_free(&g_ms.hist.input);
 		g_ms.hist.input = ft_strdup("exit");
+		if (is_heredoc)
+			return (GNL_HEREDOC_EOF);
 		return (GNL_EOF);
 	}
 	else if (*buf == '\n' || *buf == '\r')

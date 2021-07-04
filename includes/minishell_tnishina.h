@@ -63,6 +63,7 @@
 # define GNL_SUCCESS 1
 # define GNL_ERROR -1
 # define GNL_EOF 0
+# define GNL_HEREDOC_EOF -2
 
 /*
 ** Error messages

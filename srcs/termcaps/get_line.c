@@ -35,6 +35,8 @@ int
 		*line = ft_strndup_append_null(g_ms.hist.input, g_ms.hist.input_len);
 	ft_free(&g_ms.hist.input);
 	g_ms.hist.input_len = 0;
+	if (ret == GNL_HEREDOC_EOF)
+		return (GNL_HEREDOC_EOF);
 	if ((0 <= ret && !*line) || ret < 0)
 	{
 		if (ret != IS_OVERFLOW)
