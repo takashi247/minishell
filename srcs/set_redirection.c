@@ -42,8 +42,6 @@ t_bool
 {
 	t_bool	res;
 
-	if (ft_execute_all_heredoc(rd) == FALSE)
-		return (FALSE);
 	res = set_redirection_loop(rd, std_fds);
 	if (res)
 		g_ms.status = STATUS_SUCCESS;

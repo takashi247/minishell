@@ -77,13 +77,14 @@ t_command
 static t_bool
 	get_interactive_input(t_command **commands)
 {
-	char		*line;
-	t_bool		res;
+	char	*line;
+	t_bool	res;
 
 	ft_sig_prior();
 	if (ft_get_line(&line, FALSE) == GNL_ERROR)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	ft_sig_post();
+	res = TRUE;
 	if (ft_is_end_with_escape(line))
 	{
 		ft_put_cmderror("\\", MULTILINE_ERROR_MSG);
@@ -91,11 +92,10 @@ static t_bool
 		res = FALSE;
 	}
 	else
-	{
 		ft_convert_line(&line, commands);
-		res = TRUE;
-	}
 	ft_free(&line);
+	if (res == TRUE)
+		res = ft_execute_all_heredoc((*commands));
 	return (res);
 }
 
