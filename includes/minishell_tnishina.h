@@ -64,6 +64,7 @@
 # define GNL_ERROR -1
 # define GNL_EOF 0
 # define GNL_HEREDOC_EOF -2
+# define GNL_HEREDOC_SIGINT -3
 
 /*
 ** Error messages
@@ -155,6 +156,7 @@ typedef struct s_minishell
 	struct termios	ms_term;
 	struct termios	origin_term;
 	t_bool			interrupted;
+	char			interrupted_buf[4];
 	t_history_list	hist;
 	char			*pwd;
 	char			*sh_pwd;

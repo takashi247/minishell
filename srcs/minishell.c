@@ -119,6 +119,8 @@ int
 			ft_run_commands(commands, &res);
 			ft_clear_commands(&commands);
 		}
+		else if (g_ms.interrupted == TRUE)
+			ft_clear_commands(&commands);
 		if (res == EXIT || res == EXIT_NON_NUMERIC)
 			break ;
 	}

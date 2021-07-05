@@ -45,6 +45,8 @@ static int
 			get_res = ft_get_line(&line, TRUE);
 	}
 	free_n_close(&line, fd, FALSE);
+	if (get_res == GNL_HEREDOC_SIGINT)
+		return (FAILED);
 	if (get_res == GNL_ERROR)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	return (write_res);
@@ -84,6 +86,7 @@ t_bool
 	t_list	*rd_head;
 	t_bool	res;
 
+	ft_sig_prior();
 	res = TRUE;
 	while (res == TRUE && command)
 	{
@@ -99,5 +102,6 @@ t_bool
 		command->redirects = rd_head;
 		command = command->next;
 	}
+	ft_sig_post();
 	return (res);
 }

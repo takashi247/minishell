@@ -9,6 +9,7 @@ static void
 		ft_putstr_fd(PROMPT, STDERR_FILENO);
 		g_ms.interrupted = TRUE;
 		g_ms.status = 1;
+		g_ms.hist.input_len = 0;
 	}
 }
 
