@@ -77,7 +77,6 @@ static t_bool
 	}
 	if (get_n_write_heredoc_line(fd, delimiter, no_expand_flg) == FAILED)
 		return (ft_free_n_return(&delimiter, FALSE));
-	ft_free(&delimiter);
 	return (ft_free_n_return(&delimiter, TRUE));
 }
 
