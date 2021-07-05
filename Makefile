@@ -105,8 +105,8 @@ LFLAGS		:= -L${LIBDIR} -lft -lcurses
 
 CC			:= gcc
 CFLAGS		:= -Wall -Wextra -Werror
-# DEBUG		:= -g -fsanitize=address
-DEBUG		:=
+DEBUG		:= -g -fsanitize=address
+# DEBUG		:=
 
 RM			:= rm -f
 C_GREEN		:= "\x1b[32m"

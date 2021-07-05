@@ -60,24 +60,25 @@ static t_bool
 	int		fd;
 
 	no_expand_flg = FALSE;
-	delimiter = (char *)(rd->next->content);
+	delimiter = ft_strdup((char *)(rd->next->content));
 	if (ft_strchr(delimiter, '\'') || ft_strchr(delimiter, '\"'))
 		no_expand_flg = TRUE;
 	if (ft_expand_quotation(&delimiter) == FALSE)
 	{
 		g_ms.status = STATUS_GENERAL_ERR;
-		return (FALSE);
+		return (ft_free_n_return(&delimiter, FALSE));
 	}
 	fd = open(HEREDOC_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (fd < 0)
 	{
 		ft_put_cmderror(HEREDOC_PATH, strerror(errno));
 		g_ms.status = STATUS_GENERAL_ERR;
-		return (FALSE);
+		return (ft_free_n_return(&delimiter, FALSE));
 	}
 	if (get_n_write_heredoc_line(fd, delimiter, no_expand_flg) == FAILED)
-		return (FALSE);
-	return (TRUE);
+		return (ft_free_n_return(&delimiter, FALSE));
+	ft_free(&delimiter);
+	return (ft_free_n_return(&delimiter, TRUE));
 }
 
 t_bool

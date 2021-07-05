@@ -267,6 +267,7 @@ t_bool		ft_is_env_name_end(char c);
 /* utils/free_utils.c */
 void		ft_clear_argv(char ***argv);
 void		ft_free(char **ptr);
+int			ft_free_n_return(char **ptr, int return_value);
 
 /* utils/make_command_utils.c */
 void		ft_clear_commands(t_command **c);

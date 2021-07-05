@@ -23,3 +23,11 @@ void
 		free(*ptr);
 	*ptr = NULL;
 }
+
+int
+	ft_free_n_return(char **ptr, int return_value)
+{
+	if (ptr)
+		ft_free(ptr);
+	return (return_value);
+}
