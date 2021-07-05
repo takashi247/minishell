@@ -83,8 +83,6 @@ static t_bool
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	if (fd_to != fd_from)
 		close(fd_to);
-	if (!(ft_strcmp(path, HEREDOC_PATH)))
-		unlink(HEREDOC_PATH);
 	return (TRUE);
 }
 
