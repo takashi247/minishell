@@ -35,7 +35,7 @@ int
 		*line = ft_strndup_append_null(g_ms.hist.input, g_ms.hist.input_len);
 	ft_free(&g_ms.hist.input);
 	g_ms.hist.input_len = 0;
-	if (ret == GNL_HEREDOC_EOF || ret == GNL_HEREDOC_SIGINT)
+	if (ret == GNL_HEREDOC_EOF || ret == GNL_SIGINT)
 		return (ret);
 	if ((0 <= ret && !*line) || ret < 0)
 	{

@@ -36,6 +36,20 @@ static char
 		return (PROMPT);
 }
 
+static int
+	handle_put_prompt(size_t *allocated, t_bool is_heredoc)
+{
+	int	ret;
+
+	ret = 1;
+	if (g_ms.interrupted == TRUE)
+		ret = handle_keys(g_ms.interrupted_buf, allocated, is_heredoc);
+	else
+		ft_putstr_fd(get_prompt(is_heredoc), STDERR_FILENO);
+	g_ms.interrupted = FALSE;
+	return (ret);
+}
+
 int
 	ft_handle_keys_loop(t_bool is_heredoc)
 {
@@ -46,28 +60,16 @@ int
 	ft_bzero(buf, sizeof(buf));
 	allocated = BUFFER_SIZE;
 	g_ms.hist.current = NULL;
-	ret = 1;
-	if (g_ms.interrupted == TRUE)
-	{
-		ret = handle_keys(g_ms.interrupted_buf, &allocated, is_heredoc);
-		if (ret < 0 || ret == GNL_EOF)
-			return (ret);
-	}
-	else
-		ft_putstr_fd(get_prompt(is_heredoc), STDERR_FILENO);
-	g_ms.interrupted = FALSE;
+	ret = handle_put_prompt(&allocated, is_heredoc);
+	if (ret < 0 || ret == GNL_EOF)
+		return (ret);
 	ret = read(STDIN_FILENO, buf, sizeof(buf) / sizeof(buf[0]));
 	while (0 <= ret)
 	{
 		if (g_ms.interrupted == TRUE)
 		{
-			g_ms.hist.input_len = 0;
-			if (is_heredoc == TRUE)
-			{
-				ft_memcpy(g_ms.interrupted_buf, buf, sizeof(buf));
-				return (GNL_HEREDOC_SIGINT);
-			}
-			g_ms.interrupted = FALSE;
+			ft_memcpy(g_ms.interrupted_buf, buf, sizeof(buf));
+			return (GNL_SIGINT);
 		}
 		ret = handle_keys(buf, &allocated, is_heredoc);
 		if (ret < 0 || ret == GNL_EOF)

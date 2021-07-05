@@ -45,7 +45,7 @@ static int
 			get_res = ft_get_line(&line, TRUE);
 	}
 	free_n_close(&line, fd, FALSE);
-	if (get_res == GNL_HEREDOC_SIGINT)
+	if (get_res == GNL_SIGINT)
 		return (FAILED);
 	if (get_res == GNL_ERROR)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
