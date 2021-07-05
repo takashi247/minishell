@@ -86,6 +86,7 @@ static t_bool
 	if (get_res == GNL_ERROR)
 		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 	ft_sig_post();
+	*commands = NULL;
 	if (get_res == GNL_SIGINT)
 		return (FALSE);
 	res = TRUE;
@@ -123,7 +124,7 @@ int
 			ft_run_commands(commands, &res);
 			ft_clear_commands(&commands);
 		}
-		else if (g_ms.interrupted == TRUE)
+		else if (g_ms.interrupted == TRUE && commands)
 			ft_clear_commands(&commands);
 		if (res == EXIT || res == EXIT_NON_NUMERIC)
 			break ;
