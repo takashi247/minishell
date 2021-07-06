@@ -32,6 +32,7 @@ void
 		delone_command(&prev);
 	}
 	*c = NULL;
+	unlink(HEREDOC_PATH);
 }
 
 int

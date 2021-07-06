@@ -61,9 +61,8 @@ static t_bool
 static t_bool
 	redirect_in(int fd_from, char *path, int std_fds[3])
 {
-	int	fd_to;
+	const int	fd_to = open(path, O_RDONLY);
 
-	fd_to = open(path, O_RDONLY);
 	if (fd_to < 0)
 	{
 		ft_put_cmderror(path, strerror(errno));
