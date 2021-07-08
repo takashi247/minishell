@@ -63,6 +63,8 @@
 # define GNL_SUCCESS 1
 # define GNL_ERROR -1
 # define GNL_EOF 0
+# define GNL_HEREDOC_EOF -2
+# define GNL_SIGINT -3
 
 /*
 ** Error messages
@@ -154,6 +156,7 @@ typedef struct s_minishell
 	struct termios	ms_term;
 	struct termios	origin_term;
 	t_bool			interrupted;
+	char			interrupted_buf[4];
 	t_history_list	hist;
 	char			*pwd;
 	char			*sh_pwd;
@@ -264,6 +267,7 @@ t_bool		ft_is_env_name_end(char c);
 /* utils/free_utils.c */
 void		ft_clear_argv(char ***argv);
 void		ft_free(char **ptr);
+int			ft_free_n_return(char **ptr, int return_value);
 
 /* utils/make_command_utils.c */
 void		ft_clear_commands(t_command **c);

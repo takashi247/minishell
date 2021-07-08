@@ -1,10 +1,13 @@
 #include "minishell_tnishina.h"
 
 static void
-	close_n_exit(int fd)
+	free_n_close(char **line, int fd, t_bool should_exit)
 {
+	if (line)
+		ft_free(line);
 	close(fd);
-	ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	if (should_exit == TRUE)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
 }
 
 static int
@@ -25,27 +28,28 @@ static int
 {
 	char	*line;
 	t_list	*tmp;
-	int		res;
+	int		get_res;
+	int		write_res;
 
-	if (ft_get_line(&line, TRUE) == GNL_ERROR)
-		close_n_exit(fd);
-	res = COMPLETED;
-	while (res != FAILED && ft_strcmp(line, delimiter))
+	get_res = ft_get_line(&line, TRUE);
+	write_res = COMPLETED;
+	while (write_res != FAILED && 0 < get_res && ft_strcmp(line, delimiter))
 	{
 		tmp = ft_lstnew(line);
 		if (!tmp)
-		{
-			ft_free(&line);
-			close_n_exit(fd);
-		}
-		res = write_heredoc_line(fd, tmp, no_expand_flg);
+			free_n_close(&line, fd, TRUE);
+		write_res = write_heredoc_line(fd, tmp, no_expand_flg);
 		ft_lstclear(&tmp, free);
-		if (res != FAILED && ft_get_line(&line, TRUE) == GNL_ERROR)
-			close_n_exit(fd);
+		line = NULL;
+		if (write_res != FAILED)
+			get_res = ft_get_line(&line, TRUE);
 	}
-	ft_free(&line);
-	close(fd);
-	return (res);
+	free_n_close(&line, fd, FALSE);
+	if (get_res == GNL_SIGINT)
+		return (FAILED);
+	if (get_res == GNL_ERROR)
+		ft_exit_n_free_g_vars(STATUS_GENERAL_ERR);
+	return (write_res);
 }
 
 static t_bool
@@ -56,24 +60,24 @@ static t_bool
 	int		fd;
 
 	no_expand_flg = FALSE;
-	delimiter = (char *)(rd->next->content);
+	delimiter = ft_strdup((char *)(rd->next->content));
 	if (ft_strchr(delimiter, '\'') || ft_strchr(delimiter, '\"'))
 		no_expand_flg = TRUE;
 	if (ft_expand_quotation(&delimiter) == FALSE)
 	{
 		g_ms.status = STATUS_GENERAL_ERR;
-		return (FALSE);
+		return (ft_free_n_return(&delimiter, FALSE));
 	}
 	fd = open(HEREDOC_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (fd < 0)
 	{
 		ft_put_cmderror(HEREDOC_PATH, strerror(errno));
 		g_ms.status = STATUS_GENERAL_ERR;
-		return (FALSE);
+		return (ft_free_n_return(&delimiter, FALSE));
 	}
 	if (get_n_write_heredoc_line(fd, delimiter, no_expand_flg) == FAILED)
-		return (FALSE);
-	return (TRUE);
+		return (ft_free_n_return(&delimiter, FALSE));
+	return (ft_free_n_return(&delimiter, TRUE));
 }
 
 t_bool
@@ -82,6 +86,7 @@ t_bool
 	t_list	*rd_head;
 	t_bool	res;
 
+	ft_sig_prior();
 	res = TRUE;
 	while (res == TRUE && command)
 	{
@@ -97,5 +102,6 @@ t_bool
 		command->redirects = rd_head;
 		command = command->next;
 	}
+	ft_sig_post();
 	return (res);
 }
