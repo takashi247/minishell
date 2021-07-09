@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static int
 	make_current_path_list(t_list **path_list)

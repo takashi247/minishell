@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 t_command
 	*ft_get_last_command(t_command *head)

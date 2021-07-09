@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 void
 	ft_handle_post_pipe_signal(int signal)

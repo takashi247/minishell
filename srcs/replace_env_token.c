@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static char
 	*convert_env(char *new[3])

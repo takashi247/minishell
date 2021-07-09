@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static void
 	add_pwd_front(char **path_env)

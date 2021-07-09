@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 char
 	*ft_get_cmd_option(char *option, const char *arg)

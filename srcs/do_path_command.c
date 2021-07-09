@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static void
 	check_command_dir(char *command, char *command_dir)

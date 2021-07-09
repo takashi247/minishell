@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 void
 	ft_save_fds(t_command *c, int std_fds[3])

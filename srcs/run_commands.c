@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 t_bool
 	ft_is_pipe(t_command *c)

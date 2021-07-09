@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 void
 	ft_free_strs(char **line, char **fd_array)

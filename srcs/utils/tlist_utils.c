@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 void
 	ft_lstdelend(t_list **lst, void (*del)(void*))

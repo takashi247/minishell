@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 void
 	ft_put_line(const char *pre_line, size_t len, t_bool is_heredoc)

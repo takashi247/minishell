@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static int
 	handle_keys(const char *buf, size_t *allocated, t_bool is_heredoc)

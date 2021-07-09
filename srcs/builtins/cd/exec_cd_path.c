@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static char
 	*create_new_path(const char *cd_path, const char *path)

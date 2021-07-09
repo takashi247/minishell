@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static void
 	adjust_start_row(t_bool is_heredoc)
