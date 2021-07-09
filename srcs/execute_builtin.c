@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static int
 	do_builtin_cmd(t_bool is_pipe, char **argv)

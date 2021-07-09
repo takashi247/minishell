@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static void
 	put_env_with_export_syntax(const char *str, const int fd)

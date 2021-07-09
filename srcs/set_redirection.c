@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 void
 	ft_free_n_update_params(t_list **rd, char **op, char **path)

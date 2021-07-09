@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 char
 	*ft_strndup_append_null(const char *s, size_t n)

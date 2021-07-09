@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static void
 	update_redirects(t_command *c, t_list **current, t_list *prev)

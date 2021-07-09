@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static void
 	free_n_close(char **line, int fd, t_bool should_exit)

@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 t_bool
 	ft_is_end_with_escape(char *line)

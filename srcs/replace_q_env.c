@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 void
 	ft_free_all_chars(char **env, char *tmp[2], char *new[3])

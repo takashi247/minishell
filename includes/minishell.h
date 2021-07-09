@@ -1,5 +1,5 @@
-#ifndef MINISHELL_TNISHINA_H
-# define MINISHELL_TNISHINA_H
+#ifndef MINISHELL_H
+# define MINISHELL_H
 
 /*
 ** required header files

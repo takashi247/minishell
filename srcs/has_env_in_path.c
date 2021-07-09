@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 /*
 ** fl[0]: a flag for single quotations ('\'')

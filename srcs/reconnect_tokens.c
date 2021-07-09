@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static int
 	handle_multi_tokens(t_list *tokens, char *new[3], t_list **args, int *i)

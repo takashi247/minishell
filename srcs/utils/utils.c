@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 void
 	*ft_realloc(void *original, size_t size, size_t original_size)

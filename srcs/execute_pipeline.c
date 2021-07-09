@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 static void
 	dup_to_stdfd(t_command *c, t_bool p_flag[2], int last_p[2], int new_p[2])

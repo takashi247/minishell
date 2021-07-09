@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 char
 	*ft_extract_envname_from_str(const char *str)

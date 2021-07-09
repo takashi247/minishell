@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 char
 	*ft_join_path(const char *path, const char *new)

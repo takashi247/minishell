@@ -1,4 +1,4 @@
-#include "minishell_tnishina.h"
+#include "minishell.h"
 
 t_bool
 	add_space_after_redirect(char **l, int *i)
