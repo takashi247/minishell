@@ -24,14 +24,8 @@ t_bool
 {
 	int	p[2];
 
-	if (content[env_pos[0] + 1] != '{')
-		p[0] = env_pos[0] + 1;
-	else
-		p[0] = env_pos[0] + 2;
-	if (content[env_pos[0] + 1] == '{' && content[env_pos[1]] == '}')
-		p[1] = env_pos[1] + 1;
-	else
-		p[1] = env_pos[1];
+	p[0] = env_pos[0] + 1;
+	p[1] = env_pos[1];
 	new[0] = ft_substr(content, 0, env_pos[0]);
 	new[1] = ft_substr(content, p[0], env_pos[1] - p[0]);
 	new[2] = ft_strdup(content + p[1]);
