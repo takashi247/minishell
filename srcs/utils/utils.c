@@ -1,21 +1,21 @@
 #include "minishell.h"
 
 void
-	*ft_realloc(void *original, size_t size, size_t original_size)
+	*ft_realloc(char **original, size_t size, size_t original_size)
 {
 	void	*new;
 
-	if (!original)
+	if (!original || !*original)
 		return (malloc(size));
 	new = malloc(size);
 	if (new)
 	{
 		if (original_size < size)
-			ft_memcpy(new, original, original_size);
+			ft_memcpy(new, *original, original_size);
 		else
-			ft_memcpy(new, original, size);
+			ft_memcpy(new, *original, size);
 	}
-	free(original);
+	ft_free(original);
 	return (new);
 }
 

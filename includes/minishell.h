@@ -311,7 +311,7 @@ int			ft_isover_llrange(char *s);
 int			ft_isover_intrange(char *s);
 
 /* utils/utils.c */
-void		*ft_realloc(void *original, size_t size, size_t original_size);
+void		*ft_realloc(char **original, size_t size, size_t original_size);
 int			ft_isspace(char c);
 int			ft_isnumeric(char *s);
 char		**ft_convert_list(t_list *l);
