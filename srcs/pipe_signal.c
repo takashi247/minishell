@@ -15,14 +15,14 @@ static void
 	if (signal == SIGINT)
 	{
 		if (kill(g_ms.latest_pid, 0) == 0)
-			g_ms.status = 130;
+			g_ms.status = STATUS_SIGINT;
 		else
 			ft_putstr_fd("\n", STDERR_FILENO);
 	}
 	else if (signal == SIGQUIT)
 	{
 		if (kill(g_ms.latest_pid, 0) == 0)
-			g_ms.status = 131;
+			g_ms.status = STATUS_SIGQUIT;
 	}
 }
 
@@ -32,11 +32,11 @@ void
 	if (signal(SIGINT, handle_piped_signal) == SIG_ERR)
 	{
 		ft_putstr_fd(strerror(errno), STDERR_FILENO);
-		exit(1);
+		exit(STATUS_GENERAL_ERR);
 	}
 	if (signal(SIGQUIT, handle_piped_signal) == SIG_ERR)
 	{
 		ft_putstr_fd(strerror(errno), STDERR_FILENO);
-		exit(1);
+		exit(STATUS_GENERAL_ERR);
 	}
 }
