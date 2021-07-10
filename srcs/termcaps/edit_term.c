@@ -48,8 +48,8 @@ static int
 		if (SIZE_MAX == g_ms.hist.input_len
 			|| SIZE_MAX - BUFFER_SIZE < *allocated)
 			return (IS_OVERFLOW);
-		g_ms.hist.input
-			= ft_realloc(g_ms.hist.input, *allocated + BUFFER_SIZE, *allocated);
+		g_ms.hist.input = ft_realloc(
+				&g_ms.hist.input, *allocated + BUFFER_SIZE, *allocated);
 		if (!g_ms.hist.input)
 		{
 			write(STDERR_FILENO, "\n", 1);
