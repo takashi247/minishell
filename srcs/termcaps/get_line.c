@@ -28,7 +28,7 @@ int
 		return (GNL_ERROR);
 	*line = NULL;
 	if (init_input_and_position() == GNL_ERROR)
-		return (GNL_SUCCESS);
+		return (GNL_ERROR);
 	ret = ft_handle_keys_loop(is_heredoc);
 	tcsetattr(STDIN_FILENO, TCSANOW, &g_ms.origin_term);
 	if (0 <= ret)
